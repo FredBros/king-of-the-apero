@@ -58,3 +58,9 @@ func push_to(new_pos: Vector2i) -> void:
 		
 	var tween = create_tween()
 	tween.tween_property(self, "position", target_world_pos, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+# Rotate the wrestler to face a target position (keeping Y axis upright)
+func look_at_target(target_pos: Vector3) -> void:
+	var look_pos = target_pos
+	look_pos.y = global_position.y
+	look_at(look_pos, Vector3.UP)

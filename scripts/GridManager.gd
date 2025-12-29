@@ -25,8 +25,15 @@ var current_card: CardData
 # Offset to center the grid in the world (0,0,0)
 var board_offset: Vector3
 
+# Validation and Highlighting
+var valid_cells: Array[Vector2i] = []
+var highlight_instances: Array[MeshInstance3D] = []
+var highlight_material_move: StandardMaterial3D
+var highlight_material_attack: StandardMaterial3D
+
 func _ready() -> void:
 	_calculate_offset()
+	_init_materials()
 	# Debug: Print the world position of the first cell (0,0)
 	print("Grid initialized. Cell (0,0) is at World Pos: ", grid_to_world(Vector2i(0, 0)))
 	_create_debug_grid()
@@ -41,10 +48,23 @@ func _unhandled_input(event: InputEvent) -> void:
 func on_card_selected(card: CardData) -> void:
 	current_card = card
 	print("GridManager received card: ", card.title)
+	_calculate_valid_cells()
+	_update_highlights()
 
 # Called by GameManager when turn changes
 func set_active_wrestler(wrestler: Wrestler) -> void:
 	active_wrestler = wrestler
+	_clear_highlights()
+	current_card = null
+
+func _init_materials() -> void:
+	highlight_material_move = StandardMaterial3D.new()
+	highlight_material_move.albedo_color = Color(0.4, 0.6, 1.0, 0.5) # Blue transparent
+	highlight_material_move.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	
+	highlight_material_attack = StandardMaterial3D.new()
+	highlight_material_attack.albedo_color = Color(1.0, 0.4, 0.4, 0.5) # Red transparent
+	highlight_material_attack.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 
 func _handle_grid_click(mouse_pos: Vector2) -> void:
 	if not active_wrestler or not current_card:
@@ -56,47 +76,126 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 		
 	print("Clicked cell: ", clicked_cell)
 	
+	# Strict Validation: Check if the cell is in the pre-calculated valid list
+	if not clicked_cell in valid_cells:
+		print("Invalid move/target!")
+		return
+	
 	# Check if we have actions left
 	if game_manager and game_manager.current_actions <= 0:
 		print("No actions left!")
 		return
 	
+	# Rotate wrestler towards target
+	active_wrestler.look_at_target(to_global(grid_to_world(clicked_cell)))
+	
+	var is_joker = current_card.suit == "Joker"
+	var target = _get_wrestler_at(clicked_cell)
+	
 	# Logic based on card type
-	if current_card.type == CardData.CardType.MOVE:
-		# Calculate Manhattan distance (grid steps)
-		var diff = (clicked_cell - active_wrestler.grid_position).abs()
-		var distance = diff.x + diff.y
-		
-		if distance <= current_card.value:
-			active_wrestler.move_to_grid_position(clicked_cell)
+	if target:
+		if current_card.type == CardData.CardType.ATTACK or is_joker:
+			target.take_damage(1)
 			_consume_card()
-		else:
-			print("Too far! Max distance: ", current_card.value)
-			
-	elif current_card.type == CardData.CardType.ATTACK:
-		var target = _get_wrestler_at(clicked_cell)
-		if target and target != active_wrestler:
-			# Check range (Attack is usually adjacent, distance = 1)
-			var diff = (clicked_cell - active_wrestler.grid_position).abs()
-			if (diff.x + diff.y) == 1:
-				target.take_damage(current_card.value)
-				_consume_card()
+	elif current_card.type == CardData.CardType.MOVE or is_joker:
+		active_wrestler.move_to_grid_position(clicked_cell)
+		_consume_card()
+
+func _calculate_valid_cells() -> void:
+	valid_cells.clear()
+	if not active_wrestler or not current_card:
+		return
+		
+	var is_joker = current_card.suit == "Joker"
+		
+	if current_card.type == CardData.CardType.MOVE or is_joker:
+		# Check all cells within range
+		var range_val = 1
+		for x in range(-range_val, range_val + 1):
+			for y in range(-range_val, range_val + 1):
+				var offset = Vector2i(x, y)
+				var target_pos = active_wrestler.grid_position + offset
 				
-	elif current_card.type == CardData.CardType.THROW:
-		var target = _get_wrestler_at(clicked_cell)
-		if target and target != active_wrestler:
-			# Check range (Throw is usually adjacent)
-			var diff = (clicked_cell - active_wrestler.grid_position).abs()
-			if (diff.x + diff.y) == 1:
-				# Push direction: From Attacker TO Target
-				var direction = (clicked_cell - active_wrestler.grid_position)
-				var push_dest = clicked_cell + (direction * current_card.value) # Push X cells away
-				target.push_to(push_dest)
-				_consume_card()
+				if not is_valid_cell(target_pos): continue
+				
+				# Check Pattern (Orthogonal vs Diagonal)
+				var valid_pattern = false
+				if is_joker:
+					valid_pattern = true
+				elif current_card.pattern == CardData.MovePattern.ORTHOGONAL:
+					if offset.x == 0 or offset.y == 0: valid_pattern = true
+				elif current_card.pattern == CardData.MovePattern.DIAGONAL:
+					if abs(offset.x) == abs(offset.y): valid_pattern = true
+				
+				if not valid_pattern: continue
+				
+				var diff = offset.abs()
+				
+				# Distance Check (Range 1)
+				var valid_dist = false
+				if is_joker:
+					if diff.x <= 1 and diff.y <= 1 and (diff.x + diff.y > 0): valid_dist = true
+				elif current_card.pattern == CardData.MovePattern.ORTHOGONAL:
+					if diff.x + diff.y == 1: valid_dist = true
+				elif current_card.pattern == CardData.MovePattern.DIAGONAL:
+					if diff.x == 1 and diff.y == 1: valid_dist = true
+				
+				if valid_dist:
+					# Move requires empty cell
+					if _get_wrestler_at(target_pos) == null:
+						valid_cells.append(target_pos)
+						
+	if current_card.type == CardData.CardType.ATTACK or is_joker:
+		# Check all opponents
+		for w in wrestlers:
+			if w == active_wrestler: continue
+			
+			var diff = (w.grid_position - active_wrestler.grid_position).abs()
+			
+			# Attack range is 1 (Adjacent)
+			# But we must check pattern
+			var is_valid_pos = false
+			
+			if is_joker:
+				if max(diff.x, diff.y) == 1: is_valid_pos = true
+			elif current_card.pattern == CardData.MovePattern.ORTHOGONAL:
+				# Distance 1 Manhattan is always orthogonal
+				if diff.x + diff.y == 1: is_valid_pos = true
+			elif current_card.pattern == CardData.MovePattern.DIAGONAL:
+				# Diagonal adjacent means dx=1 and dy=1 (Manhattan=2)
+				if diff.x == 1 and diff.y == 1: is_valid_pos = true
+				
+			if is_valid_pos:
+				valid_cells.append(w.grid_position)
+
+func _update_highlights() -> void:
+	_clear_highlights()
+	
+	for cell in valid_cells:
+		var material = highlight_material_move
+		if _get_wrestler_at(cell) != null:
+			material = highlight_material_attack
+			
+		var mesh_inst = MeshInstance3D.new()
+		var plane = PlaneMesh.new()
+		plane.size = Vector2(cell_size * 0.9, cell_size * 0.9)
+		mesh_inst.mesh = plane
+		mesh_inst.material_override = material
+		mesh_inst.position = grid_to_world(cell)
+		mesh_inst.position.y = 0.1 # Slightly above ground to avoid z-fighting
+		add_child(mesh_inst)
+		highlight_instances.append(mesh_inst)
+
+func _clear_highlights() -> void:
+	for inst in highlight_instances:
+		inst.queue_free()
+	highlight_instances.clear()
 
 func _consume_card() -> void:
 	if game_manager:
 		game_manager.use_card(current_card)
+	_clear_highlights()
+	current_card = null
 
 func _get_cell_under_mouse(mouse_pos: Vector2) -> Vector2i:
 	var camera = get_viewport().get_camera_3d()

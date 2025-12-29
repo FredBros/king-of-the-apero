@@ -13,19 +13,22 @@ var base_color: Color = Color.WHITE
 func setup(data: CardData) -> void:
 	card_data = data
 	title_label.text = data.title
-	value_label.text = str(data.value)
+	
+	if data.suit == "Joker":
+		value_label.text = "★"
+	else:
+		value_label.text = str(data.value)
 	
 	# Simple visual feedback based on type
-	match data.type:
-		CardData.CardType.MOVE:
-			type_label.text = "MOVE"
-			base_color = Color(0.4, 0.6, 1.0) # Blueish
-		CardData.CardType.ATTACK:
-			type_label.text = "ATTACK"
-			base_color = Color(1.0, 0.4, 0.4) # Reddish
-		CardData.CardType.THROW:
-			type_label.text = "THROW"
-			base_color = Color(1.0, 0.8, 0.2) # Yellowish
+	if data.suit in ["Hearts", "Diamonds"]:
+		type_label.text = "ATTACK"
+		base_color = Color(0.9, 0.3, 0.3) # Red
+	elif data.suit == "Joker":
+		type_label.text = "JOKER"
+		base_color = Color(0.6, 0.3, 0.8) # Purple
+	else:
+		type_label.text = "MOVE"
+		base_color = Color(0.2, 0.2, 0.2) # Black/Grey
 	
 	self.modulate = base_color
 

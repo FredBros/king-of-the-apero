@@ -7,7 +7,7 @@ var discard_pile: Array[CardData] = []
 func initialize_deck() -> void:
 	draw_pile.clear()
 	discard_pile.clear()
-	_create_test_deck()
+	_create_standard_deck()
 	shuffle_deck()
 
 func shuffle_deck() -> void:
@@ -30,17 +30,49 @@ func draw_card() -> CardData:
 func discard_card(card: CardData) -> void:
 	discard_pile.append(card)
 
-func _create_test_deck() -> void:
-	# Create a simple balanced deck for testing
-	for i in range(10):
-		draw_pile.append(_create_card(CardData.CardType.MOVE, 1, "Step"))
-		draw_pile.append(_create_card(CardData.CardType.MOVE, 2, "Run"))
+func _create_standard_deck() -> void:
+	var suits = ["Spades", "Clubs", "Hearts", "Diamonds"]
 	
-	for i in range(6):
-		draw_pile.append(_create_card(CardData.CardType.ATTACK, 2, "Punch"))
-		
-	for i in range(4):
-		draw_pile.append(_create_card(CardData.CardType.THROW, 2, "Suplex"))
+	for suit in suits:
+		for rank in range(1, 14):
+			var card = CardData.new()
+			card.value = rank
+			card.suit = suit
+			
+			# Set Rank Label
+			if rank == 1: card.rank_label = "A"
+			elif rank == 11: card.rank_label = "J"
+			elif rank == 12: card.rank_label = "Q"
+			elif rank == 13: card.rank_label = "K"
+			else: card.rank_label = str(rank)
+			
+			card.title = card.rank_label + " " + suit
+			
+			match suit:
+				"Spades": # Pique (Noir) -> Move Diagonal
+					card.type = CardData.CardType.MOVE
+					card.pattern = CardData.MovePattern.DIAGONAL
+				"Clubs": # Trefle (Noir) -> Move Orthogonal
+					card.type = CardData.CardType.MOVE
+					card.pattern = CardData.MovePattern.ORTHOGONAL
+				"Hearts": # Coeur (Rouge) -> Attack Diagonal
+					card.type = CardData.CardType.ATTACK
+					card.pattern = CardData.MovePattern.DIAGONAL
+				"Diamonds": # Carreau (Rouge) -> Attack Orthogonal
+					card.type = CardData.CardType.ATTACK
+					card.pattern = CardData.MovePattern.ORTHOGONAL
+			
+			draw_pile.append(card)
+			
+	# Add 2 Jokers
+	for i in range(2):
+		var card = CardData.new()
+		card.type = CardData.CardType.MOVE
+		card.pattern = CardData.MovePattern.OMNI
+		card.value = 1
+		card.title = "JOKER"
+		card.suit = "Joker"
+		draw_pile.append(card)
 
 func _create_card(type: CardData.CardType, value: int, title: String) -> CardData:
 	var card = CardData.new()
