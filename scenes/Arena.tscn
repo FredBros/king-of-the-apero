@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://b8j4k5l6m7n8"]
+
+[ext_resource type="Script" path="res://scripts/Arena.gd" id="1_arena"]
+[ext_resource type="Script" uid="uid://mpnorh1sywyd" path="res://scripts/GridManager.gd" id="1_grid"]
+[ext_resource type="PackedScene" uid="uid://dnc417x07353p" path="res://scenes/Wrestler.tscn" id="2_q751w"]
+[ext_resource type="PackedScene" uid="uid://g1h2i3j4k5l6" path="res://scenes/GameUI.tscn" id="3_gameui"]
+
+[node name="Arena" type="Node3D"]
+script = ExtResource("1_arena")
+
+[node name="GridManager" type="Node3D" parent="."]
+script = ExtResource("1_grid")
+wrestler_scene = ExtResource("2_q751w")
+grid_size = Vector2i(5, 5)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 8, 6)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 5, 0)
+shadow_enabled = true
+
+[node name="GameUI" parent="." instance=ExtResource("3_gameui")]
