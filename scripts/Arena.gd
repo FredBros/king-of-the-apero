@@ -21,20 +21,17 @@ func _ready() -> void:
 		
 		# Connect UI End Turn button
 		game_ui.end_turn_pressed.connect(game_manager.end_turn)
+		game_ui.card_discard_requested.connect(game_manager.discard_hand_card)
 		
 		# Connect Game Manager signals to UI
 		game_manager.turn_started.connect(func(player_name):
-			game_ui.update_turn_info(player_name, game_manager.current_actions)
-		)
-		game_manager.action_spent.connect(func(remaining):
-			var active_wrestler = game_manager.get_active_wrestler()
-			if active_wrestler:
-				game_ui.update_turn_info(active_wrestler.name, remaining)
+			game_ui.update_turn_info(player_name)
 		)
 		
 		# Connect Card Drawing/Discarding to UI
 		game_manager.card_drawn.connect(game_ui.add_card_to_hand)
 		game_manager.card_discarded.connect(game_ui.remove_card_from_hand)
+		game_manager.card_discarded.connect(grid_manager.on_card_discarded)
 		
 		# Connect Game Manager to Grid Manager (to sync active wrestler)
 		game_manager.turn_started.connect(func(player_name):

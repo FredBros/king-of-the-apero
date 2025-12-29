@@ -2,13 +2,12 @@ class_name GameManager
 extends Node
 
 signal turn_started(player_name: String)
-signal action_spent(remaining: int)
 signal card_drawn(card: CardData)
 signal card_discarded(card: CardData)
 signal turn_ended
 
-@export var actions_per_turn: int = 2
 @export var hand_size_limit: int = 5
+@export var cards_drawn_per_turn: int = 2
 
 var deck_manager: DeckManager
 
@@ -16,7 +15,6 @@ var players: Array[Wrestler] = []
 # Dictionary to store hand for each player: { player_name: [CardData] }
 var player_hands: Dictionary = {}
 var active_player_index: int = 0
-var current_actions: int = 0
 var is_game_active: bool = false
 
 func initialize(wrestlers_list: Array[Wrestler], deck_mgr: DeckManager) -> void:
@@ -25,15 +23,18 @@ func initialize(wrestlers_list: Array[Wrestler], deck_mgr: DeckManager) -> void:
 	active_player_index = 0 # Player 1 starts
 	is_game_active = true
 	deck_manager.initialize_deck()
+	
+	# Initial setup: Fill hands to limit for all players
+	for player in players:
+		_draw_up_to_limit(player.name)
+		
 	_start_turn()
 
 func _start_turn() -> void:
-	current_actions = actions_per_turn
 	var current_player = players[active_player_index]
 	print("Turn Start: ", current_player.name)
 	turn_started.emit(current_player.name)
-	action_spent.emit(current_actions)
-	_draw_up_to_limit(current_player.name)
+	_draw_turn_cards(current_player.name)
 
 func end_turn() -> void:
 	if not is_game_active: return
@@ -47,13 +48,7 @@ func end_turn() -> void:
 
 # Returns true if an action was successfully consumed
 func try_use_action() -> bool:
-	if not is_game_active: return false
-	
-	if current_actions > 0:
-		current_actions -= 1
-		action_spent.emit(current_actions)
-		return true
-	return false
+	return is_game_active
 
 func get_active_wrestler() -> Wrestler:
 	if players.is_empty(): return null
@@ -69,9 +64,17 @@ func use_card(card: CardData) -> bool:
 		return true
 	return false
 
+func discard_hand_card(card: CardData) -> void:
+	if not is_game_active: return
+	var current_player_name = players[active_player_index].name
+	_remove_card_from_hand(current_player_name, card)
+	deck_manager.discard_card(card)
+	card_discarded.emit(card)
+
 func get_player_hand(player_name: String) -> Array:
 	return player_hands.get(player_name, [])
 
+# Used for initialization (fill hand to 5)
 func _draw_up_to_limit(player_name: String) -> void:
 	if not player_hands.has(player_name):
 		player_hands[player_name] = []
@@ -84,6 +87,23 @@ func _draw_up_to_limit(player_name: String) -> void:
 			card_drawn.emit(new_card)
 		else:
 			break # Deck empty
+
+# Used for turn start (draw max 2, up to limit)
+func _draw_turn_cards(player_name: String) -> void:
+	if not player_hands.has(player_name):
+		player_hands[player_name] = []
+		
+	var current_hand = player_hands[player_name]
+	var space_in_hand = hand_size_limit - current_hand.size()
+	var amount_to_draw = min(cards_drawn_per_turn, space_in_hand)
+	
+	for i in range(amount_to_draw):
+		var new_card = deck_manager.draw_card()
+		if new_card:
+			current_hand.append(new_card)
+			card_drawn.emit(new_card)
+		else:
+			break
 
 func _remove_card_from_hand(player_name: String, card: CardData) -> void:
 	if player_hands.has(player_name):

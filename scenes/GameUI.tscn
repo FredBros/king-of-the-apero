@@ -39,11 +39,6 @@ layout_mode = 2
 text = "Player's Turn"
 horizontal_alignment = 1
 
-[node name="ActionsLabel" type="Label" parent="TurnInfoContainer/VBoxContainer"]
-layout_mode = 2
-text = "Actions: 2"
-horizontal_alignment = 1
-
 [node name="EndTurnButton" type="Button" parent="."]
 anchors_preset = 3
 anchor_left = 1.0

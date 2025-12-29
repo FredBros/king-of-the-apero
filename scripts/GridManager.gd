@@ -30,10 +30,12 @@ var valid_cells: Array[Vector2i] = []
 var highlight_instances: Array[MeshInstance3D] = []
 var highlight_material_move: StandardMaterial3D
 var highlight_material_attack: StandardMaterial3D
+var active_indicator: MeshInstance3D
 
 func _ready() -> void:
 	_calculate_offset()
 	_init_materials()
+	_init_active_indicator()
 	# Debug: Print the world position of the first cell (0,0)
 	print("Grid initialized. Cell (0,0) is at World Pos: ", grid_to_world(Vector2i(0, 0)))
 	_create_debug_grid()
@@ -51,11 +53,17 @@ func on_card_selected(card: CardData) -> void:
 	_calculate_valid_cells()
 	_update_highlights()
 
+func on_card_discarded(card: CardData) -> void:
+	if current_card == card:
+		_clear_highlights()
+		current_card = null
+
 # Called by GameManager when turn changes
 func set_active_wrestler(wrestler: Wrestler) -> void:
 	active_wrestler = wrestler
 	_clear_highlights()
 	current_card = null
+	_update_active_indicator()
 
 func _init_materials() -> void:
 	highlight_material_move = StandardMaterial3D.new()
@@ -65,6 +73,33 @@ func _init_materials() -> void:
 	highlight_material_attack = StandardMaterial3D.new()
 	highlight_material_attack.albedo_color = Color(1.0, 0.4, 0.4, 0.5) # Red transparent
 	highlight_material_attack.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+
+func _init_active_indicator() -> void:
+	active_indicator = MeshInstance3D.new()
+	var mesh = CylinderMesh.new()
+	mesh.top_radius = cell_size * 0.35
+	mesh.bottom_radius = cell_size * 0.35
+	mesh.height = 0.05
+	active_indicator.mesh = mesh
+	active_indicator.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	
+	var material = StandardMaterial3D.new()
+	material.albedo_color = Color(0.2, 1.0, 0.2, 0.6) # Green transparent
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	active_indicator.material_override = material
+
+func _update_active_indicator() -> void:
+	if not active_indicator: return
+	
+	if active_indicator.get_parent():
+		active_indicator.get_parent().remove_child(active_indicator)
+		
+	if active_wrestler:
+		active_wrestler.add_child(active_indicator)
+		# Wrestler is at Y=1.0, Floor is at Y=0.0.
+		# We place indicator slightly above floor relative to wrestler
+		active_indicator.position = Vector3(0, -0.95, 0)
 
 func _handle_grid_click(mouse_pos: Vector2) -> void:
 	if not active_wrestler or not current_card:
@@ -79,11 +114,6 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 	# Strict Validation: Check if the cell is in the pre-calculated valid list
 	if not clicked_cell in valid_cells:
 		print("Invalid move/target!")
-		return
-	
-	# Check if we have actions left
-	if game_manager and game_manager.current_actions <= 0:
-		print("No actions left!")
 		return
 	
 	# Rotate wrestler towards target
@@ -286,8 +316,8 @@ func _spawn_debug_wrestler() -> void:
 	wrestlers.append(wrestler_instance)
 	add_child(wrestler_instance)
 	
-	# Place it on a starting cell, e.g., (2, 2)
-	var start_pos = Vector2i(2, 2)
+	# Place it on a starting cell (Top-Left Corner)
+	var start_pos = Vector2i(0, 0)
 	wrestler_instance.set_initial_position(start_pos, self)
 	wrestler_instance.name = "Player"
 	
@@ -295,7 +325,8 @@ func _spawn_debug_wrestler() -> void:
 	var dummy = wrestler_scene.instantiate()
 	wrestlers.append(dummy)
 	add_child(dummy)
-	dummy.set_initial_position(Vector2i(2, 3), self)
+	# Place it on opposite corner (Bottom-Right)
+	dummy.set_initial_position(grid_size - Vector2i(1, 1), self)
 	dummy.name = "Dummy"
 	
 	# Connect signals

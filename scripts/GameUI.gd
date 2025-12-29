@@ -2,6 +2,7 @@ class_name GameUI
 extends CanvasLayer
 
 signal card_selected(card_data: CardData)
+signal card_discard_requested(card_data: CardData)
 signal end_turn_pressed
 
 @export var card_ui_scene: PackedScene
@@ -10,7 +11,6 @@ signal end_turn_pressed
 @onready var winner_label: Label = $GameOverContainer/Panel/MarginContainer/VBoxContainer/WinnerLabel
 
 @onready var turn_label: Label = $TurnInfoContainer/VBoxContainer/TurnLabel
-@onready var actions_label: Label = $TurnInfoContainer/VBoxContainer/ActionsLabel
 
 var selected_card_ui: CardUI
 
@@ -30,15 +30,15 @@ func _on_restart_button_pressed() -> void:
 	# Reload the current scene to restart
 	get_tree().reload_current_scene()
 
-func update_turn_info(player_name: String, actions_left: int) -> void:
+func update_turn_info(player_name: String) -> void:
 	turn_label.text = player_name + "'s Turn"
-	actions_label.text = "Actions: " + str(actions_left)
 
 func add_card_to_hand(card_data: CardData) -> void:
 	var card = card_ui_scene.instantiate()
 	hand_container.add_child(card)
 	card.setup(card_data)
 	card.clicked.connect(_on_card_clicked)
+	card.discard_requested.connect(_on_card_discard_requested)
 
 func remove_card_from_hand(card_data: CardData) -> void:
 	for child in hand_container.get_children():
@@ -67,6 +67,9 @@ func _on_card_clicked(card_ui: CardUI) -> void:
 	selected_card_ui = card_ui
 	selected_card_ui.set_selected(true)
 	card_selected.emit(card_ui.card_data)
+
+func _on_card_discard_requested(card_ui: CardUI) -> void:
+	card_discard_requested.emit(card_ui.card_data)
 
 func show_game_over(winner_name: String) -> void:
 	winner_label.text = winner_name + " WINS!"

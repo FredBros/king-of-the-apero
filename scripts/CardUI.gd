@@ -2,8 +2,10 @@ class_name CardUI
 extends PanelContainer
 
 signal clicked(card_ui: CardUI)
+signal discard_requested(card_ui: CardUI)
 
-@onready var title_label: Label = $MarginContainer/VBoxContainer/TitleLabel
+@onready var title_label: Label = $MarginContainer/VBoxContainer/Header/TitleLabel
+@onready var discard_button: Button = $MarginContainer/VBoxContainer/Header/DiscardButton
 @onready var type_label: Label = $MarginContainer/VBoxContainer/TypeLabel
 @onready var value_label: Label = $MarginContainer/VBoxContainer/ValueLabel
 
@@ -32,6 +34,10 @@ func setup(data: CardData) -> void:
 	
 	self.modulate = base_color
 
+func _ready() -> void:
+	if discard_button:
+		discard_button.pressed.connect(func(): discard_requested.emit(self))
+
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		clicked.emit(self)
@@ -41,6 +47,8 @@ func set_selected(selected: bool) -> void:
 		# Highlight by making it brighter
 		self.modulate = base_color.lightened(0.4)
 		self.scale = Vector2(1.1, 1.1) # Pop effect
+		discard_button.show()
 	else:
 		self.modulate = base_color
 		self.scale = Vector2(1.0, 1.0)
+		discard_button.hide()
