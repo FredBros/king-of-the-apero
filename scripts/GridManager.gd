@@ -3,6 +3,9 @@ extends Node3D
 
 signal game_over(winner_name: String)
 
+# Reference to the Game Manager (injected by Arena)
+var game_manager: GameManager
+
 # Scene reference for the wrestler pawn. We'll link this in the editor.
 @export var wrestler_scene: PackedScene
 
@@ -39,6 +42,10 @@ func on_card_selected(card: CardData) -> void:
 	current_card = card
 	print("GridManager received card: ", card.title)
 
+# Called by GameManager when turn changes
+func set_active_wrestler(wrestler: Wrestler) -> void:
+	active_wrestler = wrestler
+
 func _handle_grid_click(mouse_pos: Vector2) -> void:
 	if not active_wrestler or not current_card:
 		return
@@ -49,6 +56,11 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 		
 	print("Clicked cell: ", clicked_cell)
 	
+	# Check if we have actions left
+	if game_manager and game_manager.current_actions <= 0:
+		print("No actions left!")
+		return
+	
 	# Logic based on card type
 	if current_card.type == CardData.CardType.MOVE:
 		# Calculate Manhattan distance (grid steps)
@@ -57,7 +69,7 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 		
 		if distance <= current_card.value:
 			active_wrestler.move_to_grid_position(clicked_cell)
-			# Optional: Consume card / Deselect
+			_consume_card()
 		else:
 			print("Too far! Max distance: ", current_card.value)
 			
@@ -68,6 +80,7 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 			var diff = (clicked_cell - active_wrestler.grid_position).abs()
 			if (diff.x + diff.y) == 1:
 				target.take_damage(current_card.value)
+				_consume_card()
 				
 	elif current_card.type == CardData.CardType.THROW:
 		var target = _get_wrestler_at(clicked_cell)
@@ -79,6 +92,11 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 				var direction = (clicked_cell - active_wrestler.grid_position)
 				var push_dest = clicked_cell + (direction * current_card.value) # Push X cells away
 				target.push_to(push_dest)
+				_consume_card()
+
+func _consume_card() -> void:
+	if game_manager:
+		game_manager.use_card(current_card)
 
 func _get_cell_under_mouse(mouse_pos: Vector2) -> Vector2i:
 	var camera = get_viewport().get_camera_3d()

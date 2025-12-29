@@ -2,9 +2,50 @@ extends Node3D
 
 @onready var grid_manager: GridManager = $GridManager
 @onready var game_ui: GameUI = $GameUI
+@onready var game_manager: GameManager = $GameManager
+@onready var deck_manager: DeckManager = $DeckManager
 
 func _ready() -> void:
 	# Connect the UI signal to the GridManager
 	if game_ui and grid_manager:
 		game_ui.card_selected.connect(grid_manager.on_card_selected)
-		grid_manager.game_over.connect(game_ui.show_game_over)
+		grid_manager.game_over.connect(func(winner_name):
+			game_ui.show_game_over(winner_name)
+			game_manager.is_game_active = false
+		)
+		
+	# Setup Game Manager
+	if game_manager:
+		# Inject dependency into GridManager
+		grid_manager.game_manager = game_manager
+		
+		# Connect UI End Turn button
+		game_ui.end_turn_pressed.connect(game_manager.end_turn)
+		
+		# Connect Game Manager signals to UI
+		game_manager.turn_started.connect(func(player_name):
+			game_ui.update_turn_info(player_name, game_manager.current_actions)
+		)
+		game_manager.action_spent.connect(func(remaining):
+			var active_wrestler = game_manager.get_active_wrestler()
+			if active_wrestler:
+				game_ui.update_turn_info(active_wrestler.name, remaining)
+		)
+		
+		# Connect Card Drawing/Discarding to UI
+		game_manager.card_drawn.connect(game_ui.add_card_to_hand)
+		game_manager.card_discarded.connect(game_ui.remove_card_from_hand)
+		
+		# Connect Game Manager to Grid Manager (to sync active wrestler)
+		game_manager.turn_started.connect(func(player_name):
+			grid_manager.set_active_wrestler(game_manager.get_active_wrestler())
+			
+			# Refresh Hand UI for the new player
+			game_ui.clear_hand()
+			var hand = game_manager.get_player_hand(player_name)
+			for card in hand:
+				game_ui.add_card_to_hand(card)
+		)
+		
+		# Start the game logic (GridManager has already spawned wrestlers in its _ready)
+		game_manager.initialize(grid_manager.wrestlers, deck_manager)

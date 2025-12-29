@@ -1,12 +1,20 @@
 [gd_scene load_steps=3 format=3 uid="uid://b8j4k5l6m7n8"]
 
 [ext_resource type="Script" path="res://scripts/Arena.gd" id="1_arena"]
+[ext_resource type="Script" path="res://scripts/GameManager.gd" id="2_gamemanager"]
+[ext_resource type="Script" path="res://scripts/DeckManager.gd" id="3_deckmanager"]
 [ext_resource type="Script" uid="uid://mpnorh1sywyd" path="res://scripts/GridManager.gd" id="1_grid"]
 [ext_resource type="PackedScene" uid="uid://dnc417x07353p" path="res://scenes/Wrestler.tscn" id="2_q751w"]
 [ext_resource type="PackedScene" uid="uid://g1h2i3j4k5l6" path="res://scenes/GameUI.tscn" id="3_gameui"]
 
 [node name="Arena" type="Node3D"]
 script = ExtResource("1_arena")
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("2_gamemanager")
+
+[node name="DeckManager" type="Node" parent="."]
+script = ExtResource("3_deckmanager")
 
 [node name="GridManager" type="Node3D" parent="."]
 script = ExtResource("1_grid")
