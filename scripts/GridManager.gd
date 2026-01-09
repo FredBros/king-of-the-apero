@@ -38,7 +38,7 @@ func _ready() -> void:
 	_init_active_indicator()
 	# Debug: Print the world position of the first cell (0,0)
 	print("Grid initialized. Cell (0,0) is at World Pos: ", grid_to_world(Vector2i(0, 0)))
-	_create_debug_grid()
+	_create_arena_visuals()
 	_spawn_debug_wrestler()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -97,9 +97,8 @@ func _update_active_indicator() -> void:
 		
 	if active_wrestler:
 		active_wrestler.add_child(active_indicator)
-		# Wrestler is at Y=1.0, Floor is at Y=0.0.
-		# We place indicator slightly above floor relative to wrestler
-		active_indicator.position = Vector3(0, -0.95, 0)
+		# Wrestler pivot is at feet (Y=0). Place indicator slightly above floor.
+		active_indicator.position = Vector3(0, 0.05, 0)
 
 func _handle_grid_click(mouse_pos: Vector2) -> void:
 	if not active_wrestler or not current_card:
@@ -125,7 +124,7 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 	# Logic based on card type
 	if target:
 		if current_card.type == CardData.CardType.ATTACK or is_joker:
-			target.take_damage(1)
+			active_wrestler.attack(target)
 			_consume_card()
 	elif current_card.type == CardData.CardType.MOVE or is_joker:
 		active_wrestler.move_to_grid_position(clicked_cell)
@@ -282,22 +281,26 @@ func is_valid_cell(grid_pos: Vector2i) -> bool:
 	return (grid_pos.x >= 0 and grid_pos.x < grid_size.x) and \
 		   (grid_pos.y >= 0 and grid_pos.y < grid_size.y)
 
-# Create visual meshes for the grid (Debug purpose)
-func _create_debug_grid() -> void:
-	for x in range(grid_size.x):
-		for y in range(grid_size.y):
-			var grid_pos = Vector2i(x, y)
-			var world_pos = grid_to_world(grid_pos)
-			
-			var cell_visual = MeshInstance3D.new()
-			var mesh = PlaneMesh.new()
-			# Make it slightly smaller than cell_size to see gaps between cells
-			mesh.size = Vector2(cell_size * 0.95, cell_size * 0.95)
-			
-			cell_visual.mesh = mesh
-			cell_visual.position = world_pos
-			
-			add_child(cell_visual)
+# Create the 3D visuals for the Arena (Floor only)
+func _create_arena_visuals() -> void:
+	var total_width = grid_size.x * cell_size
+	var total_depth = grid_size.y * cell_size
+	
+	# 1. The Mat (Floor)
+	var mat_mesh = BoxMesh.new()
+	# Size: Width, Height (Thickness), Depth
+	mat_mesh.size = Vector3(total_width, 1.0, total_depth)
+	
+	var mat_instance = MeshInstance3D.new()
+	mat_instance.mesh = mat_mesh
+	# Position: Center is (0,0,0) based on our offset logic.
+	# We want the top surface at Y=0. Since height is 1.0, center Y is -0.5.
+	mat_instance.position = Vector3(0, -0.5, 0)
+	
+	var mat_material = StandardMaterial3D.new()
+	mat_material.albedo_color = Color(0.2, 0.2, 0.2) # Dark Grey
+	mat_instance.material_override = mat_material
+	add_child(mat_instance)
 
 # Spawns a test wrestler on the grid
 func _spawn_debug_wrestler() -> void:
@@ -335,7 +338,8 @@ func _spawn_debug_wrestler() -> void:
 
 func _on_wrestler_died(w: Wrestler) -> void:
 	print("GAME OVER! ", w.name, " has been eliminated!")
-	w.queue_free()
+	# We don't destroy the object so we can see the KO animation/body
+	# w.queue_free()
 	wrestlers.erase(w)
 	
 	# Simple win condition: Last man standing

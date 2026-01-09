@@ -33,7 +33,7 @@ L'objectif est de passer d'un prototype mécanique à une boucle de jeu complèt
 - [x] **Étape 4 :** La Boucle de Jeu (Game Loop)
 - [x] **Étape 5 :** Conditions de Victoire
 
-## Phase 2 : Game Loop & Système de Deck
+## Phase 2 : Game Loop & Système de Deck [COMPLETED]
 
 **Objectif :** Passer d'un mode "bac à sable" à un match structuré en tour par tour où les actions sont dictées par une main de cartes limitée et piochée aléatoirement.
 
@@ -52,17 +52,23 @@ L'objectif est de passer d'un prototype mécanique à une boucle de jeu complèt
     *   **Deck :** Tableau de `CardData`, mélangé (`shuffle`) au début.
     *   **Main :** Limite de cartes (ex: 5). Pioche au début du tour.
     *   **Défausse :** Pile pour les cartes jouées.
-- [ ] **Étape 2.3 : Liaison UI -> Gameplay**
+- [x] **Étape 2.3 : Liaison UI -> Gameplay**
     *   Mise à jour de `CardUI` pour être dynamique.
     *   Logique de sélection stricte (Carte + Cible valide).
-- [ ] **Étape 2.4 : Amélioration du Feedback Visuel**
+- [x] **Étape 2.4 : Amélioration du Feedback Visuel**
     *   **Highlight :** Colorer les cases accessibles (Bleu=Move, Rouge=Attack).
     *   **Orientation :** Pivoter le pion vers la cible avant l'action.
-- [ ] **Étape 2.5 : Traduction du jeu de 52 cartes**
+- [x] **Étape 2.5 : Traduction du jeu de 52 cartes**
     *   Adapter `CardData` (ou créer un traducteur) pour convertir une carte standard en action.
     *   **Cartes Noires (Mouvement) :** Pique (Orthogonal), Trèfle (Diagonal). Portée = Valeur.
     *   **Cartes Rouges (Attaque) :** Cœur (Orthogonal), Carreau (Diagonal). Portée = 1, Force = Valeur.
     *   **Conséquence :** Attaque réussie = Poussée (selon Force). Sortie de ring = KO.
+
+## Phase 3 : Graphismes et Modèles 3D
+
+- [x] **Étape 3.1 :** Importation des modèles de Personnages (Remplacement des capsules).
+- [x] **Étape 3.2 :** Animations (Idle, Walk, Attack, Hit).
+- [x] **Étape 3.3 :** Modélisation procédurale du Ring (Sol uniquement).
 
 ### Règles de Validation
 *   **MOVE :** La case cible doit être vide.
