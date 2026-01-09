@@ -31,7 +31,7 @@ func discard_card(card: CardData) -> void:
 	discard_pile.append(card)
 
 func _create_standard_deck() -> void:
-	var suits = ["Spades", "Clubs", "Hearts", "Diamonds"]
+	var suits = ["♠", "♣", "♥", "♦"]
 	
 	for suit in suits:
 		for rank in range(1, 14):
@@ -46,19 +46,19 @@ func _create_standard_deck() -> void:
 			elif rank == 13: card.rank_label = "K"
 			else: card.rank_label = str(rank)
 			
-			card.title = card.rank_label + " " + suit
+			card.title = suit + " " + card.rank_label
 			
 			match suit:
-				"Spades": # Pique (Noir) -> Move Diagonal
+				"♠": # Pique (Noir) -> Move Diagonal
 					card.type = CardData.CardType.MOVE
 					card.pattern = CardData.MovePattern.DIAGONAL
-				"Clubs": # Trefle (Noir) -> Move Orthogonal
+				"♣": # Trefle (Noir) -> Move Orthogonal
 					card.type = CardData.CardType.MOVE
 					card.pattern = CardData.MovePattern.ORTHOGONAL
-				"Hearts": # Coeur (Rouge) -> Attack Diagonal
+				"♥": # Coeur (Rouge) -> Attack Diagonal
 					card.type = CardData.CardType.ATTACK
 					card.pattern = CardData.MovePattern.DIAGONAL
-				"Diamonds": # Carreau (Rouge) -> Attack Orthogonal
+				"♦": # Carreau (Rouge) -> Attack Orthogonal
 					card.type = CardData.CardType.ATTACK
 					card.pattern = CardData.MovePattern.ORTHOGONAL
 			
