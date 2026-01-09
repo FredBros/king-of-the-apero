@@ -20,7 +20,7 @@ var current_card: CardData
 
 # Grid configuration
 @export var grid_size: Vector2i = Vector2i(6, 6) # 6x6 grid
-@export var cell_size: float = 2.0 # Each cell is 2x2 meters
+@export var cell_size: float = 1.0 # Each cell is 1x1 meter
 
 # Offset to center the grid in the world (0,0,0)
 var board_offset: Vector3
@@ -285,22 +285,50 @@ func is_valid_cell(grid_pos: Vector2i) -> bool:
 func _create_arena_visuals() -> void:
 	var total_width = grid_size.x * cell_size
 	var total_depth = grid_size.y * cell_size
+	var border_size = 1.0 # 1 meter border around the grid
 	
-	# 1. The Mat (Floor)
-	var mat_mesh = BoxMesh.new()
-	# Size: Width, Height (Thickness), Depth
-	mat_mesh.size = Vector3(total_width, 1.0, total_depth)
+	# 1. The Border (Base of the board)
+	var border_mesh = BoxMesh.new()
+	border_mesh.size = Vector3(total_width + (border_size * 2), 0.5, total_depth + (border_size * 2))
 	
-	var mat_instance = MeshInstance3D.new()
-	mat_instance.mesh = mat_mesh
-	# Position: Center is (0,0,0) based on our offset logic.
-	# We want the top surface at Y=0. Since height is 1.0, center Y is -0.5.
-	mat_instance.position = Vector3(0, -0.5, 0)
+	var border_instance = MeshInstance3D.new()
+	border_instance.mesh = border_mesh
+	# Position: Center X/Z. Y is slightly lower so tiles sit on top.
+	# Tiles will be at Y=0 (top surface). Border top should be slightly below or same level.
+	# Let's put border center at Y = -0.26 (since height is 0.5, top is at -0.01) to avoid Z-fighting
+	border_instance.position = Vector3(0, -0.26, 0)
 	
-	var mat_material = StandardMaterial3D.new()
-	mat_material.albedo_color = Color(0.2, 0.2, 0.2) # Dark Grey
-	mat_instance.material_override = mat_material
-	add_child(mat_instance)
+	var border_mat = StandardMaterial3D.new()
+	border_mat.albedo_color = Color(0.3, 0.2, 0.1) # Brown/Wood color
+	border_instance.material_override = border_mat
+	add_child(border_instance)
+	
+	# 2. The Tiles (Checkerboard)
+	var tile_mat_1 = StandardMaterial3D.new()
+	tile_mat_1.albedo_color = Color(0.4, 0.4, 0.4) # Grey
+	
+	var tile_mat_2 = StandardMaterial3D.new()
+	tile_mat_2.albedo_color = Color(0.2, 0.2, 0.2) # Dark Grey
+	
+	for x in range(grid_size.x):
+		for y in range(grid_size.y):
+			var tile = MeshInstance3D.new()
+			var mesh = BoxMesh.new()
+			# Slightly smaller than cell_size to show gaps/grid lines
+			mesh.size = Vector3(cell_size * 0.95, 0.1, cell_size * 0.95)
+			tile.mesh = mesh
+			
+			# Position: Use grid_to_world logic.
+			# Y position: Center at -0.05 so top surface is at 0.0
+			tile.position = grid_to_world(Vector2i(x, y)) + Vector3(0, -0.05, 0)
+			
+			# Checkerboard pattern
+			if (x + y) % 2 == 0:
+				tile.material_override = tile_mat_1
+			else:
+				tile.material_override = tile_mat_2
+				
+			add_child(tile)
 
 # Spawns a test wrestler on the grid
 func _spawn_debug_wrestler() -> void:
