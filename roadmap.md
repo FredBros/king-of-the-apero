@@ -69,6 +69,13 @@ L'objectif est de passer d'un prototype mécanique à une boucle de jeu complèt
 - [x] **Étape 3.1 :** Importation des modèles de Personnages (Remplacement des capsules).
 - [x] **Étape 3.2 :** Animations (Idle, Walk, Attack, Hit).
 - [x] **Étape 3.3 :** Modélisation procédurale du Ring (Sol uniquement).
+- [ ] **Étape 3.4 :** Obstacles destructibles sur le plateau.
+
+## Phase 4 : Polish & UI
+
+- [x] **Étape 4.1 :** Interface de jeu (HUD Joueurs, PV, Noms).
+- [ ] **Étape 4.2 :** Caméra dynamique et Screenshake.
+- [ ] **Étape 4.3 :** VFX (Particules).
 
 ### Règles de Validation
 *   **MOVE :** La case cible doit être vide.

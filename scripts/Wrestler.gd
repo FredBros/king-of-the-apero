@@ -2,6 +2,7 @@ class_name Wrestler
 extends Node3D
 
 signal died(wrestler: Wrestler)
+signal health_changed(current: int, max: int)
 
 @export var max_health: int = 2
 var current_health: int
@@ -17,6 +18,7 @@ var grid_manager: GridManager
 func set_initial_position(pos: Vector2i, manager: GridManager) -> void:
 	grid_manager = manager
 	current_health = max_health
+	health_changed.emit(current_health, max_health)
 	
 	# Auto-detect AnimationPlayer if not assigned manually
 	if not animation_player:
@@ -64,6 +66,7 @@ func attack(target: Wrestler) -> void:
 # Apply damage to the wrestler
 func take_damage(amount: int) -> void:
 	current_health -= amount
+	health_changed.emit(current_health, max_health)
 	print(name, " took ", amount, " damage. HP: ", current_health)
 	
 	if current_health <= 0:

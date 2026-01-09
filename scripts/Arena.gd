@@ -26,6 +26,7 @@ func _ready() -> void:
 		# Connect Game Manager signals to UI
 		game_manager.turn_started.connect(func(player_name):
 			game_ui.update_turn_info(player_name)
+			_update_ui_player_positions()
 		)
 		
 		# Connect Card Drawing/Discarding to UI
@@ -46,3 +47,20 @@ func _ready() -> void:
 		
 		# Start the game logic (GridManager has already spawned wrestlers in its _ready)
 		game_manager.initialize(grid_manager.wrestlers, deck_manager)
+		
+		# Connect Health Signals
+		for w in grid_manager.wrestlers:
+			# We bind the wrestler instance so UI knows WHO changed health
+			w.health_changed.connect(game_ui.on_wrestler_health_changed.bind(w))
+
+func _update_ui_player_positions() -> void:
+	var active = game_manager.get_active_wrestler()
+	var opponent = null
+	
+	# Find the opponent (Simple 1v1 logic)
+	for w in grid_manager.wrestlers:
+		if w != active:
+			opponent = w
+			break
+			
+	game_ui.update_player_info(active, opponent)

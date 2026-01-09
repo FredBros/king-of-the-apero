@@ -1,10 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://g1h2i3j4k5l6"]
+[gd_scene load_steps=4 format=3 uid="uid://g1h2i3j4k5l6"]
 
-[ext_resource type="Script" path="res://scripts/GameUI.gd" id="1_gameui"]
+[ext_resource type="Script" uid="uid://du3ndwc5toxcm" path="res://scripts/GameUI.gd" id="1_gameui"]
 [ext_resource type="PackedScene" uid="uid://c8j2k3l4m5n6" path="res://scenes/CardUI.tscn" id="2_cardui"]
+[ext_resource type="PackedScene" uid="uid://ul6duyq4iklg" path="res://scenes/UI/PlayerInfo/PlayerInfo.tscn" id="3_4s3j0"]
 
-[node name="GameUI" type="CanvasLayer"]
+[node name="GameUI" type="CanvasLayer" node_paths=PackedStringArray("top_player_info", "bottom_player_info")]
 script = ExtResource("1_gameui")
+top_player_info = NodePath("TopPlayerInfo")
+bottom_player_info = NodePath("BottomPlayerInfo")
 card_ui_scene = ExtResource("2_cardui")
 
 [node name="HandContainer" type="HBoxContainer" parent="."]
@@ -84,3 +87,21 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 text = "RESTART MATCH"
+
+[node name="TopPlayerInfo" parent="." instance=ExtResource("3_4s3j0")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_right = 6.0
+offset_bottom = 23.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="BottomPlayerInfo" parent="." instance=ExtResource("3_4s3j0")]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_right = 0.0
+offset_top = -23.0
+offset_right = 6.0
+grow_horizontal = 1
+grow_vertical = 0

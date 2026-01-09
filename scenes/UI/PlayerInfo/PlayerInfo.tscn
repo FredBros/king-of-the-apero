@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://ul6duyq4iklg"]
+
+[ext_resource type="Script" uid="uid://cgy4xoay7ixya" path="res://scripts/PlayerInfo.gd" id="1_2eeu7"]
+
+[node name="PlayerInfo" type="HBoxContainer" node_paths=PackedStringArray("name_label", "health_label")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_2eeu7")
+name_label = NodePath("NameLabel")
+health_label = NodePath("HealthLabel")
+
+[node name="NameLabel" type="Label" parent="."]
+layout_mode = 2
+
+[node name="HealthLabel" type="Label" parent="."]
+layout_mode = 2

@@ -5,6 +5,12 @@ signal card_selected(card_data: CardData)
 signal card_discard_requested(card_data: CardData)
 signal end_turn_pressed
 
+@export var top_player_info: PlayerInfo
+@export var bottom_player_info: PlayerInfo
+
+var active_wrestler_ref: Wrestler
+var opponent_wrestler_ref: Wrestler
+
 @export var card_ui_scene: PackedScene
 @onready var hand_container: HBoxContainer = $HandContainer
 @onready var game_over_container: CenterContainer = $GameOverContainer
@@ -74,3 +80,24 @@ func _on_card_discard_requested(card_ui: CardUI) -> void:
 func show_game_over(winner_name: String) -> void:
 	winner_label.text = winner_name + " WINS!"
 	game_over_container.show()
+
+
+# Met à jour les infos des joueurs (Hotseat : Actif en bas, Adversaire en haut)
+func update_player_info(active: Wrestler, opponent: Wrestler) -> void:
+	active_wrestler_ref = active
+	opponent_wrestler_ref = opponent
+	
+	if bottom_player_info and active:
+		bottom_player_info.setup(active.name, active.max_health)
+		bottom_player_info.update_health(active.current_health, active.max_health)
+	
+	if top_player_info and opponent:
+		top_player_info.setup(opponent.name, opponent.max_health)
+		top_player_info.update_health(opponent.current_health, opponent.max_health)
+
+# Callback appelé quand un catcheur change de PV
+func on_wrestler_health_changed(current: int, max_hp: int, wrestler: Wrestler) -> void:
+	if wrestler == active_wrestler_ref and bottom_player_info:
+		bottom_player_info.update_health(current, max_hp)
+	elif wrestler == opponent_wrestler_ref and top_player_info:
+		top_player_info.update_health(current, max_hp)
