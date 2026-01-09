@@ -69,7 +69,12 @@ L'objectif est de passer d'un prototype mécanique à une boucle de jeu complèt
 - [x] **Étape 3.1 :** Importation des modèles de Personnages (Remplacement des capsules).
 - [x] **Étape 3.2 :** Animations (Idle, Walk, Attack, Hit).
 - [x] **Étape 3.3 :** Modélisation procédurale du Ring (Sol uniquement).
-- [ ] **Étape 3.4 :** Obstacles destructibles sur le plateau.
+
+## Phase 3.5 : Profondeur de Gameplay (Règles Avancées)
+
+- [ ] **Étape 3.5.1 :** Règle des "Tomates" (Perte de PV si inactif).
+- [ ] **Étape 3.5.2 :** Mécanique de Poussée (UI de choix Dégât vs Push).
+- [ ] **Étape 3.5.3 :** Système de Réaction (Blocage/Esquive) - *À développer avec le module Multijoueur*.
 
 ## Phase 4 : Polish & UI
 

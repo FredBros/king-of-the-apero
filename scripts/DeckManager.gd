@@ -40,10 +40,10 @@ func _create_standard_deck() -> void:
 			card.suit = suit
 			
 			match suit:
-				"Spades": card.symbol = "♠"
-				"Clubs": card.symbol = "♣"
-				"Hearts": card.symbol = "♥"
-				"Diamonds": card.symbol = "♦"
+				"Spades": card.symbol = "X" # Diagonal (ASCII)
+				"Clubs": card.symbol = "+" # Orthogonal (ASCII)
+				"Hearts": card.symbol = "X" # Diagonal (ASCII)
+				"Diamonds": card.symbol = "+" # Orthogonal (ASCII)
 			
 			# Set Rank Label
 			if rank == 1: card.rank_label = "A"
@@ -78,7 +78,7 @@ func _create_standard_deck() -> void:
 		card.value = 1
 		card.title = "JOKER"
 		card.suit = "Joker"
-		card.symbol = "Joker"
+		card.symbol = "*"
 		draw_pile.append(card)
 
 func _create_card(type: CardData.CardType, value: int, title: String) -> CardData:

@@ -4,7 +4,6 @@ extends Node3D
 signal died(wrestler: Wrestler)
 signal health_changed(current: int, max: int)
 
-@export var max_health: int = 2
 @export var max_health: int = 10
 var current_health: int
 var grid_position: Vector2i = Vector2i.ZERO
