@@ -31,13 +31,19 @@ func discard_card(card: CardData) -> void:
 	discard_pile.append(card)
 
 func _create_standard_deck() -> void:
-	var suits = ["♠", "♣", "♥", "♦"]
+	var suits = ["Spades", "Clubs", "Hearts", "Diamonds"]
 	
 	for suit in suits:
 		for rank in range(1, 14):
 			var card = CardData.new()
 			card.value = rank
 			card.suit = suit
+			
+			match suit:
+				"Spades": card.symbol = "♠"
+				"Clubs": card.symbol = "♣"
+				"Hearts": card.symbol = "♥"
+				"Diamonds": card.symbol = "♦"
 			
 			# Set Rank Label
 			if rank == 1: card.rank_label = "A"
@@ -46,19 +52,19 @@ func _create_standard_deck() -> void:
 			elif rank == 13: card.rank_label = "K"
 			else: card.rank_label = str(rank)
 			
-			card.title = suit + " " + card.rank_label
+			card.title = card.symbol + " " + card.rank_label
 			
 			match suit:
-				"♠": # Pique (Noir) -> Move Diagonal
+				"Spades": # Pique (Noir) -> Move Diagonal
 					card.type = CardData.CardType.MOVE
 					card.pattern = CardData.MovePattern.DIAGONAL
-				"♣": # Trefle (Noir) -> Move Orthogonal
+				"Clubs": # Trefle (Noir) -> Move Orthogonal
 					card.type = CardData.CardType.MOVE
 					card.pattern = CardData.MovePattern.ORTHOGONAL
-				"♥": # Coeur (Rouge) -> Attack Diagonal
+				"Hearts": # Coeur (Rouge) -> Attack Diagonal
 					card.type = CardData.CardType.ATTACK
 					card.pattern = CardData.MovePattern.DIAGONAL
-				"♦": # Carreau (Rouge) -> Attack Orthogonal
+				"Diamonds": # Carreau (Rouge) -> Attack Orthogonal
 					card.type = CardData.CardType.ATTACK
 					card.pattern = CardData.MovePattern.ORTHOGONAL
 			
@@ -72,6 +78,7 @@ func _create_standard_deck() -> void:
 		card.value = 1
 		card.title = "JOKER"
 		card.suit = "Joker"
+		card.symbol = "Joker"
 		draw_pile.append(card)
 
 func _create_card(type: CardData.CardType, value: int, title: String) -> CardData:
