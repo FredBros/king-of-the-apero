@@ -9,6 +9,7 @@ signal server_disconnected
 const PORT = 8910
 const DEFAULT_SERVER_IP = "127.0.0.1" # Localhost
 const GAME_SCENE_PATH = "res://scenes/Arena.tscn" # TODO: Vérifie que c'est le bon chemin vers ta scène de jeu !
+const LOBBY_SCENE_PATH = "res://scenes/Lobby.tscn" # TODO: Vérifie le chemin de ta scène Lobby/Main
 
 var multiplayer_peer: WebSocketMultiplayerPeer
 
@@ -77,3 +78,20 @@ func start_game() -> void:
 @rpc("authority", "call_local", "reliable")
 func load_game_scene(scene_path: String) -> void:
 	get_tree().change_scene_to_file(scene_path)
+
+func return_to_lobby() -> void:
+	# On ferme la connexion proprement
+	if multiplayer.multiplayer_peer:
+		multiplayer.multiplayer_peer.close()
+		multiplayer.multiplayer_peer = null
+	
+	get_tree().change_scene_to_file(LOBBY_SCENE_PATH)
+
+@rpc("any_peer", "call_local", "reliable")
+func request_rematch() -> void:
+	if multiplayer.is_server():
+		print("Rematch requested. Reloading game scene...")
+		load_game_scene.rpc(GAME_SCENE_PATH)
+	else:
+		# Client requests rematch to server
+		request_rematch.rpc_id(1)

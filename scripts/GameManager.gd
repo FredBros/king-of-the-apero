@@ -79,7 +79,8 @@ func end_turn() -> void:
 		return
 		
 	# Logique Serveur
-	_server_process_end_turn()
+	if is_local_player_active():
+		_server_process_end_turn()
 
 # Returns true if an action was successfully consumed
 func try_use_action() -> bool:
@@ -118,11 +119,17 @@ func use_card(card: CardData) -> bool:
 
 func discard_hand_card(card: CardData) -> void:
 	if not is_game_active: return
-	# TODO: Implémenter la défausse réseau si nécessaire (pour l'instant local)
-	var current_player_name = players[active_player_index].name
-	_remove_card_from_hand(current_player_name, card)
-	deck_manager.discard_card(card)
-	card_discarded.emit(card)
+	
+	if try_use_action():
+		# Si on est client, on demande au serveur de défausser
+		if not multiplayer.is_server():
+			request_discard_card.rpc_id(1, _serialize_card(card))
+			var my_name = _get_my_player_name()
+			_remove_card_from_hand(my_name, card)
+			return
+
+		# Logique Serveur (ou Local)
+		server_process_discard_card(card)
 
 func get_player_hand(player_name: String) -> Array:
 	return player_hands.get(player_name, [])
@@ -174,8 +181,9 @@ func _remove_card_from_hand(player_name: String, card: CardData) -> bool:
 		# On doit trouver la carte correspondante dans la main (comparaison par valeur car instances différentes réseau)
 		var hand = player_hands[player_name]
 		for c in hand:
-			# Comparaison souple sur les valeurs pour éviter les soucis int/float
-			if c.title == card.title and c.suit == card.suit and is_equal_approx(float(c.value), float(card.value)):
+			# Simplification : On compare uniquement le titre qui est unique (ex: "X 10", "+ K", "JOKER")
+			# Cela évite les erreurs de typage sur value/suit ou les problèmes de float
+			if c.title == card.title:
 				hand.erase(c)
 				return true
 	
@@ -248,16 +256,44 @@ func request_play_card(card_dict: Dictionary) -> void:
 		var card = _deserialize_card(card_dict)
 		server_process_use_card(card)
 
+@rpc("any_peer", "call_remote", "reliable")
+func request_discard_card(card_dict: Dictionary) -> void:
+	var sender_id = multiplayer.get_remote_sender_id()
+	var current_player_name = players[active_player_index].name
+	
+	if player_peer_ids[current_player_name] == sender_id:
+		var card = _deserialize_card(card_dict)
+		server_process_discard_card(card)
+
 func server_process_use_card(card: CardData) -> void:
 	var current_player_name = players[active_player_index].name
 	
 	# On ne consomme la carte que si on arrive vraiment à l'enlever de la main
-	if _remove_card_from_hand(current_player_name, card):
-		deck_manager.discard_card(card)
-		# Informer tout le monde qu'une carte a été jouée (pour l'historique/anim)
-		sync_card_played.rpc(_serialize_card(card), current_player_name)
-	else:
-		printerr("Server: Attempted to use a card not in hand! Possible desync.")
+	if not _remove_card_from_hand(current_player_name, card):
+		printerr("Server: Card '", card.title, "' not found in hand. Forcing consumption to fix desync.")
+		if player_hands.has(current_player_name) and not player_hands[current_player_name].is_empty():
+			var removed = player_hands[current_player_name].pop_front()
+			print("Server: Force removed '", removed.title, "' to maintain hand count.")
+	
+	# Dans tous les cas (succès ou desync), on valide la consommation car l'action (Mvt/Attaque) a eu lieu.
+	deck_manager.discard_card(card)
+	# Informer tout le monde qu'une carte a été jouée (pour l'historique/anim et nettoyage client)
+	sync_card_played.rpc(_serialize_card(card), current_player_name)
+
+func server_process_discard_card(card: CardData) -> void:
+	var current_player_name = players[active_player_index].name
+	
+	# Même logique robuste que pour use_card
+	if not _remove_card_from_hand(current_player_name, card):
+		printerr("Server: Discarded card '", card.title, "' not found in hand. Forcing consumption.")
+		if player_hands.has(current_player_name) and not player_hands[current_player_name].is_empty():
+			var removed = player_hands[current_player_name].pop_front()
+			print("Server: Force removed '", removed.title, "' to maintain hand count.")
+	
+	deck_manager.discard_card(card)
+	# On réutilise sync_card_played car l'effet est le même (retrait de main + signal discard)
+	# Si on voulait une anim différente pour la défausse, on créerait un sync_card_discarded
+	sync_card_played.rpc(_serialize_card(card), current_player_name)
 
 @rpc("authority", "call_local", "reliable")
 func sync_card_played(card_dict: Dictionary, player_name: String) -> void:

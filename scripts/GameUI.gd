@@ -25,6 +25,10 @@ func _ready() -> void:
 	var restart_btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/RestartButton
 	restart_btn.pressed.connect(_on_restart_button_pressed)
 	
+	# Connect quit button manually
+	var quit_btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/QuitButton
+	quit_btn.pressed.connect(_on_quit_button_pressed)
+	
 	# Connect end turn button manually
 	var end_turn_btn = $EndTurnButton
 	end_turn_btn.pressed.connect(_on_end_turn_button_pressed)
@@ -44,8 +48,12 @@ func _on_end_turn_button_pressed() -> void:
 	end_turn_pressed.emit()
 
 func _on_restart_button_pressed() -> void:
-	# Reload the current scene to restart
-	get_tree().reload_current_scene()
+	# Request a rematch (reload scene keeping connection)
+	NetworkManager.request_rematch()
+
+func _on_quit_button_pressed() -> void:
+	# Return to lobby properly closing connection
+	NetworkManager.return_to_lobby()
 
 func update_turn_info(player_name: String) -> void:
 	turn_label.text = player_name + "'s Turn"
@@ -94,6 +102,12 @@ func _on_card_discard_requested(card_ui: CardUI) -> void:
 func show_game_over(winner_name: String) -> void:
 	winner_label.text = winner_name + " WINS!"
 	game_over_container.show()
+
+func disable_restart_button() -> void:
+	var restart_btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/RestartButton
+	if restart_btn:
+		restart_btn.disabled = true
+		restart_btn.text = "OPPONENT LEFT"
 
 
 # Met à jour les infos des joueurs (Hotseat : Actif en bas, Adversaire en haut)

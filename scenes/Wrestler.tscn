@@ -5,5 +5,6 @@
 
 [node name="Wrestler" type="Node3D"]
 script = ExtResource("1_83s1c")
+max_health = 2
 
 [node name="BigGuy" parent="." instance=ExtResource("2_i8vlu")]

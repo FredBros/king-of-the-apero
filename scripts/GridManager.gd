@@ -50,6 +50,11 @@ func _unhandled_input(event: InputEvent) -> void:
 func on_card_selected(card: CardData) -> void:
 	current_card = card
 	print("GridManager received card: ", card.title)
+	
+	# Empêcher l'affichage des déplacements si ce n'est pas notre tour
+	if game_manager and not game_manager.is_local_player_active():
+		return
+	
 	_calculate_valid_cells()
 	_update_highlights()
 
