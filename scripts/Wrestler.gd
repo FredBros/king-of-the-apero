@@ -26,10 +26,20 @@ func set_initial_position(pos: Vector2i, manager: GridManager) -> void:
 	
 	_play_anim("Idle")
 	
-	move_to_grid_position(pos)
+	# Initial placement is local only, no RPC needed (spawn is deterministic or handled elsewhere)
+	_perform_move(pos)
 
 # Moves the wrestler to a new grid position (instantly for now)
 func move_to_grid_position(new_pos: Vector2i) -> void:
+	# On diffuse l'ordre de mouvement à tout le monde
+	sync_move.rpc(new_pos)
+
+@rpc("call_local", "reliable")
+func sync_move(new_pos: Vector2i) -> void:
+	_perform_move(new_pos)
+
+func _perform_move(new_pos: Vector2i) -> void:
+	# Logique de mouvement (exécutée chez tout le monde)
 	if not grid_manager:
 		printerr("GridManager not set for this wrestler!")
 		return
@@ -50,12 +60,17 @@ func move_to_grid_position(new_pos: Vector2i) -> void:
 
 # Perform an attack on a target wrestler
 func attack(target: Wrestler) -> void:
+	sync_attack.rpc(target.get_path())
+
+@rpc("call_local", "reliable")
+func sync_attack(target_path: NodePath) -> void:
 	_play_anim("Punch")
 	
 	# Wait for the "impact" moment of the animation (approx 0.2s - 0.4s usually)
 	# Ideally, use AnimationPlayer method track, but a timer is fine for POC
 	await get_tree().create_timer(0.3).timeout
 	
+	var target = get_node_or_null(target_path)
 	if target:
 		target.take_damage(1)
 	
@@ -97,6 +112,18 @@ func push_to(new_pos: Vector2i) -> void:
 
 # Rotate the wrestler to face a target position (keeping Y axis upright)
 func look_at_target(target_pos: Vector3) -> void:
+	# Local visual update immediately
+	_perform_look_at(target_pos)
+	
+	# If we are the server, we sync this to others
+	if multiplayer.is_server():
+		sync_look_at.rpc(target_pos)
+
+@rpc("call_remote", "unreliable")
+func sync_look_at(target_pos: Vector3) -> void:
+	_perform_look_at(target_pos)
+
+func _perform_look_at(target_pos: Vector3) -> void:
 	var look_pos = target_pos
 	look_pos.y = global_position.y
 	look_at(look_pos, Vector3.UP)

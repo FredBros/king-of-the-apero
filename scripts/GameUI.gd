@@ -28,6 +28,17 @@ func _ready() -> void:
 	# Connect end turn button manually
 	var end_turn_btn = $EndTurnButton
 	end_turn_btn.pressed.connect(_on_end_turn_button_pressed)
+	
+	# Connexion dynamique au GameManager
+	# On cherche le GameManager dans la scène (il devrait être un frère ou un parent)
+	var game_manager = get_tree().root.find_child("GameManager", true, false)
+	if game_manager:
+		if not game_manager.card_drawn.is_connected(add_card_to_hand):
+			game_manager.card_drawn.connect(add_card_to_hand)
+		if not game_manager.card_discarded.is_connected(remove_card_from_hand):
+			game_manager.card_discarded.connect(remove_card_from_hand)
+	else:
+		printerr("GameUI: GameManager not found!")
 
 func _on_end_turn_button_pressed() -> void:
 	end_turn_pressed.emit()
@@ -40,6 +51,7 @@ func update_turn_info(player_name: String) -> void:
 	turn_label.text = player_name + "'s Turn"
 
 func add_card_to_hand(card_data: CardData) -> void:
+	print("DEBUG UI: Adding card ", card_data.title, " to hand.")
 	var card = card_ui_scene.instantiate()
 	hand_container.add_child(card)
 	card.setup(card_data)
@@ -48,7 +60,9 @@ func add_card_to_hand(card_data: CardData) -> void:
 
 func remove_card_from_hand(card_data: CardData) -> void:
 	for child in hand_container.get_children():
-		if child is CardUI and child.card_data == card_data:
+		# Comparaison par valeur (car les instances diffèrent via RPC)
+		if child is CardUI and child.card_data.title == card_data.title and \
+		   child.card_data.value == card_data.value and child.card_data.suit == card_data.suit:
 			child.queue_free()
 			if selected_card_ui == child:
 				selected_card_ui = null

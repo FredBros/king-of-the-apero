@@ -29,20 +29,33 @@ func _ready() -> void:
 			_update_ui_player_positions()
 		)
 		
-		# Connect Card Drawing/Discarding to UI
-		game_manager.card_drawn.connect(game_ui.add_card_to_hand)
-		game_manager.card_discarded.connect(game_ui.remove_card_from_hand)
+		# Connect Card Discarding to GridManager (to clear highlights)
 		game_manager.card_discarded.connect(grid_manager.on_card_discarded)
 		
 		# Connect Game Manager to Grid Manager (to sync active wrestler)
 		game_manager.turn_started.connect(func(player_name):
 			grid_manager.set_active_wrestler(game_manager.get_active_wrestler())
 			
-			# Refresh Hand UI for the new player
+			# Determine whose hand to show
+			var hand_owner = ""
+			
+			# Check for Hotseat (Server with no clients)
+			if multiplayer.is_server() and multiplayer.get_peers().size() == 0:
+				hand_owner = player_name # Show active player
+			else:
+				# Networked: Find local player name
+				var my_id = multiplayer.get_unique_id()
+				for name in game_manager.player_peer_ids:
+					if game_manager.player_peer_ids[name] == my_id:
+						hand_owner = name
+						break
+			
+			# Refresh Hand UI
 			game_ui.clear_hand()
-			var hand = game_manager.get_player_hand(player_name)
-			for card in hand:
-				game_ui.add_card_to_hand(card)
+			if hand_owner != "":
+				var hand = game_manager.get_player_hand(hand_owner)
+				for card in hand:
+					game_ui.add_card_to_hand(card)
 		)
 		
 		# Start the game logic (GridManager has already spawned wrestlers in its _ready)

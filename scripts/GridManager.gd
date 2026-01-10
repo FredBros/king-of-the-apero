@@ -104,6 +104,10 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 	if not active_wrestler or not current_card:
 		return
 		
+	# Empêcher l'input si ce n'est pas notre tour
+	if game_manager and not game_manager.is_local_player_active():
+		return
+		
 	var clicked_cell = _get_cell_under_mouse(mouse_pos)
 	if not is_valid_cell(clicked_cell):
 		return
@@ -117,18 +121,55 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 	
 	# Rotate wrestler towards target
 	active_wrestler.look_at_target(to_global(grid_to_world(clicked_cell)))
+	# Si on est Client, on envoie la requête au Serveur
+	if not multiplayer.is_server():
+		request_grid_action.rpc_id(1, clicked_cell, _serialize_card(current_card))
+		# On nettoie localement pour l'UI (Optimistic UI ou simple cleanup)
+		_clear_highlights()
+		current_card = null
+		return
+
+	# Si on est Serveur (ou Local), on exécute
+	_execute_action(clicked_cell, current_card)
+
+@rpc("any_peer", "call_local", "reliable")
+func request_grid_action(clicked_cell: Vector2i, card_data: Dictionary) -> void:
+	# Seul le serveur traite cette demande
+	if not multiplayer.is_server(): return
 	
-	var is_joker = current_card.suit == "Joker"
+	var card = _deserialize_card(card_data)
+	
+	# Validation de sécurité : Est-ce bien le tour du joueur qui envoie la requête ?
+	if game_manager:
+		var sender_id = multiplayer.get_remote_sender_id()
+		var current_player_name = game_manager.players[game_manager.active_player_index].name
+		var active_id = game_manager.player_peer_ids.get(current_player_name, -1)
+		
+		if sender_id != active_id:
+			printerr("Action rejetée : Le joueur ", sender_id, " a tenté de jouer pendant le tour de ", active_id)
+			return
+			
+		active_wrestler = game_manager.get_active_wrestler()
+	
+	_execute_action(clicked_cell, card)
+
+func _execute_action(clicked_cell: Vector2i, card: CardData) -> void:
+	if not active_wrestler: return
+	
+	var is_joker = card.suit == "Joker"
 	var target = _get_wrestler_at(clicked_cell)
+	
+	# Ensure rotation is synced from server to all clients
+	active_wrestler.look_at_target(to_global(grid_to_world(clicked_cell)))
 	
 	# Logic based on card type
 	if target:
-		if current_card.type == CardData.CardType.ATTACK or is_joker:
+		if card.type == CardData.CardType.ATTACK or is_joker:
 			active_wrestler.attack(target)
-			_consume_card()
-	elif current_card.type == CardData.CardType.MOVE or is_joker:
+			_consume_card(card)
+	elif card.type == CardData.CardType.MOVE or is_joker:
 		active_wrestler.move_to_grid_position(clicked_cell)
-		_consume_card()
+		_consume_card(card)
 
 func _calculate_valid_cells() -> void:
 	valid_cells.clear()
@@ -220,9 +261,13 @@ func _clear_highlights() -> void:
 		inst.queue_free()
 	highlight_instances.clear()
 
-func _consume_card() -> void:
+func _consume_card(card: CardData) -> void:
 	if game_manager:
-		game_manager.use_card(current_card)
+		if multiplayer.is_server():
+			# Sur le serveur, on force le traitement car l'action a déjà été validée par request_grid_action
+			game_manager.server_process_use_card(card)
+		else:
+			game_manager.use_card(card)
 	_clear_highlights()
 	current_card = null
 
@@ -345,20 +390,20 @@ func _spawn_debug_wrestler() -> void:
 	# Add it to the scene tree
 	active_wrestler = wrestler_instance
 	wrestlers.append(wrestler_instance)
+	wrestler_instance.name = "Player" # Nommer AVANT d'ajouter à l'arbre pour éviter les conflits RPC
 	add_child(wrestler_instance)
 	
 	# Place it on a starting cell (Top-Left Corner)
 	var start_pos = Vector2i(0, 0)
 	wrestler_instance.set_initial_position(start_pos, self)
-	wrestler_instance.name = "Player"
 	
 	# Spawn a Dummy Opponent
 	var dummy = wrestler_scene.instantiate()
 	wrestlers.append(dummy)
+	dummy.name = "Dummy" # Nommer AVANT d'ajouter à l'arbre
 	add_child(dummy)
 	# Place it on opposite corner (Bottom-Right)
 	dummy.set_initial_position(grid_size - Vector2i(1, 1), self)
-	dummy.name = "Dummy"
 	
 	# Connect signals
 	wrestler_instance.died.connect(_on_wrestler_died)
@@ -373,3 +418,22 @@ func _on_wrestler_died(w: Wrestler) -> void:
 	# Simple win condition: Last man standing
 	if wrestlers.size() == 1:
 		game_over.emit(wrestlers[0].name)
+
+# --- Helpers Serialization (Dupliqué pour éviter les dépendances circulaires complexes) ---
+func _serialize_card(card: CardData) -> Dictionary:
+	return {
+		"type": int(card.type),
+		"value": card.value,
+		"title": card.title,
+		"suit": card.suit,
+		"pattern": int(card.pattern)
+	}
+
+func _deserialize_card(data: Dictionary) -> CardData:
+	var card = CardData.new()
+	card.type = int(data.type)
+	card.value = int(data.value)
+	card.title = data.title
+	card.suit = data.suit
+	card.pattern = int(data.pattern)
+	return card
