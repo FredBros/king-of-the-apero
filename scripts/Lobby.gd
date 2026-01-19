@@ -56,6 +56,7 @@ func _on_join_pressed() -> void:
 		
 	if status_label: status_label.text = "Joining Match..."
 	
+	NetworkManager.is_host = false
 	# On rejoint directement l'ID
 	NetworkManager.join_game(match_id)
 	_disable_buttons()
@@ -91,7 +92,7 @@ func _check_start_game() -> void:
 	# Logic to start the game when 2 players are ready (Self + 1 Opponent)
 	var peers_count = NetworkManager.match_presences.size()
 	print("DEBUG: Checking start game. Peers count: ", peers_count)
-	if peers_count >= 1:
+	if peers_count >= 1 and NetworkManager.is_host:
 		print("Enough players! Can start game logic here.")
 		start_game_timer.stop()
 		NetworkManager.start_game()

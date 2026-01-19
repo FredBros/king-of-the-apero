@@ -21,6 +21,8 @@ enum OpCode {
 var current_match_id: String = ""
 var match_presences: Dictionary = {} # userID -> presence data
 var self_user_id: String = ""
+var is_joining: bool = false
+var is_host: bool = false
 
 func _ready() -> void:
 	# Listen to NakamaManager to know when a match is found
@@ -46,17 +48,20 @@ func _connect_socket_signals() -> void:
 		self_user_id = NakamaManager.session.user_id
 
 func host_game() -> void:
+	is_host = true
 	# Host creates the match on Nakama
 	NakamaManager.create_match()
 
 func join_game(match_id: String) -> void:
 	print("⏳ Joining match manually: ", match_id)
+	is_joining = true
 	
 	# We use the manual join from NakamaManager to avoid the "Dot vs Token" bug in the SDK
 	var result = await NakamaManager.join_match_manually(match_id)
 	
 	if result.is_empty():
 		connection_failed.emit()
+		is_joining = false
 		return
 	
 	current_match_id = match_id
@@ -72,6 +77,7 @@ func join_game(match_id: String) -> void:
 		match_presences[presence.user_id] = presence
 		player_connected.emit(presence.user_id)
 		
+	is_joining = false
 	connection_successful.emit()
 
 func _on_match_created(match_id: String) -> void:
@@ -134,6 +140,10 @@ func _handle_network_message(data: Dictionary) -> void:
 	
 	match data.type:
 		"START_GAME":
+			if is_joining:
+				print("⏳ Received START_GAME while joining. Waiting for completion...")
+				await connection_successful
+			
 			print("🎮 Received START_GAME command.")
 			get_tree().change_scene_to_file(GAME_SCENE_PATH)
 		_:
@@ -147,6 +157,7 @@ func start_game() -> void:
 	get_tree().change_scene_to_file(GAME_SCENE_PATH)
 
 func return_to_lobby() -> void:
+	is_host = false
 	if not current_match_id.is_empty():
 		var socket = NakamaManager.get_socket()
 		if socket:
