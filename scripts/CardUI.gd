@@ -14,18 +14,31 @@ var base_color: Color = Color.WHITE
 
 func setup(data: CardData) -> void:
 	card_data = data
-	title_label.text = data.title
+	if is_node_ready():
+		_update_visuals()
+
+func _ready() -> void:
+	if discard_button:
+		discard_button.pressed.connect(func(): discard_requested.emit(self))
 	
-	if data.suit == "Joker":
+	if card_data:
+		_update_visuals()
+
+func _update_visuals() -> void:
+	if not card_data: return
+	
+	title_label.text = card_data.title
+	
+	if card_data.suit == "Joker":
 		value_label.text = "★"
 	else:
-		value_label.text = str(data.value)
+		value_label.text = str(card_data.value)
 	
 	# Simple visual feedback based on type
-	if data.suit in ["Hearts", "Diamonds"]:
+	if card_data.suit in ["Hearts", "Diamonds"]:
 		type_label.text = "ATTACK"
 		base_color = Color(0.9, 0.3, 0.3) # Red
-	elif data.suit == "Joker":
+	elif card_data.suit == "Joker":
 		type_label.text = "JOKER"
 		base_color = Color(0.6, 0.3, 0.8) # Purple
 	else:
@@ -33,10 +46,6 @@ func setup(data: CardData) -> void:
 		base_color = Color(0.2, 0.2, 0.2) # Black/Grey
 	
 	self.modulate = base_color
-
-func _ready() -> void:
-	if discard_button:
-		discard_button.pressed.connect(func(): discard_requested.emit(self))
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:

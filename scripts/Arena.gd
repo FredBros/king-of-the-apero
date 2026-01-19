@@ -5,9 +5,6 @@ extends Node3D
 @onready var game_manager: GameManager = $GameManager
 @onready var deck_manager: DeckManager = $DeckManager
 
-# Track loaded players to prevent race conditions
-var _players_loaded: int = 0
-
 func _ready() -> void:
 	# Connect the UI signal to the GridManager
 	if game_ui and grid_manager:
@@ -58,16 +55,12 @@ func _ready() -> void:
 			# Determine whose hand to show
 			var hand_owner = ""
 			
-			# Check for Hotseat (Server with no clients)
-			if multiplayer.is_server() and multiplayer.get_peers().size() == 0:
-				hand_owner = player_name # Show active player
-			else:
-				# Networked: Find local player name
-				var my_id = multiplayer.get_unique_id()
-				for name in game_manager.player_peer_ids:
-					if game_manager.player_peer_ids[name] == my_id:
-						hand_owner = name
-						break
+			# Networked: Find local player name using Nakama ID
+			var my_id = NetworkManager.self_user_id
+			for name in game_manager.player_peer_ids:
+				if game_manager.player_peer_ids[name] == my_id:
+					hand_owner = name
+					break
 			
 			# Refresh Hand UI
 			game_ui.clear_hand()
@@ -77,18 +70,19 @@ func _ready() -> void:
 					game_ui.add_card_to_hand(card)
 		)
 		
-		# Handshake: Wait for all players to load the scene before initializing
-		if multiplayer.is_server():
-			_players_loaded += 1 # Server is loaded
-			_check_start_game()
-		else:
-			game_manager.initialize(grid_manager.wrestlers, deck_manager)
-			notify_server_scene_loaded.rpc_id(1)
+		# Initialize Game Manager directly (Handshake handled by NetworkManager/GameManager logic)
+		game_manager.initialize(grid_manager.wrestlers, deck_manager)
 		
 		# Connect Health Signals
 		for w in grid_manager.wrestlers:
 			# We bind the wrestler instance so UI knows WHO changed health
 			w.health_changed.connect(game_ui.on_wrestler_health_changed.bind(w))
+			
+			# Network Sync: Quand la santé change localement, on prévient les autres
+			w.health_changed.connect(func(current, _max):
+				if not game_manager.is_network_syncing:
+					game_manager.send_health_update(w.name, current)
+			)
 
 func _update_ui_player_positions() -> void:
 	var active = game_manager.get_active_wrestler()
@@ -101,15 +95,3 @@ func _update_ui_player_positions() -> void:
 			break
 			
 	game_ui.update_player_info(active, opponent)
-
-@rpc("any_peer", "call_remote", "reliable")
-func notify_server_scene_loaded() -> void:
-	if multiplayer.is_server():
-		_players_loaded += 1
-		_check_start_game()
-
-func _check_start_game() -> void:
-	var expected = multiplayer.get_peers().size() + 1
-	if _players_loaded >= expected:
-		print("All players loaded. Starting game logic.")
-		game_manager.initialize(grid_manager.wrestlers, deck_manager)

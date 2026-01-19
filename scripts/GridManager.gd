@@ -4,7 +4,12 @@ extends Node3D
 signal game_over(winner_name: String)
 
 # Reference to the Game Manager (injected by Arena)
-var game_manager: GameManager
+var game_manager: GameManager:
+	set(value):
+		game_manager = value
+		if game_manager:
+			if not game_manager.grid_action_received.is_connected(_on_grid_action_received):
+				game_manager.grid_action_received.connect(_on_grid_action_received)
 
 # Scene reference for the wrestler pawn. We'll link this in the editor.
 @export var wrestler_scene: PackedScene
@@ -126,39 +131,32 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 	
 	# Rotate wrestler towards target
 	active_wrestler.look_at_target(to_global(grid_to_world(clicked_cell)))
-	# Si on est Client, on envoie la requête au Serveur
-	if not multiplayer.is_server():
-		request_grid_action.rpc_id(1, clicked_cell, _serialize_card(current_card))
-		# On nettoie localement pour l'UI (Optimistic UI ou simple cleanup)
-		_clear_highlights()
-		current_card = null
-		return
-
-	# Si on est Serveur (ou Local), on exécute
-	_execute_action(clicked_cell, current_card)
-
-@rpc("any_peer", "call_local", "reliable")
-func request_grid_action(clicked_cell: Vector2i, card_data: Dictionary) -> void:
-	# Seul le serveur traite cette demande
-	if not multiplayer.is_server(): return
 	
-	var card = _deserialize_card(card_data)
+	# Capture card locally because _execute_action -> _consume_card sets current_card to null
+	var card_to_play = current_card
 	
-	# Validation de sécurité : Est-ce bien le tour du joueur qui envoie la requête ?
-	if game_manager:
-		var sender_id = multiplayer.get_remote_sender_id()
-		var current_player_name = game_manager.players[game_manager.active_player_index].name
-		var active_id = game_manager.player_peer_ids.get(current_player_name, -1)
-		
-		if sender_id != active_id:
-			printerr("Action rejetée : Le joueur ", sender_id, " a tenté de jouer pendant le tour de ", active_id)
-			return
-			
-		active_wrestler = game_manager.get_active_wrestler()
+	# Send to network FIRST to ensure order (GridAction before Health Update)
+	var action_data = {
+		"x": clicked_cell.x,
+		"y": clicked_cell.y,
+		"card": _serialize_card(card_to_play)
+	}
+	game_manager.send_grid_action(action_data)
 	
-	_execute_action(clicked_cell, card)
+	# Execute locally
+	_execute_action(clicked_cell, card_to_play)
+	
+	# Cleanup local
+	_clear_highlights()
+	current_card = null
 
-func _execute_action(clicked_cell: Vector2i, card: CardData) -> void:
+func _on_grid_action_received(data: Dictionary) -> void:
+	print("DEBUG: Grid action received: ", data)
+	var cell = Vector2i(data.x, data.y)
+	var card = _deserialize_card(data.card)
+	_execute_action(cell, card, true) # is_remote = true
+
+func _execute_action(clicked_cell: Vector2i, card: CardData, is_remote: bool = false) -> void:
 	if not active_wrestler: return
 	
 	var is_joker = card.suit == "Joker"
@@ -170,11 +168,14 @@ func _execute_action(clicked_cell: Vector2i, card: CardData) -> void:
 	# Logic based on card type
 	if target:
 		if card.type == CardData.CardType.ATTACK or is_joker:
-			active_wrestler.attack(target)
-			_consume_card(card)
+			# Pass the network context down to the attack method.
+			# The wrestler will decide whether to apply damage or not.
+			active_wrestler.attack(target, is_remote)
+			
+			_consume_card(card, is_remote)
 	elif card.type == CardData.CardType.MOVE or is_joker:
 		active_wrestler.move_to_grid_position(clicked_cell)
-		_consume_card(card)
+		_consume_card(card, is_remote)
 
 func _calculate_valid_cells() -> void:
 	valid_cells.clear()
@@ -266,13 +267,12 @@ func _clear_highlights() -> void:
 		inst.queue_free()
 	highlight_instances.clear()
 
-func _consume_card(card: CardData) -> void:
+func _consume_card(card: CardData, is_remote: bool = false) -> void:
+	if is_remote: return
+	
 	if game_manager:
-		if multiplayer.is_server():
-			# Sur le serveur, on force le traitement car l'action a déjà été validée par request_grid_action
-			game_manager.server_process_use_card(card)
-		else:
-			game_manager.use_card(card)
+		game_manager.use_card(card)
+		
 	_clear_highlights()
 	current_card = null
 

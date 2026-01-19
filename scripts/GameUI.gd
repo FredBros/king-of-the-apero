@@ -49,7 +49,8 @@ func _on_end_turn_button_pressed() -> void:
 
 func _on_restart_button_pressed() -> void:
 	# Request a rematch (reload scene keeping connection)
-	NetworkManager.request_rematch()
+	# NetworkManager.request_rematch() # TODO: Re-implement rematch logic with JSON messages
+	pass
 
 func _on_quit_button_pressed() -> void:
 	# Return to lobby properly closing connection

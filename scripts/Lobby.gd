@@ -12,6 +12,13 @@ const DEFAULT_PORT = 7000
 const DEFAULT_IP = "127.0.0.1"
 
 func _ready() -> void:
+	# Timer to check for game start conditions periodically
+	# Init at the top to ensure it's ready before any signal callback
+	start_game_timer = Timer.new()
+	start_game_timer.wait_time = 1.0
+	start_game_timer.timeout.connect(_check_start_game)
+	add_child(start_game_timer)
+
 	if host_button: host_button.pressed.connect(_on_host_pressed)
 	if join_button: join_button.pressed.connect(_on_join_pressed)
 	
@@ -35,12 +42,6 @@ func _ready() -> void:
 	NetworkManager.connection_failed.connect(_on_connection_fail)
 	NetworkManager.player_connected.connect(_on_player_connected)
 	NetworkManager.match_hosted.connect(_on_match_hosted)
-	
-	# Timer to check for game start conditions periodically
-	start_game_timer = Timer.new()
-	start_game_timer.wait_time = 1.0
-	start_game_timer.timeout.connect(_check_start_game)
-	add_child(start_game_timer)
 
 func _on_host_pressed() -> void:
 	if status_label: status_label.text = "Creating Match..."
@@ -66,7 +67,8 @@ func _on_nakama_ready() -> void:
 func _on_connection_success() -> void:
 	if status_label: status_label.text = "Connected! Waiting for game..."
 	# Check immediately if we already have peers (e.g. late join or bridge already synced)
-	start_game_timer.start() # Start polling
+	if start_game_timer.is_inside_tree():
+		start_game_timer.start() # Start polling
 	_check_start_game()
 
 func _on_match_hosted(match_id: String) -> void:
@@ -81,15 +83,15 @@ func _on_connection_fail() -> void:
 	_enable_buttons()
 	start_game_timer.stop()
 
-func _on_player_connected(id: int) -> void:
-	if status_label: status_label.text = "Player " + str(id) + " connected."
+func _on_player_connected(user_id: String) -> void:
+	if status_label: status_label.text = "Player " + user_id + " connected."
 	_check_start_game()
 
 func _check_start_game() -> void:
 	# Logic to start the game when 2 players are ready (Self + 1 Opponent)
-	var peers = multiplayer.get_peers()
-	print("DEBUG: Checking start game. Peers count: ", peers.size())
-	if peers.size() >= 1:
+	var peers_count = NetworkManager.match_presences.size()
+	print("DEBUG: Checking start game. Peers count: ", peers_count)
+	if peers_count >= 1:
 		print("Enough players! Can start game logic here.")
 		start_game_timer.stop()
 		NetworkManager.start_game()

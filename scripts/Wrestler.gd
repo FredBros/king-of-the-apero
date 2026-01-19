@@ -31,11 +31,6 @@ func set_initial_position(pos: Vector2i, manager: GridManager) -> void:
 
 # Moves the wrestler to a new grid position (instantly for now)
 func move_to_grid_position(new_pos: Vector2i) -> void:
-	# On diffuse l'ordre de mouvement à tout le monde
-	sync_move.rpc(new_pos)
-
-@rpc("call_local", "reliable")
-func sync_move(new_pos: Vector2i) -> void:
 	_perform_move(new_pos)
 
 func _perform_move(new_pos: Vector2i) -> void:
@@ -59,19 +54,14 @@ func _perform_move(new_pos: Vector2i) -> void:
 	tween.tween_callback(func(): _play_anim("Idle"))
 
 # Perform an attack on a target wrestler
-func attack(target: Wrestler) -> void:
-	sync_attack.rpc(target.get_path())
-
-@rpc("call_local", "reliable")
-func sync_attack(target_path: NodePath) -> void:
+func attack(target: Wrestler, is_remote: bool = false) -> void:
 	_play_anim("Punch")
 	
 	# Wait for the "impact" moment of the animation (approx 0.2s - 0.4s usually)
 	# Ideally, use AnimationPlayer method track, but a timer is fine for POC
 	await get_tree().create_timer(0.3).timeout
 	
-	var target = get_node_or_null(target_path)
-	if target:
+	if target and not is_remote:
 		target.take_damage(1)
 	
 	# Wait for animation to finish before going back to Idle (if not looped)
@@ -93,6 +83,21 @@ func take_damage(amount: int) -> void:
 		# Wait for Hurt animation to finish roughly
 		await get_tree().create_timer(0.5).timeout
 		_play_anim("Idle")
+
+# Update health from network authority (handles UI sync and animations)
+func set_network_health(value: int) -> void:
+	var previous_health = current_health
+	current_health = value
+	health_changed.emit(current_health, max_health)
+	
+	if current_health < previous_health:
+		if current_health <= 0:
+			_play_anim("KO")
+			died.emit(self)
+		else:
+			_play_anim("Hurt")
+			await get_tree().create_timer(0.5).timeout
+			_play_anim("Idle")
 
 # Force move the wrestler (can push out of bounds)
 func push_to(new_pos: Vector2i) -> void:
