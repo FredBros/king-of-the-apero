@@ -23,7 +23,7 @@ services:
       - "/bin/sh"
       - "-ecx"
       - >
-        /nakama/nakama migrate up --database.address root@cockroachdb:26257 && exec /nakama/nakama --name nakama1 --database.address root@cockroachdb:26257 --logger.level DEBUG --session.token_expiry_sec 7200
+        /nakama/nakama migrate up --database.address root@cockroachdb:26257 && exec /nakama/nakama --name nakama1 --database.address root@cockroachdb:26257 --logger.level DEBUG --session.token_expiry_sec 7200 --socket.server_key "${NAKAMA_KEY}"
     restart: "no"
     links:
       - "cockroachdb:db"
@@ -41,5 +41,22 @@ services:
       - "7350:7350"
       - "7351:7351"
 
+  caddy:
+    image: caddy:2
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - nakama
+
 volumes:
   data:
+  caddy_data:
+  caddy_config:

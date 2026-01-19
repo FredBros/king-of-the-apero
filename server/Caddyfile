@@ -1,0 +1,10 @@
+# Utilisation de la variable d'environnement DOMAIN_NAME définie dans docker-compose
+{$DOMAIN_NAME} {
+    # Redirige tout le trafic vers le conteneur Nakama sur le port API
+    reverse_proxy nakama:7350
+}
+
+# Optionnel : Pour accéder à la console d'admin (protégée)
+# console.king-apero.com {
+#     reverse_proxy nakama:7351
+# }

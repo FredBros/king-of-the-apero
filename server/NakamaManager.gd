@@ -5,10 +5,10 @@ signal match_joined(match_id: String)
 signal nakama_ready
 
 # Nakama Configuration (Localhost by default for dev)
-const SCHEME = "http"
-const HOST = "127.0.0.1"
-const PORT = 7350
-const SERVER_KEY = "defaultkey" # Default key for Nakama Docker image
+var SCHEME = "http"
+var HOST = "127.0.0.1"
+var PORT = 7350
+var SERVER_KEY = "defaultkey" # Default key for Nakama Docker image
 
 # Main Nakama API objects
 var client: NakamaClient
@@ -16,6 +16,9 @@ var session: NakamaSession
 var socket: NakamaSocket
 
 func _ready() -> void:
+	# Load secrets/config if available
+	_load_config()
+	
 	# 1. Client Initialization
 	# The 'Nakama' singleton is provided by the plugin you just installed
 	client = Nakama.create_client(SERVER_KEY, HOST, PORT, SCHEME)
@@ -27,6 +30,18 @@ func _ready() -> void:
 	
 	# Automatic connection on startup
 	login_with_device()
+
+func _load_config() -> void:
+	var config = ConfigFile.new()
+	var err = config.load("res://secrets.cfg")
+	if err == OK:
+		SCHEME = config.get_value("nakama", "scheme", SCHEME)
+		HOST = config.get_value("nakama", "host", HOST)
+		PORT = config.get_value("nakama", "port", PORT)
+		SERVER_KEY = config.get_value("nakama", "server_key", SERVER_KEY)
+		print("🔒 Configuration loaded from secrets.cfg")
+	else:
+		print("⚠️ No secrets.cfg found. Using default (Localhost) configuration.")
 
 func login_with_device() -> void:
 	# Use unique device/machine ID as identifier
