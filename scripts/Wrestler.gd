@@ -119,14 +119,6 @@ func push_to(new_pos: Vector2i) -> void:
 func look_at_target(target_pos: Vector3) -> void:
 	# Local visual update immediately
 	_perform_look_at(target_pos)
-	
-	# If we are the server, we sync this to others
-	if multiplayer.is_server():
-		sync_look_at.rpc(target_pos)
-
-@rpc("call_remote", "unreliable")
-func sync_look_at(target_pos: Vector3) -> void:
-	_perform_look_at(target_pos)
 
 func _perform_look_at(target_pos: Vector3) -> void:
 	var look_pos = target_pos
