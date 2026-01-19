@@ -28,24 +28,23 @@ func initialize(wrestlers_list: Array[Wrestler], deck_mgr: DeckManager) -> void:
 	
 	# Configuration des IDs réseau
 	player_peer_ids.clear()
-	# Convention : players[0] est le Serveur (Host), players[1] est le Client (Joiner)
-	player_peer_ids[players[0].name] = 1
 	
-	if multiplayer.is_server():
-		var peers = multiplayer.get_peers()
-		print("DEBUG: Server Initialize. Connected peers: ", peers)
-		
-		if peers.size() > 0:
-			player_peer_ids[players[1].name] = peers[0]
-		else:
-			# Mode Solo / Debug Local
-			print("DEBUG: No peers found. Defaulting to Hotseat/Local.")
-			player_peer_ids[players[1].name] = 1
-			
-		# Synchroniser les IDs avec les clients pour être sûr que tout le monde est d'accord
-		sync_player_ids.rpc(player_peer_ids)
+	# Logique P2P Déterministe : On récupère tous les IDs et on les trie.
+	# Tout le monde aura la même liste triée, donc tout le monde sera d'accord sur qui est J1 et J2.
+	var all_peers = multiplayer.get_peers()
+	all_peers.append(multiplayer.get_unique_id())
+	all_peers.sort()
+	
+	# Assignation : Le plus petit ID est le Joueur 1 (Pseudo-Host)
+	if all_peers.size() > 0: player_peer_ids[players[0].name] = all_peers[0]
+	if all_peers.size() > 1: player_peer_ids[players[1].name] = all_peers[1]
+	else: player_peer_ids[players[1].name] = all_peers[0] # Fallback Solo/Debug
 
-		# Seul le serveur gère le deck et la distribution
+	# Est-ce que je suis le "Pseudo-Host" (Joueur 1) ?
+	var am_i_host = (multiplayer.get_unique_id() == player_peer_ids[players[0].name])
+
+	if am_i_host:
+		# Le "Host" gère le deck et la distribution
 		deck_manager.initialize_deck()
 		
 		# Initial setup: Fill hands to limit for all players
@@ -53,11 +52,6 @@ func initialize(wrestlers_list: Array[Wrestler], deck_mgr: DeckManager) -> void:
 			_draw_up_to_limit(player.name)
 			
 		_start_turn()
-	else:
-		print("DEBUG: Client Initialize. Waiting for Server ID Sync...")
-		# On attend que le serveur nous envoie les IDs via sync_player_ids
-		# On met une valeur par défaut temporaire pour éviter les crashs si accédé avant sync
-		player_peer_ids[players[1].name] = multiplayer.get_unique_id()
 
 func _start_turn() -> void:
 	var current_player = players[active_player_index]
@@ -67,15 +61,17 @@ func _start_turn() -> void:
 	sync_turn_update.rpc(current_player.name)
 	
 	# Le serveur gère la pioche
-	if multiplayer.is_server():
+	# En P2P, c'est le Pseudo-Host (Joueur 1) qui gère ça
+	if multiplayer.get_unique_id() == player_peer_ids[players[0].name]:
 		_draw_turn_cards(current_player.name)
 
 func end_turn() -> void:
 	if not is_game_active: return
 	
-	# Si on est client, on demande au serveur de finir le tour
-	if not multiplayer.is_server():
-		request_end_turn.rpc_id(1)
+	# Si on n'est pas le Pseudo-Host (J1), on demande à J1 de finir le tour
+	var host_id = player_peer_ids[players[0].name]
+	if multiplayer.get_unique_id() != host_id:
+		request_end_turn.rpc_id(host_id)
 		return
 		
 	# Logique Serveur
@@ -101,9 +97,10 @@ func get_active_wrestler() -> Wrestler:
 
 func use_card(card: CardData) -> bool:
 	if try_use_action():
-		# Si on est client, on demande au serveur de jouer la carte
-		if not multiplayer.is_server():
-			request_play_card.rpc_id(1, _serialize_card(card))
+		# Si on n'est pas le Host, on envoie la requête au Host
+		var host_id = player_peer_ids[players[0].name]
+		if multiplayer.get_unique_id() != host_id:
+			request_play_card.rpc_id(host_id, _serialize_card(card))
 			# On retourne true pour que l'UI locale soit réactive (Optimistic UI)
 			# On retire la carte de notre main locale pour qu'elle ne revienne pas au refresh
 			var my_name = _get_my_player_name()
@@ -121,9 +118,10 @@ func discard_hand_card(card: CardData) -> void:
 	if not is_game_active: return
 	
 	if try_use_action():
-		# Si on est client, on demande au serveur de défausser
-		if not multiplayer.is_server():
-			request_discard_card.rpc_id(1, _serialize_card(card))
+		# Si on n'est pas le Host, on envoie la requête au Host
+		var host_id = player_peer_ids[players[0].name]
+		if multiplayer.get_unique_id() != host_id:
+			request_discard_card.rpc_id(host_id, _serialize_card(card))
 			var my_name = _get_my_player_name()
 			_remove_card_from_hand(my_name, card)
 			return
@@ -166,11 +164,11 @@ func _draw_turn_cards(player_name: String) -> void:
 			break
 
 func _notify_card_drawn(player_name: String, card: CardData) -> void:
-	# On récupère l'ID, par défaut 1 (Serveur) si inconnu
-	var target_id = player_peer_ids.get(player_name, 1)
+	var target_id = player_peer_ids.get(player_name)
+	var my_id = multiplayer.get_unique_id()
 	
-	# Si c'est le serveur (local) ou mode Hotseat
-	if target_id == 1:
+	# Si c'est pour moi (Host/Local)
+	if target_id == my_id:
 		card_drawn.emit(card)
 	else:
 		# Sinon on envoie la carte au client concerné via RPC
@@ -196,11 +194,6 @@ func _remove_card_from_hand(player_name: String, card: CardData) -> bool:
 	return false
 
 # --- RPCs & Network Logic ---
-
-@rpc("authority", "call_local", "reliable")
-func sync_player_ids(ids: Dictionary) -> void:
-	print("Sync Player IDs received: ", ids)
-	player_peer_ids = ids
 
 @rpc("authority", "call_local", "reliable")
 func sync_turn_update(player_name: String) -> void:

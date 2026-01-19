@@ -5,86 +5,53 @@ signal player_disconnected(peer_id: int)
 signal connection_successful
 signal connection_failed
 signal server_disconnected
+signal match_hosted(match_id: String)
 
 const PORT = 8910
 const DEFAULT_SERVER_IP = "127.0.0.1" # Localhost
-const GAME_SCENE_PATH = "res://scenes/Arena.tscn" # TODO: Vérifie que c'est le bon chemin vers ta scène de jeu !
-const LOBBY_SCENE_PATH = "res://scenes/Lobby.tscn" # TODO: Vérifie le chemin de ta scène Lobby/Main
+const GAME_SCENE_PATH = "res://scenes/Arena.tscn" # TODO: Verify this is the correct path to your game scene!
+const LOBBY_SCENE_PATH = "res://scenes/Lobby.tscn" # TODO: Verify the path to your Lobby/Main scene
 
-var multiplayer_peer: WebSocketMultiplayerPeer
+var current_match_id: String = ""
+var match_presences: Dictionary = {} # userID -> presence data
 
 func _ready() -> void:
-	# Connect signals from the high-level multiplayer API
-	multiplayer.peer_connected.connect(_on_peer_connected)
-	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
-	multiplayer.connected_to_server.connect(_on_connected_to_server)
-	multiplayer.connection_failed.connect(_on_connection_failed)
-	multiplayer.server_disconnected.connect(_on_server_disconnected)
+	# TODO: Connect to Nakama Socket events (MatchData, MatchPresence)
+	# Listen to NakamaManager to know when a match is found
+	if NakamaManager:
+		NakamaManager.match_created.connect(_on_match_created)
+		# Note: For joining, we call join_nakama_match directly from Lobby with the ID
 
 func host_game() -> void:
-	multiplayer_peer = WebSocketMultiplayerPeer.new()
-	var error = multiplayer_peer.create_server(PORT)
-	if error != OK:
-		printerr("Failed to create server: ", error)
-		return
-		
-	multiplayer.multiplayer_peer = multiplayer_peer
-	print("Server started on port ", PORT)
+	# Host creates the match on Nakama
+	NakamaManager.create_match()
+
+func join_game(match_id: String) -> void:
+	# Placeholder for manual join logic
+	print("⏳ Joining match manually: ", match_id)
+	# TODO: Implement socket.join_match_async(match_id) here
+
+func _on_match_created(match_id: String) -> void:
+	current_match_id = match_id
+	# We emit a signal so Lobby can display the ID to share
+	print("📢 Match ID to share: ", match_id)
+	match_hosted.emit(match_id)
 	
-	# Host is always ID 1. We emit it manually because peer_connected isn't emitted for self.
-	player_connected.emit(1)
-
-func join_game(address: String = "") -> void:
-	multiplayer_peer = WebSocketMultiplayerPeer.new()
-	if address.is_empty():
-		address = DEFAULT_SERVER_IP
-		
-	# WebSocket URL format: ws://IP:PORT
-	var url = "ws://" + address + ":" + str(PORT)
-	var error = multiplayer_peer.create_client(url)
-	if error != OK:
-		printerr("Failed to create client: ", error)
-		return
-		
-	multiplayer.multiplayer_peer = multiplayer_peer
-	print("Connecting to server at ", url, "...")
-
-func _on_peer_connected(id: int) -> void:
-	print("Peer connected: ", id)
-	player_connected.emit(id)
-
-func _on_peer_disconnected(id: int) -> void:
-	print("Peer disconnected: ", id)
-	player_disconnected.emit(id)
-
-func _on_connected_to_server() -> void:
-	print("Successfully connected to server!")
-	connection_successful.emit()
-
-func _on_connection_failed() -> void:
-	printerr("Connection failed!")
-	connection_failed.emit()
-
-func _on_server_disconnected() -> void:
-	print("Server disconnected!")
-	server_disconnected.emit()
-	multiplayer.multiplayer_peer = null
+	# Host joins their own match logic (manual)
+	join_game(match_id)
 
 func start_game() -> void:
-	# Seul le serveur peut lancer la partie
-	if multiplayer.is_server():
-		load_game_scene.rpc(GAME_SCENE_PATH)
+	# In P2P, anyone (usually the Host) can trigger the start.
+	# We use RPC to tell everyone (including self) to load the scene.
+	load_game_scene.rpc(GAME_SCENE_PATH)
 
-@rpc("authority", "call_local", "reliable")
+@rpc("any_peer", "call_local", "reliable")
 func load_game_scene(scene_path: String) -> void:
 	get_tree().change_scene_to_file(scene_path)
 
 func return_to_lobby() -> void:
-	# On ferme la connexion proprement
-	if multiplayer.multiplayer_peer:
-		multiplayer.multiplayer_peer.close()
-		multiplayer.multiplayer_peer = null
-	
+	# Close the connection cleanly
+	# TODO: Leave match via socket
 	get_tree().change_scene_to_file(LOBBY_SCENE_PATH)
 
 @rpc("any_peer", "call_local", "reliable")

@@ -18,11 +18,16 @@ Digital adaptation of the board game "Les Rois du Ring" (Chien Sauvage).
 ## Roadmap
 
 ### Phase 1: Mechanical Prototype (POC)
-- [ ] **Step 1:** Arena Setup (Grid System)
-- [ ] **Step 2:** Wrestlers (Pawns)
-- [ ] **Step 3:** Card System Logic
-- [ ] **Step 4:** Game Loop (Turn-based)
-- [ ] **Step 5:** Victory Conditions
+- [x] **Step 1:** Arena Setup (Grid System)
+- [x] **Step 2:** Wrestlers (Pawns)
+- [x] **Step 3:** Card System Logic
+- [x] **Step 4:** Game Loop (Turn-based)
+- [x] **Step 5:** Victory Conditions
+
+### Phase 2: Visual Polish & Game Feel
+- [ ] **Step 1:** 3D Models & Animations (Wrestlers, Arena)
+- [ ] **Step 2:** Visual Effects (VFX) & Feedback (Highlights, Impacts)
+- [ ] **Step 3:** Sound Effects (SFX) & Music
 
 ## Setup
 

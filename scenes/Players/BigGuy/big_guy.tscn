@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://d1ru4aj524ukk"]
 
-[ext_resource type="PackedScene" uid="uid://dbqpm1b4l2myo" path="res://scenes/Players/BigGuy/BigGuy.glb" id="1_lgits"]
-[ext_resource type="Texture2D" uid="uid://1pkrxctis4qf" path="res://scenes/Players/BigGuy/BigGuy_endesga-32-1x.png" id="2_gr3fq"]
+[ext_resource type="PackedScene" uid="uid://dbqpm1b4l2myo" path="res://assets/Actors/BigGuy.glb" id="1_lgits"]
+[ext_resource type="Texture2D" uid="uid://1pkrxctis4qf" path="res://assets/Actors/BigGuy_endesga-32-1x.png" id="2_gr3fq"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2orey"]
 albedo_texture = ExtResource("2_gr3fq")

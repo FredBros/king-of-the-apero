@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://dbqpm1b4l2myo"
-path="res://.godot/imported/BigGuy.glb-a147df3e8118d00f1bede08fe25de915.scn"
+path="res://.godot/imported/BigGuy.glb-12142b8d2eb8db38ad1940f417e9729c.scn"
 
 [deps]
 
-source_file="res://scenes/Players/BigGuy/BigGuy.glb"
-dest_files=["res://.godot/imported/BigGuy.glb-a147df3e8118d00f1bede08fe25de915.scn"]
+source_file="res://assets/Actors/BigGuy.glb"
+dest_files=["res://.godot/imported/BigGuy.glb-12142b8d2eb8db38ad1940f417e9729c.scn"]
 
 [params]
 

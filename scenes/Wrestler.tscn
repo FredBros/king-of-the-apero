@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dnc417x07353p"]
 
 [ext_resource type="Script" uid="uid://bk0urxjh033xy" path="res://scripts/Wrestler.gd" id="1_83s1c"]
-[ext_resource type="PackedScene" uid="uid://dbqpm1b4l2myo" path="res://scenes/Players/BigGuy/BigGuy.glb" id="2_i8vlu"]
+[ext_resource type="PackedScene" uid="uid://dbqpm1b4l2myo" path="res://assets/Actors/BigGuy.glb" id="2_i8vlu"]
 
 [node name="Wrestler" type="Node3D"]
 script = ExtResource("1_83s1c")

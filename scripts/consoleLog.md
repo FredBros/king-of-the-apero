@@ -1,382 +1,85 @@
-Godot Engine v4.5.stable.official.876b29033 - https://godotengine.org
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
 OpenGL API 3.3.0 Core Profile Context 25.10.30.02.250923 - Compatibility - Using Device: ATI Technologies Inc. - AMD Radeon RX 6600
 
-Godot Engine v4.5.stable.official.876b29033 - https://godotengine.org
+Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org
 OpenGL API 3.3.0 Core Profile Context 25.10.30.02.250923 - Compatibility - Using Device: ATI Technologies Inc. - AMD Radeon RX 6600
 
-Server started on port 8910
-Connecting to server at ws://127.0.0.1:8910...
-Peer connected: 244588963
-Enough players! Can start game logic here.
-Grid initialized. Cell (0,0) is at World Pos: (-2.0, 0.0, -2.0)
-All players loaded. Starting game logic.
-DEBUG: Server Initialize. Connected peers: [244588963]
-Sync Player IDs received: { &"Player": 1, &"Dummy": 244588963 }
-Successfully connected to server!
-Peer connected: 1
-Grid initialized. Cell (0,0) is at World Pos: (-2.0, 0.0, -2.0)
-DEBUG: Client Initialize. Waiting for Server ID Sync...
-Deck shuffled. Count: 54
-DEBUG UI: Adding card + 2 to hand.
-DEBUG UI: Adding card JOKER to hand.
-DEBUG UI: Adding card + 9 to hand.
-DEBUG UI: Adding card X 5 to hand.
-DEBUG UI: Adding card + J to hand.
-Turn Start: Player
-Sync Turn: Player
-DEBUG UI: Adding card + 2 to hand.
-DEBUG UI: Adding card JOKER to hand.
-DEBUG UI: Adding card + 9 to hand.
-DEBUG UI: Adding card X 5 to hand.
-DEBUG UI: Adding card + J to hand.
-Sync Player IDs received: { &"Player": 1, &"Dummy": 244588963 }
-Client received card RPC
-DEBUG UI: Adding card + 5 to hand.
-Client received card RPC
-DEBUG UI: Adding card X 10 to hand.
-Client received card RPC
-DEBUG UI: Adding card + 6 to hand.
-Client received card RPC
-DEBUG UI: Adding card + 9 to hand.
-Client received card RPC
-DEBUG UI: Adding card X 7 to hand.
-Sync Turn: Player
-DEBUG UI: Adding card + 5 to hand.
-DEBUG UI: Adding card X 10 to hand.
-DEBUG UI: Adding card + 6 to hand.
-DEBUG UI: Adding card + 9 to hand.
-DEBUG UI: Adding card X 7 to hand.
-GridManager received card: + 2
-Clicked cell: (0, 1)
-DEBUG: Failed to remove card '+ 2' from hand of Player
-DEBUG: Hand content: ["JOKER", "+ 9", "X 5", "+ J"]
-DEBUG: Failed to remove card '+ 2' from hand of Player
-DEBUG: Hand content: []
-GridManager received card: + J
-Clicked cell: (1, 1)
-DEBUG: Failed to remove card '+ J' from hand of Player
-DEBUG: Hand content: ["JOKER", "+ 9", "X 5"]
-DEBUG: Failed to remove card '+ J' from hand of Player
-DEBUG: Hand content: []
-GridManager received card: JOKER
-Clicked cell: (2, 2)
-DEBUG: Failed to remove card 'JOKER' from hand of Player
-DEBUG: Hand content: ["+ 9", "X 5"]
-DEBUG: Failed to remove card 'JOKER' from hand of Player
-DEBUG: Hand content: []
-Turn End Processed
-Turn Start: Dummy
-Sync Turn: Dummy
-DEBUG UI: Adding card + 9 to hand.
-DEBUG UI: Adding card X 5 to hand.
-Sync Turn: Dummy
-DEBUG UI: Adding card + 5 to hand.
-DEBUG UI: Adding card X 10 to hand.
-DEBUG UI: Adding card + 6 to hand.
-DEBUG UI: Adding card + 9 to hand.
-DEBUG UI: Adding card X 7 to hand.
-GridManager received card: + 5
-GridManager received card: + 9
-Clicked cell: (3, 4)
-DEBUG: Failed to remove card '+ 9' from hand of Dummy
-DEBUG: Hand content: ["+ 5", "X 10", "+ 6", "X 7"]
-GridManager received card: + 5
-Clicked cell: (3, 3)
-DEBUG: Failed to remove card '+ 5' from hand of Dummy
-DEBUG: Hand content: ["X 10", "+ 6", "X 7"]
-GridManager received card: X 7
-Clicked cell: (2, 2)
-DEBUG: Failed to remove card 'X 7' from hand of Dummy
-DEBUG: Hand content: ["X 10", "+ 6"]
-Player took 1 damage. HP: 1
-Player took 1 damage. HP: 1
-GridManager received card: X 10
-Clicked cell: (2, 2)
-DEBUG: Failed to remove card 'X 10' from hand of Dummy
-DEBUG: Hand content: ["+ 6"]
-Player took 1 damage. HP: 0
-Wrestler died. Attempting to play 'KO' animation.
-GAME OVER! Player has been eliminated!
-Player took 1 damage. HP: 0
-Wrestler died. Attempting to play 'KO' animation.
-GAME OVER! Player has been eliminated!
-Peer disconnected: 244588963
-Server started on port 8910
-Connecting to server at ws://127.0.0.1:8910...
-Peer connected: 1478703679
-Enough players! Can start game logic here.
-Grid initialized. Cell (0,0) is at World Pos: (-2.0, 0.0, -2.0)
-All players loaded. Starting game logic.
-DEBUG: Server Initialize. Connected peers: [1478703679]
-Sync Player IDs received: { &"Player": 1, &"Dummy": 1478703679 }
-Successfully connected to server!
-Peer connected: 1
-Grid initialized. Cell (0,0) is at World Pos: (-2.0, 0.0, -2.0)
-DEBUG: Client Initialize. Waiting for Server ID Sync...
-Deck shuffled. Count: 54
-DEBUG UI: Adding card X 3 to hand.
-DEBUG UI: Adding card + 10 to hand.
-DEBUG UI: Adding card + 3 to hand.
-DEBUG UI: Adding card + Q to hand.
-DEBUG UI: Adding card + 2 to hand.
-Turn Start: Player
-Sync Turn: Player
-DEBUG UI: Adding card X 3 to hand.
-DEBUG UI: Adding card + 10 to hand.
-DEBUG UI: Adding card + 3 to hand.
-DEBUG UI: Adding card + Q to hand.
-DEBUG UI: Adding card + 2 to hand.
-Sync Player IDs received: { &"Player": 1, &"Dummy": 1478703679 }
-Client received card RPC
-DEBUG UI: Adding card X 8 to hand.
-Client received card RPC
-DEBUG UI: Adding card + 7 to hand.
-Client received card RPC
-DEBUG UI: Adding card X Q to hand.
-Client received card RPC
-DEBUG UI: Adding card X Q to hand.
-Client received card RPC
-DEBUG UI: Adding card + Q to hand.
-Sync Turn: Player
-DEBUG UI: Adding card X 8 to hand.
-DEBUG UI: Adding card + 7 to hand.
-DEBUG UI: Adding card X Q to hand.
-DEBUG UI: Adding card X Q to hand.
-DEBUG UI: Adding card + Q to hand.
-GridManager received card: X 3
-Clicked cell: (1, 1)
-DEBUG: Failed to remove card 'X 3' from hand of Player
-DEBUG: Hand content: ["+ 10", "+ 3", "+ Q", "+ 2"]
-DEBUG: Failed to remove card 'X 3' from hand of Player
-DEBUG: Hand content: []
-GridManager received card: + 2
-GridManager received card: + 3
-Turn End Processed
-Turn Start: Dummy
-Sync Turn: Dummy
-DEBUG UI: Adding card + 10 to hand.
-DEBUG UI: Adding card + Q to hand.
-Sync Turn: Dummy
-DEBUG UI: Adding card X 8 to hand.
-DEBUG UI: Adding card + 7 to hand.
-DEBUG UI: Adding card X Q to hand.
-DEBUG UI: Adding card X Q to hand.
-DEBUG UI: Adding card + Q to hand.
-GridManager received card: X 8
-Clicked cell: (3, 3)
-DEBUG: Failed to remove card 'X 8' from hand of Dummy
-DEBUG: Hand content: ["+ 7", "X Q", "X Q", "+ Q"]
-GridManager received card: X Q
-Clicked cell: (2, 2)
-GridManager received card: X Q
-Clicked cell: (1, 1)
-DEBUG: Failed to remove card 'X Q' from hand of Dummy
-DEBUG: Hand content: ["+ 7", "+ Q"]
-  ERROR: Server: Card 'X Q' not found in hand. Forcing consumption to fix desync.
-Server: Force removed '+ 7' to maintain hand count.
-DEBUG: Failed to remove card 'X Q' from hand of Dummy
-DEBUG: Hand content: ["+ Q"]
-Player took 1 damage. HP: 1
-Player took 1 damage. HP: 1
-GridManager received card: + Q
-Clicked cell: (1, 2)
-DEBUG: Failed to remove card '+ Q' from hand of Dummy
-DEBUG: Hand content: []
-GridManager received card: + 7
-Clicked cell: (1, 1)
-DEBUG: Failed to remove card '+ 7' from hand of Dummy
-DEBUG: Hand content: []
-  ERROR: Server: Card '+ 7' not found in hand. Forcing consumption to fix desync.
-DEBUG: Failed to remove card '+ 7' from hand of Dummy
-DEBUG: Hand content: []
-Player took 1 damage. HP: 0
-Wrestler died. Attempting to play 'KO' animation.
-GAME OVER! Player has been eliminated!
-Player took 1 damage. HP: 0
-Wrestler died. Attempting to play 'KO' animation.
-GAME OVER! Player has been eliminated!
-Rematch requested. Reloading game scene...
-Grid initialized. Cell (0,0) is at World Pos: (-2.0, 0.0, -2.0)
-All players loaded. Starting game logic.
-DEBUG: Server Initialize. Connected peers: [1478703679]
-Sync Player IDs received: { &"Player": 1, &"Dummy": 1478703679 }
-Grid initialized. Cell (0,0) is at World Pos: (-2.0, 0.0, -2.0)
-DEBUG: Client Initialize. Waiting for Server ID Sync...
-Deck shuffled. Count: 54
-DEBUG UI: Adding card + 3 to hand.
-DEBUG UI: Adding card + 8 to hand.
-DEBUG UI: Adding card + Q to hand.
-DEBUG UI: Adding card X A to hand.
-DEBUG UI: Adding card + 8 to hand.
-Turn Start: Player
-Sync Turn: Player
-DEBUG UI: Adding card + 3 to hand.
-DEBUG UI: Adding card + 8 to hand.
-DEBUG UI: Adding card + Q to hand.
-DEBUG UI: Adding card X A to hand.
-DEBUG UI: Adding card + 8 to hand.
-Sync Player IDs received: { &"Player": 1, &"Dummy": 1478703679 }
-Client received card RPC
-DEBUG UI: Adding card X K to hand.
-Client received card RPC
-DEBUG UI: Adding card + J to hand.
-Client received card RPC
-DEBUG UI: Adding card X J to hand.
-Client received card RPC
-DEBUG UI: Adding card + 7 to hand.
-Client received card RPC
-DEBUG UI: Adding card X 3 to hand.
-Sync Turn: Player
-DEBUG UI: Adding card X K to hand.
-DEBUG UI: Adding card + J to hand.
-DEBUG UI: Adding card X J to hand.
-DEBUG UI: Adding card + 7 to hand.
-DEBUG UI: Adding card X 3 to hand.
-GridManager received card: + 3
-Clicked cell: (1, 0)
-DEBUG: Failed to remove card '+ 3' from hand of Player
-DEBUG: Hand content: ["+ 8", "+ Q", "X A", "+ 8"]
-DEBUG: Failed to remove card '+ 3' from hand of Player
-DEBUG: Hand content: []
-GridManager received card: X A
-Clicked cell: (2, 1)
-DEBUG: Failed to remove card 'X A' from hand of Player
-DEBUG: Hand content: ["+ 8", "+ Q", "+ 8"]
-DEBUG: Failed to remove card 'X A' from hand of Player
-DEBUG: Hand content: []
-GridManager received card: + 8
-Clicked cell: (2, 2)
-DEBUG: Failed to remove card '+ 8' from hand of Player
-DEBUG: Hand content: []
-Turn End Processed
-Turn Start: Dummy
-Sync Turn: Dummy
-DEBUG UI: Adding card + Q to hand.
-Sync Turn: Dummy
-DEBUG UI: Adding card X K to hand.
-DEBUG UI: Adding card + J to hand.
-DEBUG UI: Adding card X J to hand.
-DEBUG UI: Adding card + 7 to hand.
-DEBUG UI: Adding card X 3 to hand.
-GridManager received card: X K
-Clicked cell: (3, 3)
-DEBUG: Failed to remove card 'X K' from hand of Dummy
-DEBUG: Hand content: ["+ J", "X J", "+ 7", "X 3"]
-GridManager received card: X J
-Clicked cell: (2, 2)
-DEBUG: Failed to remove card 'X J' from hand of Dummy
-DEBUG: Hand content: ["+ J", "+ 7", "X 3"]
-Player took 1 damage. HP: 1
-Player took 1 damage. HP: 1
-GridManager received card: X 3
-Clicked cell: (2, 2)
-DEBUG: Failed to remove card 'X 3' from hand of Dummy
-DEBUG: Hand content: ["+ J", "+ 7"]
-Player took 1 damage. HP: 0
-Wrestler died. Attempting to play 'KO' animation.
-GAME OVER! Player has been eliminated!
-Player took 1 damage. HP: 0
-Wrestler died. Attempting to play 'KO' animation.
-GAME OVER! Player has been eliminated!
-Rematch requested. Reloading game scene...
-Grid initialized. Cell (0,0) is at World Pos: (-2.0, 0.0, -2.0)
-All players loaded. Starting game logic.
-DEBUG: Server Initialize. Connected peers: [1478703679]
-Sync Player IDs received: { &"Player": 1, &"Dummy": 1478703679 }
-Grid initialized. Cell (0,0) is at World Pos: (-2.0, 0.0, -2.0)
-DEBUG: Client Initialize. Waiting for Server ID Sync...
-Deck shuffled. Count: 54
-DEBUG UI: Adding card X K to hand.
-DEBUG UI: Adding card X A to hand.
-DEBUG UI: Adding card JOKER to hand.
-DEBUG UI: Adding card + 10 to hand.
-DEBUG UI: Adding card + 6 to hand.
-Turn Start: Player
-Sync Turn: Player
-DEBUG UI: Adding card X K to hand.
-DEBUG UI: Adding card X A to hand.
-DEBUG UI: Adding card JOKER to hand.
-DEBUG UI: Adding card + 10 to hand.
-DEBUG UI: Adding card + 6 to hand.
-Sync Player IDs received: { &"Player": 1, &"Dummy": 1478703679 }
-Client received card RPC
-DEBUG UI: Adding card + 2 to hand.
-Client received card RPC
-DEBUG UI: Adding card X 10 to hand.
-Client received card RPC
-DEBUG UI: Adding card X K to hand.
-Client received card RPC
-DEBUG UI: Adding card + J to hand.
-Client received card RPC
-DEBUG UI: Adding card X 2 to hand.
-Sync Turn: Player
-DEBUG UI: Adding card + 2 to hand.
-DEBUG UI: Adding card X 10 to hand.
-DEBUG UI: Adding card X K to hand.
-DEBUG UI: Adding card + J to hand.
-DEBUG UI: Adding card X 2 to hand.
-GridManager received card: X K
-GridManager received card: X A
-Clicked cell: (1, 1)
-DEBUG: Failed to remove card 'X A' from hand of Player
-DEBUG: Hand content: ["X K", "JOKER", "+ 10", "+ 6"]
-DEBUG: Failed to remove card 'X A' from hand of Player
-DEBUG: Hand content: []
-GridManager received card: + 10
-Clicked cell: (1, 2)
-DEBUG: Failed to remove card '+ 10' from hand of Player
-DEBUG: Hand content: ["X K", "JOKER", "+ 6"]
-DEBUG: Failed to remove card '+ 10' from hand of Player
-DEBUG: Hand content: []
-GridManager received card: + 6
-GridManager received card: JOKER
-Clicked cell: (2, 3)
-DEBUG: Failed to remove card 'JOKER' from hand of Player
-DEBUG: Hand content: ["X K", "+ 6"]
-DEBUG: Failed to remove card 'JOKER' from hand of Player
-DEBUG: Hand content: []
-GridManager received card: + 6
-Clicked cell: (3, 3)
-DEBUG: Failed to remove card '+ 6' from hand of Player
-DEBUG: Hand content: ["X K"]
-DEBUG: Failed to remove card '+ 6' from hand of Player
-DEBUG: Hand content: []
-GridManager received card: X K
-Clicked cell: (4, 4)
-DEBUG: Failed to remove card 'X K' from hand of Player
-DEBUG: Hand content: []
-DEBUG: Failed to remove card 'X K' from hand of Player
-DEBUG: Hand content: []
-Dummy took 1 damage. HP: 1
-Dummy took 1 damage. HP: 1
-Turn End Processed
-Turn Start: Dummy
-Sync Turn: Dummy
-Sync Turn: Dummy
-DEBUG UI: Adding card + 2 to hand.
-DEBUG UI: Adding card X 10 to hand.
-DEBUG UI: Adding card X K to hand.
-DEBUG UI: Adding card + J to hand.
-DEBUG UI: Adding card X 2 to hand.
-GridManager received card: + 2
-GridManager received card: X 2
-Turn End Processed
-Turn Start: Player
-Sync Turn: Player
-DEBUG UI: Adding card + A to hand.
-DEBUG UI: Adding card X 7 to hand.
-Sync Turn: Player
-DEBUG UI: Adding card X 10 to hand.
-DEBUG UI: Adding card X K to hand.
-DEBUG UI: Adding card + J to hand.
-Turn End Processed
-Turn Start: Dummy
-Sync Turn: Dummy
-DEBUG UI: Adding card + A to hand.
-DEBUG UI: Adding card X 7 to hand.
-Sync Turn: Dummy
-DEBUG UI: Adding card X 10 to hand.
-DEBUG UI: Adding card X K to hand.
-DEBUG UI: Adding card + J to hand.
-
---- Debugging process stopped ---
+✅ Nakama Client initialized: http://127.0.0.1:7350
+=== Nakama : DEBUG === Sending request [ID: 1, Method: POST, Uri: http://127.0.0.1:7350/v2/account/authenticate/device?create=true&, Headers: { "Authorization": "Basic ZGVmYXVsdGtleTo=" }, Body: {"id":"{a80902de-aa4a-11ef-bb71-806e6f6e6963}_9452"}, Timeout: 3, Retries: 3, Backoff base: 10 ms]
+=== Nakama : DEBUG === Freeing request 1
+✅ Authenticated! Session Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiJlMDJjMWQ2OS03ZDkxLTQwYTYtOGZmNi0wZjUyMWYxMmJhZTciLCJ1aWQiOiJkZDdjYTFlYy1hMmFhLTRmY2QtYWI5Yi0yYWQ5YzZjNWMzNDMiLCJ1c24iOiJiWnNteHJ1akRKIiwiZXhwIjoxNzY4ODE2ODM2fQ.KY9_QSZ4K4KdZuFo2rIxRM_lWYUXSUBpdjEcwpuusxo
+👤 User ID: dd7ca1ec-a2aa-4fcd-ab9b-2ad9c6c5c343
+=== Nakama : DEBUG === Connecting to host: ws://127.0.0.1:7350/ws?lang=en&status=false&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiJlMDJjMWQ2OS03ZDkxLTQwYTYtOGZmNi0wZjUyMWYxMmJhZTciLCJ1aWQiOiJkZDdjYTFlYy1hMmFhLTRmY2QtYWI5Yi0yYWQ5YzZjNWMzNDMiLCJ1c24iOiJiWnNteHJ1akRKIiwiZXhwIjoxNzY4ODE2ODM2fQ.KY9_QSZ4K4KdZuFo2rIxRM_lWYUXSUBpdjEcwpuusxo
+✅ Nakama Client initialized: http://127.0.0.1:7350
+=== Nakama : DEBUG === Sending request [ID: 1, Method: POST, Uri: http://127.0.0.1:7350/v2/account/authenticate/device?create=true&, Headers: { "Authorization": "Basic ZGVmYXVsdGtleTo=" }, Body: {"id":"{a80902de-aa4a-11ef-bb71-806e6f6e6963}_25332"}, Timeout: 3, Retries: 3, Backoff base: 10 ms]
+=== Nakama : INFO === Connected!
+✅ Socket Connected! Ready for Multiplayer.
+=== Nakama : DEBUG === Freeing request 1
+✅ Authenticated! Session Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiI1OGFkOTc4ZC0xMGRkLTQ1MmUtODY1Yy0yY2ExODZlY2Y5ZWMiLCJ1aWQiOiI5YmQyYmQ1NS0yMGIxLTQyMzItODYwMC0yNDg1NGQ2ODA2MWIiLCJ1c24iOiJFTlZGSEFTd0hEIiwiZXhwIjoxNzY4ODE2ODM2fQ.yZsCarvaKFk6tDQ4lDQynHUuo84WUfdYN3-OVb8P8Dw
+👤 User ID: 9bd2bd55-20b1-4232-8600-24854d68061b
+=== Nakama : DEBUG === Connecting to host: ws://127.0.0.1:7350/ws?lang=en&status=false&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiI1OGFkOTc4ZC0xMGRkLTQ1MmUtODY1Yy0yY2ExODZlY2Y5ZWMiLCJ1aWQiOiI5YmQyYmQ1NS0yMGIxLTQyMzItODYwMC0yNDg1NGQ2ODA2MWIiLCJ1c24iOiJFTlZGSEFTd0hEIiwiZXhwIjoxNzY4ODE2ODM2fQ.yZsCarvaKFk6tDQ4lDQynHUuo84WUfdYN3-OVb8P8Dw
+=== Nakama : INFO === Connected!
+✅ Socket Connected! Ready for Multiplayer.
+⚡ Creating a new match...
+=== Nakama : DEBUG === Sending async request: MatchCreate<name=<null>>
+=== Nakama : DEBUG === Resuming request: 1: { "cid": "1", "match": { "match_id": "a1096e23-e757-4838-bdce-3bcaa7f51c1c.", "size": 1.0, "self": { "user_id": "9bd2bd55-20b1-4232-8600-24854d68061b", "session_id": "f021bd7d-f50c-11f0-bcc4-7106fdcb5b46", "username": "ENVFHASwHD" } } }
+✅ Match Created! ID: a1096e23-e757-4838-bdce-3bcaa7f51c1c.
+🔗 Initializing Bridge for Match ID: a1096e23-e757-4838-bdce-3bcaa7f51c1c.
+🔧 Pre-setting Bridge _self_id to: 9bd2bd55-20b1-4232-8600-24854d68061b
+DEBUG: Bridge signals connected. Join: 0, Fail: 0
+=== Nakama : DEBUG === Sending async request: MatchJoin<match_id=a1096e23-e757-4838-bdce-3bcaa7f51c1c., token=<null>, metadata=<null>>
+📢 Match ID to share: a1096e23-e757-4838-bdce-3bcaa7f51c1c.
+DEBUG: Socket received presence event for match: a1096e23-e757-4838-bdce-3bcaa7f51c1c.
+DEBUG: Joins: 1 Leaves: 0
+=== Nakama : DEBUG === Resuming request: 2: { "cid": "2", "match": { "match_id": "a1096e23-e757-4838-bdce-3bcaa7f51c1c.", "size": 1.0, "presences": [{ "user_id": "9bd2bd55-20b1-4232-8600-24854d68061b", "session_id": "f021bd7d-f50c-11f0-bcc4-7106fdcb5b46", "username": "ENVFHASwHD" }], "self": { "user_id": "9bd2bd55-20b1-4232-8600-24854d68061b", "session_id": "f021bd7d-f50c-11f0-bcc4-7106fdcb5b46", "username": "ENVFHASwHD" } } }
+⚠️ Watchdog: Bridge seems active but signal missed. Forcing connection.
+🔧 Forcing Bridge _self_id to: 9bd2bd55-20b1-4232-8600-24854d68061b
+🚀 Multiplayer Bridge Active! Match Joined.
+DEBUG: Current Peers: []
+DEBUG: Bridge _self_id: <null>
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+⚓ Joining match manually to fetch presences...
+=== Nakama : DEBUG === Sending async request: MatchJoin<match_id=a1096e23-e757-4838-bdce-3bcaa7f51c1c., token=<null>, metadata=<null>>
+=== Nakama : DEBUG === Resuming request: 1: { "cid": "1", "match": { "match_id": "a1096e23-e757-4838-bdce-3bcaa7f51c1c.", "size": 1.0, "presences": [{ "user_id": "9bd2bd55-20b1-4232-8600-24854d68061b", "session_id": "f021bd7d-f50c-11f0-bcc4-7106fdcb5b46", "username": "ENVFHASwHD" }], "self": { "user_id": "dd7ca1ec-a2aa-4fcd-ab9b-2ad9c6c5c343", "session_id": "f019ee9c-f50c-11f0-bcc4-7106fdcb5b46", "username": "bZsmxrujDJ" } } }
+✅ Manual Join Success. Presences count: 1
+🔗 Initializing Bridge for Match ID: a1096e23-e757-4838-bdce-3bcaa7f51c1c.
+🔧 Pre-setting Bridge _self_id to: dd7ca1ec-a2aa-4fcd-ab9b-2ad9c6c5c343
+DEBUG: Bridge signals connected. Join: 0, Fail: 0
+=== Nakama : DEBUG === Sending async request: MatchJoin<match_id=a1096e23-e757-4838-bdce-3bcaa7f51c1c., token=<null>, metadata=<null>>
+DEBUG: Socket received presence event for match: a1096e23-e757-4838-bdce-3bcaa7f51c1c.
+DEBUG: Joins: 1 Leaves: 0
+DEBUG: Socket received presence event for match: a1096e23-e757-4838-bdce-3bcaa7f51c1c.
+DEBUG: Joins: 1 Leaves: 0
+=== Nakama : DEBUG === Resuming request: 2: { "cid": "2", "match": { "match_id": "a1096e23-e757-4838-bdce-3bcaa7f51c1c.", "size": 2.0, "presences": [{ "user_id": "9bd2bd55-20b1-4232-8600-24854d68061b", "session_id": "f021bd7d-f50c-11f0-bcc4-7106fdcb5b46", "username": "ENVFHASwHD" }, { "user_id": "dd7ca1ec-a2aa-4fcd-ab9b-2ad9c6c5c343", "session_id": "f019ee9c-f50c-11f0-bcc4-7106fdcb5b46", "username": "bZsmxrujDJ" }], "self": { "user_id": "dd7ca1ec-a2aa-4fcd-ab9b-2ad9c6c5c343", "session_id": "f019ee9c-f50c-11f0-bcc4-7106fdcb5b46", "username": "bZsmxrujDJ" } } }
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+⚠️ Watchdog: Bridge seems active but signal missed. Forcing connection.
+🔧 Forcing Bridge _self_id to: dd7ca1ec-a2aa-4fcd-ab9b-2ad9c6c5c343
+🔄 Injecting 1 pending presences into Bridge...
+💉 Injecting 1 presences into socket stream...
+DEBUG: Socket received presence event for match: a1096e23-e757-4838-bdce-3bcaa7f51c1c.
+DEBUG: Joins: 1 Leaves: 0
+✅ Injection complete.
+🚀 Multiplayer Bridge Active! Match Joined.
+DEBUG: Current Peers: []
+DEBUG: Bridge _self_id: <null>
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
+DEBUG: Checking start game. Peers count: 0
