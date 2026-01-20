@@ -36,13 +36,13 @@ func _update_visuals() -> void:
 	
 	# Simple visual feedback based on type
 	if card_data.suit in ["Hearts", "Diamonds"]:
-		type_label.text = "ATTACK"
+		type_label.text = "ATTACK " + _get_suit_icon(card_data.suit)
 		base_color = Color(0.9, 0.3, 0.3) # Red
 	elif card_data.suit == "Joker":
 		type_label.text = "JOKER"
 		base_color = Color(0.6, 0.3, 0.8) # Purple
 	else:
-		type_label.text = "MOVE"
+		type_label.text = "MOVE " + _get_suit_icon(card_data.suit)
 		base_color = Color(0.2, 0.2, 0.2) # Black/Grey
 	
 	self.modulate = base_color
@@ -61,3 +61,25 @@ func set_selected(selected: bool) -> void:
 		self.modulate = base_color
 		self.scale = Vector2(1.0, 1.0)
 		discard_button.hide()
+
+func set_reaction_candidate(is_candidate: bool) -> void:
+	if is_candidate:
+		# Zoom et mise en avant
+		self.scale = Vector2(1.4, 1.4)
+		self.z_index = 10 # Passer au premier plan
+		self.modulate = Color(1.5, 1.5, 1.5) # Plus brillant
+		# On pourrait ajouter un shader de contour ici plus tard
+	else:
+		# Retour à la normale (ou grisé si on veut montrer qu'elles sont invalides)
+		self.scale = Vector2(1.0, 1.0)
+		self.z_index = 0
+		self.modulate = base_color.darkened(0.5) # On grise les cartes non valides
+
+func _get_suit_icon(suit: String) -> String:
+	match suit:
+		"Spades": return "♠"
+		"Clubs": return "♣"
+		"Hearts": return "♥"
+		"Diamonds": return "♦"
+		"Joker": return "★"
+	return ""

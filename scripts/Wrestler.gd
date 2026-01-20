@@ -61,9 +61,7 @@ func attack(target: Wrestler, is_remote: bool = false) -> void:
 	# Ideally, use AnimationPlayer method track, but a timer is fine for POC
 	await get_tree().create_timer(0.3).timeout
 	
-	if target and not is_remote:
-		target.take_damage(1)
-	
+	# Damage logic is now handled by GameManager via initiate_attack_sequence -> ATTACK_RESULT
 	# Wait for animation to finish before going back to Idle (if not looped)
 	await get_tree().create_timer(0.5).timeout
 	_play_anim("Idle")
@@ -83,6 +81,11 @@ func take_damage(amount: int) -> void:
 		# Wait for Hurt animation to finish roughly
 		await get_tree().create_timer(0.5).timeout
 		_play_anim("Idle")
+
+func block() -> void:
+	_play_anim("Block")
+	await get_tree().create_timer(0.5).timeout
+	_play_anim("Idle")
 
 # Update health from network authority (handles UI sync and animations)
 func set_network_health(value: int) -> void:

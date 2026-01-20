@@ -5,6 +5,7 @@ signal turn_started(player_name: String)
 signal card_drawn(card: CardData)
 signal card_discarded(card: CardData)
 signal turn_ended
+signal reaction_phase_started(attack_card: CardData, valid_cards: Array[CardData])
 signal grid_action_received(data: Dictionary)
 
 @export var hand_size_limit: int = 5
@@ -18,11 +19,19 @@ var player_hands: Dictionary = {}
 var active_player_index: int = 0
 var is_game_active: bool = false
 
+# Reference to GridManager (injected by Arena)
+var grid_manager
+
 # Mapping des noms de joueurs vers les IDs réseau (Peer ID)
 var player_peer_ids: Dictionary = {}
 
 # Flag pour éviter les boucles infinies de signaux (Network -> Local -> Network)
 var is_network_syncing: bool = false
+
+# Context pour stocker l'attaque en cours côté attaquant
+var pending_attack_context: Dictionary = {}
+var pending_defense_context: Dictionary = {}
+var is_waiting_for_reaction: bool = false
 
 func _ready() -> void:
 	# Listen for network messages
@@ -80,6 +89,10 @@ func _start_turn() -> void:
 func end_turn() -> void:
 	if not is_game_active: return
 	
+	if is_waiting_for_reaction:
+		print("⚠️ Cannot end turn while waiting for reaction.")
+		return
+	
 	# Si on n'est pas le Pseudo-Host (J1), on demande à J1 de finir le tour
 	var host_id = player_peer_ids[players[0].name]
 	if NetworkManager.self_user_id != host_id:
@@ -95,6 +108,10 @@ func end_turn() -> void:
 # Returns true if an action was successfully consumed
 func try_use_action() -> bool:
 	if not is_game_active: return false
+	if is_waiting_for_reaction:
+		print("⚠️ Action blocked: Waiting for opponent reaction.")
+		return false
+		
 	return is_local_player_active()
 
 # Vérifie si le joueur local est celui dont c'est le tour
@@ -123,6 +140,9 @@ func use_card(card: CardData) -> bool:
 			var my_name = _get_my_player_name()
 			_remove_card_from_hand(my_name, card)
 			
+			# FIX: Mettre à jour l'UI locale immédiatement (Optimistic UI)
+			card_discarded.emit(card)
+			
 			# Idéalement, on attendrait la confirmation, mais pour ce POC c'est ok.
 			return true
 		
@@ -144,6 +164,9 @@ func discard_hand_card(card: CardData) -> void:
 			})
 			var my_name = _get_my_player_name()
 			_remove_card_from_hand(my_name, card)
+			
+			# FIX: Mettre à jour l'UI locale immédiatement (Optimistic UI)
+			card_discarded.emit(card)
 			return
 
 		# Logique Serveur (ou Local)
@@ -203,19 +226,27 @@ func _remove_card_from_hand(player_name: String, card: CardData) -> bool:
 	if player_hands.has(player_name):
 		# On doit trouver la carte correspondante dans la main (comparaison par valeur car instances différentes réseau)
 		var hand = player_hands[player_name]
+		
+		# Fix: Si la main est vide, c'est probablement un écho réseau ou une double suppression. On ignore.
+		if hand.is_empty():
+			return false
+			
 		for c in hand:
 			# Simplification : On compare uniquement le titre qui est unique (ex: "X 10", "+ K", "JOKER")
 			# Cela évite les erreurs de typage sur value/suit ou les problèmes de float
-			if c.title == card.title:
+			if c.title == card.title and c.suit == card.suit:
 				hand.erase(c)
 				return true
 	
-	print("DEBUG: Failed to remove card '", card.title, "' from hand of ", player_name)
-	# Debug approfondi pour voir ce qu'il y a dans la main
-	var hand_debug = []
-	if player_hands.has(player_name):
-		for c in player_hands[player_name]: hand_debug.append(c.title)
-	print("DEBUG: Hand content: ", hand_debug)
+	# Si on arrive ici, c'est que la carte n'est pas trouvée.
+	# On loggue seulement si la main n'était pas vide (vrai problème de desync)
+	if player_hands.has(player_name) and not player_hands[player_name].is_empty():
+		print("DEBUG: Failed to remove card '", card.title, "' from hand of ", player_name)
+		# Debug approfondi pour voir ce qu'il y a dans la main
+		var hand_debug = []
+		if player_hands.has(player_name):
+			for c in player_hands[player_name]: hand_debug.append(c.title)
+		print("DEBUG: Hand content: ", hand_debug)
 	return false
 
 # --- RPCs & Network Logic ---
@@ -235,11 +266,17 @@ func _on_network_message(data: Dictionary) -> void:
 		"REQUEST_DISCARD_CARD":
 			_handle_request_discard_card(data.get("_sender_id", ""), data.card)
 		"SYNC_CARD_PLAYED":
-			_handle_sync_card_played(data.card, data.player_name)
+			# Fix Echo: On ignore si c'est notre propre carte (car déjà supprimée localement)
+			if data.player_name != _get_my_player_name():
+				_handle_sync_card_played(data.card, data.player_name)
 		"SYNC_GRID_ACTION":
 			grid_action_received.emit(data.action_data)
 		"SYNC_HEALTH":
 			_handle_sync_health(data.player_name, data.value)
+		"REQUEST_ATTACK":
+			_handle_request_attack(data)
+		"ATTACK_RESULT":
+			_handle_attack_result(data)
 
 func _handle_sync_turn(player_name: String) -> void:
 	print("Sync Turn: ", player_name)
@@ -307,7 +344,8 @@ func server_process_use_card(card: CardData) -> void:
 	# Dans tous les cas (succès ou desync), on valide la consommation car l'action (Mvt/Attaque) a eu lieu.
 	deck_manager.discard_card(card)
 	# Informer tout le monde qu'une carte a été jouée (pour l'historique/anim et nettoyage client)
-	_handle_sync_card_played(_serialize_card(card), current_player_name) # Local
+	# FIX: On émet juste le signal localement au lieu de rappeler _handle_sync_card_played (qui tenterait de supprimer la carte une 2ème fois)
+	card_discarded.emit(card)
 	NetworkManager.send_message({
 		"type": "SYNC_CARD_PLAYED",
 		"card": _serialize_card(card),
@@ -326,7 +364,8 @@ func server_process_discard_card(card: CardData) -> void:
 	
 	deck_manager.discard_card(card)
 	# On réutilise sync_card_played car l'effet est le même (retrait de main + signal discard)
-	_handle_sync_card_played(_serialize_card(card), current_player_name) # Local
+	# FIX: Idem, on évite la double suppression
+	card_discarded.emit(card)
 	NetworkManager.send_message({
 		"type": "SYNC_CARD_PLAYED",
 		"card": _serialize_card(card),
@@ -365,6 +404,196 @@ func _handle_sync_health(player_name: String, value: int) -> void:
 			break
 			
 	is_network_syncing = false
+
+# --- Attack / Reaction Sequence ---
+
+func initiate_attack_sequence(target_wrestler: Wrestler, attack_card: CardData) -> void:
+	# Appelé par GridManager quand le joueur local attaque
+	var target_name = target_wrestler.name
+	var target_id = player_peer_ids.get(target_name)
+	
+	# On stocke le contexte pour savoir qui taper quand la réponse reviendra
+	pending_attack_context = {
+		"target_name": target_name,
+		"attack_card": attack_card
+	}
+	is_waiting_for_reaction = true
+	
+	NetworkManager.send_message({
+		"type": "REQUEST_ATTACK",
+		"attacker_card": _serialize_card(attack_card),
+		"target_id": target_id
+	})
+	print("⚔️ Attack Sequence Initiated against ", target_name)
+
+func _handle_request_attack(data: Dictionary) -> void:
+	# Suis-je la cible ?
+	if data.target_id != NetworkManager.self_user_id:
+		return
+		
+	var attack_card = _deserialize_card(data.attacker_card)
+	
+	# Store context for the response (who is attacking me?)
+	pending_defense_context = {
+		"attacker_id": data.get("_sender_id"),
+		"target_id": NetworkManager.self_user_id,
+		"attack_card": attack_card
+	}
+	
+	var my_name = _get_my_player_name()
+	var my_hand = get_player_hand(my_name)
+	
+	var valid_cards = get_valid_reaction_cards(attack_card, my_hand)
+	
+	if valid_cards.is_empty():
+		print("🛡️ No valid reaction cards. Auto-taking damage.")
+		_send_attack_result(false, null, false)
+	else:
+		print("🛡️ Reaction opportunity! Valid cards: ", valid_cards.size())
+		reaction_phase_started.emit(attack_card, valid_cards)
+
+func on_reaction_selected(reaction_card: CardData) -> void:
+	print("🛡️ Player chose to block with: ", reaction_card.title)
+	
+	var attack_card = pending_defense_context.get("attack_card")
+	
+	# Distinction Blocage vs Esquive
+	if attack_card and reaction_card.suit == attack_card.suit:
+		# --- BLOCAGE (Même couleur) ---
+		_consume_reaction_card(reaction_card)
+		_send_attack_result(true, reaction_card, false)
+	else:
+		# --- ESQUIVE (Mouvement) ---
+		# On ne consomme pas encore la carte, on passe en mode déplacement
+		if grid_manager:
+			var my_name = _get_my_player_name()
+			var my_wrestler = null
+			for w in players:
+				if w.name == my_name:
+					my_wrestler = w
+					break
+			if my_wrestler:
+				grid_manager.enter_dodge_mode(reaction_card, my_wrestler)
+
+func on_dodge_complete(card: CardData) -> void:
+	print("🛡️ Dodge move complete.")
+	_consume_reaction_card(card)
+	_send_attack_result(false, card, true) # blocked=false, dodged=true
+
+func _consume_reaction_card(card: CardData) -> void:
+	var my_name = _get_my_player_name()
+	_remove_card_from_hand(my_name, card)
+	deck_manager.discard_card(card)
+	card_discarded.emit(card)
+	
+	NetworkManager.send_message({
+		"type": "SYNC_CARD_PLAYED",
+		"card": _serialize_card(card),
+		"player_name": my_name
+	})
+
+func on_reaction_skipped() -> void:
+	print("🛡️ Player skipped reaction.")
+	_send_attack_result(false, null, false)
+
+func _send_attack_result(blocked: bool, block_card: CardData, dodged: bool) -> void:
+	var msg = {
+		"type": "ATTACK_RESULT",
+		"is_blocked": blocked,
+		"is_dodged": dodged,
+		"attacker_id": pending_defense_context.get("attacker_id"),
+		"target_id": pending_defense_context.get("target_id")
+	}
+	if block_card: msg["block_card"] = _serialize_card(block_card)
+	NetworkManager.send_message(msg)
+	
+	# FIX: Handle local visual update because NetworkManager filters echo
+	_handle_attack_result(msg)
+
+func _handle_attack_result(data: Dictionary) -> void:
+	is_waiting_for_reaction = false
+	
+	if data.is_blocked:
+		print("🛡️ Attack was BLOCKED!")
+	elif data.get("is_dodged"):
+		print("💨 Attack was DODGED!")
+	else:
+		print("💥 Attack CONNECTED!")
+		
+	# Trigger Animation (Visuals)
+	var attacker = _get_wrestler_by_peer_id(data.get("attacker_id"))
+	var target = _get_wrestler_by_peer_id(data.get("target_id"))
+	
+	if attacker and target:
+		# L'attaquant frappe toujours (dans le vide si esquivé/bloqué)
+		attacker.attack(target)
+		
+		# Animation du défenseur
+		if data.is_blocked:
+			target.block()
+		elif data.get("is_dodged"):
+			# Le défenseur a déjà bougé via SYNC_GRID_ACTION, pas d'anim spécifique ici (Run déjà joué)
+			pass
+		else:
+			# Dégâts réels
+			if is_local_player_active():
+				if pending_attack_context.has("target_name"):
+					var target_name = pending_attack_context.target_name
+					for w in players:
+						if w.name == target_name:
+							w.take_damage(1)
+							break
+				pending_attack_context.clear()
+			else:
+				# Pour les clients passifs, take_damage joue l'anim Hurt
+				# Mais take_damage applique aussi les dégâts locaux, ce qui est géré par SYNC_HEALTH normalement.
+				# Cependant, pour l'animation Hurt immédiate, on peut laisser faire le sync ou forcer l'anim.
+				# Le sync health arrivera juste après.
+				pass
+		
+
+func _get_wrestler_by_peer_id(peer_id: String) -> Wrestler:
+	if peer_id == null: return null
+	for player_name in player_peer_ids:
+		if player_peer_ids[player_name] == peer_id:
+			for w in players:
+				if w.name == player_name:
+					return w
+	return null
+
+# --- Reaction Logic Helpers ---
+
+func get_valid_reaction_cards(attack_card: CardData, hand: Array) -> Array[CardData]:
+	var valid_cards: Array[CardData] = []
+	
+	for card in hand:
+		# On ne peut pas réagir avec une carte Attaque (sauf si règle spéciale, mais PRD dit Blocage/Esquive)
+		# PRD: "Jouer une carte de la même couleur (Blocage) ou Mouvement Opposé (Esquive)"
+		# Condition de base : Valeur strictement supérieure
+		if card.value <= attack_card.value and card.suit != "Joker":
+			continue
+			
+		var is_valid = false
+		
+		# 1. BLOCAGE (Même Enseigne/Symbole)
+		# Règle : Pour bloquer, il faut exactement la même enseigne (Coeur vs Coeur, Carreau vs Carreau)
+		# Cela garantit que + bloque + et X bloque X.
+		if card.suit == attack_card.suit:
+			is_valid = true # Blocage
+			
+		# 2. ESQUIVE (Mouvement Opposé)
+		# Attaque Ortho (Carreau/Trèfle?) -> Esquive Diag (Pique/Coeur?)
+		# Vérifions les patterns définis dans DeckManager
+		if card.type == CardData.CardType.MOVE or card.suit == "Joker":
+			if attack_card.pattern == CardData.MovePattern.ORTHOGONAL and card.pattern == CardData.MovePattern.DIAGONAL:
+				is_valid = true
+			elif attack_card.pattern == CardData.MovePattern.DIAGONAL and card.pattern == CardData.MovePattern.ORTHOGONAL:
+				is_valid = true
+				
+		if is_valid:
+			valid_cards.append(card)
+			
+	return valid_cards
 
 # --- Helpers Serialization ---
 

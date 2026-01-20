@@ -34,6 +34,7 @@ func _ready() -> void:
 	if game_manager:
 		# Inject dependency into GridManager
 		grid_manager.game_manager = game_manager
+		game_manager.grid_manager = grid_manager
 		
 		# Connect UI End Turn button
 		game_ui.end_turn_pressed.connect(game_manager.end_turn)
@@ -47,6 +48,11 @@ func _ready() -> void:
 		
 		# Connect Card Discarding to GridManager (to clear highlights)
 		game_manager.card_discarded.connect(grid_manager.on_card_discarded)
+		
+		# Connect Reaction UI
+		game_manager.reaction_phase_started.connect(game_ui.start_reaction_request)
+		game_ui.reaction_selected.connect(game_manager.on_reaction_selected)
+		game_ui.reaction_skipped.connect(game_manager.on_reaction_skipped)
 		
 		# Connect Game Manager to Grid Manager (to sync active wrestler)
 		game_manager.turn_started.connect(func(player_name):

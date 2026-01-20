@@ -4,7 +4,7 @@ extends Node3D
 signal game_over(winner_name: String)
 
 # Reference to the Game Manager (injected by Arena)
-var game_manager: GameManager:
+var game_manager: # Untyped to avoid cyclic dependency
 	set(value):
 		game_manager = value
 		if game_manager:
@@ -36,6 +36,9 @@ var highlight_instances: Array[MeshInstance3D] = []
 var highlight_material_move: StandardMaterial3D
 var highlight_material_attack: StandardMaterial3D
 var active_indicator: MeshInstance3D
+
+var is_dodging: bool = false
+var dodging_wrestler: Wrestler
 
 func _ready() -> void:
 	_calculate_offset()
@@ -111,11 +114,12 @@ func _update_active_indicator() -> void:
 		active_indicator.position = Vector3(0, 0.05, 0)
 
 func _handle_grid_click(mouse_pos: Vector2) -> void:
-	if not active_wrestler or not current_card:
+	var actor = _get_acting_wrestler()
+	if not actor or not current_card:
 		return
 		
-	# Empêcher l'input si ce n'est pas notre tour
-	if game_manager and not game_manager.is_local_player_active():
+	# Empêcher l'input si ce n'est pas notre tour, SAUF si on est en train d'esquiver
+	if game_manager and not game_manager.is_local_player_active() and not is_dodging:
 		return
 		
 	var clicked_cell = _get_cell_under_mouse(mouse_pos)
@@ -130,7 +134,7 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 		return
 	
 	# Rotate wrestler towards target
-	active_wrestler.look_at_target(to_global(grid_to_world(clicked_cell)))
+	actor.look_at_target(to_global(grid_to_world(clicked_cell)))
 	
 	# Capture card locally because _execute_action -> _consume_card sets current_card to null
 	var card_to_play = current_card
@@ -139,12 +143,20 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 	var action_data = {
 		"x": clicked_cell.x,
 		"y": clicked_cell.y,
-		"card": _serialize_card(card_to_play)
+		"card": _serialize_card(card_to_play),
+		"player_name": actor.name # On précise QUI bouge
 	}
 	game_manager.send_grid_action(action_data)
 	
 	# Execute locally
-	_execute_action(clicked_cell, card_to_play)
+	_execute_action(clicked_cell, card_to_play, false, actor.name)
+	
+	# Si on était en mode esquive, on notifie la fin
+	if is_dodging:
+		is_dodging = false
+		dodging_wrestler = null
+		if game_manager:
+			game_manager.on_dodge_complete(card_to_play)
 	
 	# Cleanup local
 	_clear_highlights()
@@ -154,32 +166,40 @@ func _on_grid_action_received(data: Dictionary) -> void:
 	print("DEBUG: Grid action received: ", data)
 	var cell = Vector2i(data.x, data.y)
 	var card = _deserialize_card(data.card)
-	_execute_action(cell, card, true) # is_remote = true
+	var player_name = data.get("player_name", "")
+	_execute_action(cell, card, true, player_name) # is_remote = true
 
-func _execute_action(clicked_cell: Vector2i, card: CardData, is_remote: bool = false) -> void:
-	if not active_wrestler: return
+func _execute_action(clicked_cell: Vector2i, card: CardData, is_remote: bool = false, actor_name: String = "") -> void:
+	var actor = active_wrestler
+	if actor_name != "":
+		actor = _get_wrestler_by_name(actor_name)
+	
+	if not actor: return
 	
 	var is_joker = card.suit == "Joker"
 	var target = _get_wrestler_at(clicked_cell)
 	
 	# Ensure rotation is synced from server to all clients
-	active_wrestler.look_at_target(to_global(grid_to_world(clicked_cell)))
+	actor.look_at_target(to_global(grid_to_world(clicked_cell)))
 	
 	# Logic based on card type
 	if target:
 		if card.type == CardData.CardType.ATTACK or is_joker:
 			# Pass the network context down to the attack method.
-			# The wrestler will decide whether to apply damage or not.
-			active_wrestler.attack(target, is_remote)
-			
+			# Visuals are now deferred until reaction resolution (GameManager)
+			# actor.attack(target, is_remote)
 			_consume_card(card, is_remote)
+			
+			if not is_remote:
+				game_manager.initiate_attack_sequence(target, card)
 	elif card.type == CardData.CardType.MOVE or is_joker:
-		active_wrestler.move_to_grid_position(clicked_cell)
+		actor.move_to_grid_position(clicked_cell)
 		_consume_card(card, is_remote)
 
 func _calculate_valid_cells() -> void:
 	valid_cells.clear()
-	if not active_wrestler or not current_card:
+	var actor = _get_acting_wrestler()
+	if not actor or not current_card:
 		return
 		
 	var is_joker = current_card.suit == "Joker"
@@ -190,7 +210,7 @@ func _calculate_valid_cells() -> void:
 		for x in range(-range_val, range_val + 1):
 			for y in range(-range_val, range_val + 1):
 				var offset = Vector2i(x, y)
-				var target_pos = active_wrestler.grid_position + offset
+				var target_pos = actor.grid_position + offset
 				
 				if not is_valid_cell(target_pos): continue
 				
@@ -224,9 +244,9 @@ func _calculate_valid_cells() -> void:
 	if current_card.type == CardData.CardType.ATTACK or is_joker:
 		# Check all opponents
 		for w in wrestlers:
-			if w == active_wrestler: continue
+			if w == actor: continue
 			
-			var diff = (w.grid_position - active_wrestler.grid_position).abs()
+			var diff = (w.grid_position - actor.grid_position).abs()
 			
 			# Attack range is 1 (Adjacent)
 			# But we must check pattern
@@ -276,6 +296,15 @@ func _consume_card(card: CardData, is_remote: bool = false) -> void:
 	_clear_highlights()
 	current_card = null
 
+func enter_dodge_mode(card: CardData, wrestler: Wrestler) -> void:
+	print("GridManager: Entering Dodge Mode with ", card.title, " for ", wrestler.name)
+	is_dodging = true
+	dodging_wrestler = wrestler
+	current_card = card
+	# Recalculer les cases valides pour ce mouvement d'esquive
+	_calculate_valid_cells()
+	_update_highlights()
+
 func _get_cell_under_mouse(mouse_pos: Vector2) -> Vector2i:
 	var camera = get_viewport().get_camera_3d()
 	var from = camera.project_ray_origin(mouse_pos)
@@ -286,6 +315,17 @@ func _get_cell_under_mouse(mouse_pos: Vector2) -> Vector2i:
 	if intersection:
 		return world_to_grid(intersection)
 	return Vector2i(-1, -1)
+
+func _get_acting_wrestler() -> Wrestler:
+	if is_dodging and dodging_wrestler:
+		return dodging_wrestler
+	return active_wrestler
+
+func _get_wrestler_by_name(w_name: String) -> Wrestler:
+	for w in wrestlers:
+		if w.name == w_name:
+			return w
+	return null
 
 # Helper to find a wrestler on a specific cell
 func _get_wrestler_at(pos: Vector2i) -> Wrestler:
