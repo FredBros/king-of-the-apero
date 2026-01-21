@@ -135,3 +135,38 @@ func _play_anim(anim_name: String) -> void:
 			animation_player.play(anim_name, 0.2) # 0.2s blend time for smooth transitions
 		else:
 			printerr("Animation not found: '", anim_name, "'. Available animations: ", animation_player.get_animation_list())
+
+func show_floating_text(text: String, color: Color) -> void:
+	var label = Label3D.new()
+	label.text = text
+	label.modulate = color
+	label.font_size = 128
+	label.pixel_size = 0.004 # Ajuste la taille dans le monde 3D
+	label.outline_render_priority = 0
+	label.outline_modulate = Color.BLACK
+	label.outline_size = 32
+	label.uppercase = true
+	label.no_depth_test = true # Toujours visible (au-dessus des modèles)
+	
+	add_child(label)
+	label.position = Vector3(0, 2.5, 0) # Au-dessus de la tête
+	
+	# Orientation "Pseudo 3D" (Regarde la caméra mais avec un angle stylé)
+	var camera = get_viewport().get_camera_3d()
+	if camera:
+		# On aligne la rotation sur celle de la caméra (Billboard manuel plus stable que look_at)
+		label.global_rotation = camera.global_rotation
+		# Ajout du "biais" (Tilt)
+		label.rotate_y(deg_to_rad(-15))
+		label.rotate_x(deg_to_rad(-10))
+	else:
+		label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	
+	# Animation Pop & Float
+	label.scale = Vector3.ZERO
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(label, "scale", Vector3.ONE, 0.5).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "position:y", label.position.y + 1.0, 1.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "modulate:a", 0.0, 0.5).set_delay(1.0)
+	tween.chain().tween_callback(label.queue_free)

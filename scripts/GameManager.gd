@@ -515,8 +515,12 @@ func _handle_attack_result(data: Dictionary) -> void:
 	
 	if data.is_blocked:
 		print("🛡️ Attack was BLOCKED!")
+		var target = _get_wrestler_by_peer_id(data.get("target_id"))
+		if target: target.show_floating_text("BLOCKED!", Color(1.0, 0.6, 0.0)) # Orange
 	elif data.get("is_dodged"):
 		print("💨 Attack was DODGED!")
+		var target = _get_wrestler_by_peer_id(data.get("target_id"))
+		if target: target.show_floating_text("DODGED!", Color(0.0, 0.8, 1.0)) # Cyan
 	else:
 		print("💥 Attack CONNECTED!")
 		
