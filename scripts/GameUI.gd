@@ -3,6 +3,7 @@ extends CanvasLayer
 
 signal card_selected(card_data: CardData)
 signal card_discard_requested(card_data: CardData)
+signal card_dropped_on_world(card_data: CardData, screen_position: Vector2)
 signal end_turn_pressed
 signal reaction_selected(card_data: CardData)
 signal reaction_skipped
@@ -28,6 +29,9 @@ var pass_button: Button
 var opponent_card_display: CardUI
 var is_reaction_phase: bool = false
 
+# Drop Zone for Push mechanic
+var drop_zone: DropZone
+
 func _ready() -> void:
 	# Connect restart button manually since we added it via code/tscn edit
 	var restart_btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/RestartButton
@@ -51,6 +55,12 @@ func _ready() -> void:
 			game_manager.card_discarded.connect(remove_card_from_hand)
 	else:
 		printerr("GameUI: GameManager not found!")
+	
+	# Setup Drop Zone for Drag & Drop (Push)
+	drop_zone = DropZone.new()
+	add_child(drop_zone)
+	move_child(drop_zone, 0) # Ensure it's behind everything else
+	drop_zone.card_dropped.connect(_on_card_dropped_on_zone)
 	
 	_setup_reaction_ui()
 
@@ -106,6 +116,9 @@ func _on_quit_button_pressed() -> void:
 
 func update_turn_info(player_name: String) -> void:
 	turn_label.text = player_name + "'s Turn"
+
+func _on_card_dropped_on_zone(card_data: CardData, pos: Vector2) -> void:
+	card_dropped_on_world.emit(card_data, pos)
 
 func add_card_to_hand(card_data: CardData) -> void:
 	print("DEBUG UI: Adding card ", card_data.title, " to hand.")

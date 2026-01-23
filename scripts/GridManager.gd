@@ -71,6 +71,118 @@ func on_card_discarded(card: CardData) -> void:
 		_clear_highlights()
 		current_card = null
 
+func on_card_dropped_on_world(card: CardData, screen_pos: Vector2) -> void:
+	# Handle Push Mechanic (Drag & Drop)
+	if not active_wrestler: return
+	if game_manager and not game_manager.is_local_player_active(): return
+	
+	print("DEBUG: Drop detected at screen pos: ", screen_pos)
+	
+	# 1. Try to find wrestler via Physics Raycast first (Better for 3D objects with height)
+	var target = _get_wrestler_under_mouse(screen_pos)
+	if target:
+		print("DEBUG: Raycast found wrestler: ", target.name)
+	else:
+		print("DEBUG: Raycast found NO wrestler.")
+	
+	var clicked_cell = Vector2i(-1, -1)
+	
+	# 2. Fallback to Grid Cell logic (Floor plane intersection)
+	if not target:
+		clicked_cell = _get_cell_under_mouse(screen_pos)
+		print("DEBUG: Fallback to grid cell: ", clicked_cell)
+		# Note: clicked_cell peut être invalide si on drop hors de la grille
+		target = _get_wrestler_at(clicked_cell)
+		if target: print("DEBUG: Found wrestler at cell via grid logic: ", target.name)
+	else:
+		clicked_cell = target.grid_position
+	
+	# 1. PUSH LOGIC (Drop sur un adversaire)
+	if target and target != active_wrestler:
+		# Check Range (Must be adjacent)
+		var diff = (target.grid_position - active_wrestler.grid_position).abs()
+		var is_valid_range = false
+		if card.suit == "Joker":
+			if max(diff.x, diff.y) == 1: is_valid_range = true
+		elif card.pattern == CardData.MovePattern.ORTHOGONAL:
+			if diff.x + diff.y == 1: is_valid_range = true
+		elif card.pattern == CardData.MovePattern.DIAGONAL:
+			if diff.x == 1 and diff.y == 1: is_valid_range = true
+			
+		if is_valid_range:
+			print("Initiating Push Attack on ", target.name)
+			active_wrestler.look_at_target(to_global(grid_to_world(clicked_cell)))
+			_consume_card(card, false)
+			game_manager.initiate_attack_sequence(target, card, true) # is_push = true
+			return
+		else:
+			print("Target out of range for Push")
+			return
+
+	# 2. SWIPE LOGIC (Drop dans le vide -> Attaque Standard)
+	# On cherche une cible valide automatiquement
+	var valid_targets = _find_valid_targets_for_attack(active_wrestler, card)
+	
+	if valid_targets.size() == 1:
+		var auto_target = valid_targets[0]
+		print("Swipe Attack (Auto-Target) on ", auto_target.name)
+		active_wrestler.look_at_target(to_global(grid_to_world(auto_target.grid_position)))
+		_consume_card(card, false)
+		game_manager.initiate_attack_sequence(auto_target, card, false) # is_push = false
+	elif valid_targets.size() > 1:
+		print("Swipe Ambiguous: Multiple targets. Please select card then click target.")
+		# Optionnel : Sélectionner la carte pour montrer les cibles
+		on_card_selected(card)
+	else:
+		print("Swipe Failed: No targets in range.")
+
+func _get_wrestler_under_mouse(mouse_pos: Vector2) -> Wrestler:
+	var space_state = get_world_3d().direct_space_state
+	var camera = get_viewport().get_camera_3d()
+	if not camera: return null
+	
+	var from = camera.project_ray_origin(mouse_pos)
+	var to = from + camera.project_ray_normal(mouse_pos) * 1000.0
+	
+	var query = PhysicsRayQueryParameters3D.create(from, to)
+	query.collide_with_areas = true
+	query.collide_with_bodies = true
+	
+	var result = space_state.intersect_ray(query)
+	if result:
+		print("DEBUG: Raycast hit object: ", result.collider.name)
+		var collider = result.collider
+		var node = collider
+		# Walk up to find Wrestler
+		while node:
+			if node is Wrestler:
+				return node
+			node = node.get_parent()
+			if node == self or node == get_tree().root: break
+	return null
+
+func _find_valid_targets_for_attack(attacker: Wrestler, card: CardData) -> Array[Wrestler]:
+	var targets: Array[Wrestler] = []
+	var is_joker = card.suit == "Joker"
+	
+	for w in wrestlers:
+		if w == attacker: continue
+		
+		var diff = (w.grid_position - attacker.grid_position).abs()
+		var is_valid_pos = false
+		
+		if is_joker:
+			if max(diff.x, diff.y) == 1: is_valid_pos = true
+		elif card.pattern == CardData.MovePattern.ORTHOGONAL:
+			if diff.x + diff.y == 1: is_valid_pos = true
+		elif card.pattern == CardData.MovePattern.DIAGONAL:
+			if diff.x == 1 and diff.y == 1: is_valid_pos = true
+			
+		if is_valid_pos:
+			targets.append(w)
+			
+	return targets
+
 # Called by GameManager when turn changes
 func set_active_wrestler(wrestler: Wrestler) -> void:
 	active_wrestler = wrestler
@@ -122,7 +234,13 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 	if game_manager and not game_manager.is_local_player_active() and not is_dodging:
 		return
 		
-	var clicked_cell = _get_cell_under_mouse(mouse_pos)
+	var clicked_cell = Vector2i(-1, -1)
+	var wrestler_under_mouse = _get_wrestler_under_mouse(mouse_pos)
+	if wrestler_under_mouse:
+		clicked_cell = wrestler_under_mouse.grid_position
+	else:
+		clicked_cell = _get_cell_under_mouse(mouse_pos)
+		
 	if not is_valid_cell(clicked_cell):
 		return
 		
@@ -191,7 +309,7 @@ func _execute_action(clicked_cell: Vector2i, card: CardData, is_remote: bool = f
 			_consume_card(card, is_remote)
 			
 			if not is_remote:
-				game_manager.initiate_attack_sequence(target, card)
+				game_manager.initiate_attack_sequence(target, card, false) # is_push = false (Standard Attack)
 	elif card.type == CardData.CardType.MOVE or is_joker:
 		actor.move_to_grid_position(clicked_cell)
 		_consume_card(card, is_remote)

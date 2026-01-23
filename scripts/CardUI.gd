@@ -83,3 +83,24 @@ func _get_suit_icon(suit: String) -> String:
 		"Diamonds": return "♦"
 		"Joker": return "★"
 	return ""
+
+func _get_drag_data(_at_position: Vector2) -> Variant:
+	if not card_data: return null
+	
+	# Only Attack cards (or Joker) allow Push via Drag & Drop
+	if card_data.type != CardData.CardType.ATTACK and card_data.suit != "Joker":
+		return null
+		
+	# Create a simple visual preview
+	var preview = PanelContainer.new()
+	var lbl = Label.new()
+	lbl.text = card_data.title
+	lbl.add_theme_font_size_override("font_size", 24)
+	preview.add_child(lbl)
+	preview.modulate = Color(1, 1, 1, 0.8)
+	preview.rotation = 0.1 # Petit effet d'inclinaison stylé
+	
+	# Center the preview on mouse
+	set_drag_preview(preview)
+	
+	return card_data

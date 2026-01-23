@@ -1,9 +1,16 @@
-[gd_scene load_steps=3 format=3 uid="uid://dnc417x07353p"]
+[gd_scene load_steps=4 format=3 uid="uid://dnc417x07353p"]
 
 [ext_resource type="Script" uid="uid://bk0urxjh033xy" path="res://scripts/Wrestler.gd" id="1_83s1c"]
 [ext_resource type="PackedScene" uid="uid://dbqpm1b4l2myo" path="res://assets/Actors/BigGuy.glb" id="2_i8vlu"]
 
-[node name="Wrestler" type="Node3D"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_i8vlu"]
+height = 1.8
+
+[node name="Wrestler" type="CharacterBody3D"]
 script = ExtResource("1_83s1c")
 
 [node name="BigGuy" parent="." instance=ExtResource("2_i8vlu")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00785327, 0.9420959, 0)
+shape = SubResource("CapsuleShape3D_i8vlu")

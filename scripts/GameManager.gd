@@ -277,6 +277,8 @@ func _on_network_message(data: Dictionary) -> void:
 			_handle_request_attack(data)
 		"ATTACK_RESULT":
 			_handle_attack_result(data)
+		"SYNC_PUSH":
+			_handle_sync_push(data)
 
 func _handle_sync_turn(player_name: String) -> void:
 	print("Sync Turn: ", player_name)
@@ -407,7 +409,7 @@ func _handle_sync_health(player_name: String, value: int) -> void:
 
 # --- Attack / Reaction Sequence ---
 
-func initiate_attack_sequence(target_wrestler: Wrestler, attack_card: CardData) -> void:
+func initiate_attack_sequence(target_wrestler: Wrestler, attack_card: CardData, is_push: bool = false) -> void:
 	# Appelé par GridManager quand le joueur local attaque
 	var target_name = target_wrestler.name
 	var target_id = player_peer_ids.get(target_name)
@@ -415,14 +417,16 @@ func initiate_attack_sequence(target_wrestler: Wrestler, attack_card: CardData) 
 	# On stocke le contexte pour savoir qui taper quand la réponse reviendra
 	pending_attack_context = {
 		"target_name": target_name,
-		"attack_card": attack_card
+		"attack_card": attack_card,
+		"is_push": is_push
 	}
 	is_waiting_for_reaction = true
 	
 	NetworkManager.send_message({
 		"type": "REQUEST_ATTACK",
 		"attacker_card": _serialize_card(attack_card),
-		"target_id": target_id
+		"target_id": target_id,
+		"is_push": is_push
 	})
 	print("⚔️ Attack Sequence Initiated against ", target_name)
 
@@ -539,13 +543,18 @@ func _handle_attack_result(data: Dictionary) -> void:
 			# Le défenseur a déjà bougé via SYNC_GRID_ACTION, pas d'anim spécifique ici (Run déjà joué)
 			pass
 		else:
-			# Dégâts réels
+			# Dégâts réels ou Poussée
 			if is_local_player_active():
 				if pending_attack_context.has("target_name"):
 					var target_name = pending_attack_context.target_name
+					var is_push = pending_attack_context.get("is_push", false)
+					
 					for w in players:
 						if w.name == target_name:
-							w.take_damage(1)
+							if is_push:
+								_apply_push(attacker, w)
+							else:
+								w.take_damage(1)
 							break
 				pending_attack_context.clear()
 			else:
@@ -555,6 +564,40 @@ func _handle_attack_result(data: Dictionary) -> void:
 				# Le sync health arrivera juste après.
 				pass
 		
+func _apply_push(attacker: Wrestler, target: Wrestler) -> void:
+	# Calculer la direction de la poussée
+	var direction = target.grid_position - attacker.grid_position
+	# Normaliser pour avoir 1 case (même en diagonale)
+	direction = direction.clamp(Vector2i(-1, -1), Vector2i(1, 1))
+	
+	var dest_cell = target.grid_position + direction
+	
+	print("💨 Pushing ", target.name, " to ", dest_cell)
+	
+	# Check Ejection (Ring Out)
+	if grid_manager and not grid_manager.is_valid_cell(dest_cell):
+		# Apply Ring Out Damage
+		target.take_damage(2)
+	
+	# Appliquer localement
+	target.push_to(dest_cell)
+	
+	# Synchroniser
+	NetworkManager.send_message({
+		"type": "SYNC_PUSH",
+		"target_name": target.name,
+		"x": dest_cell.x,
+		"y": dest_cell.y
+	})
+
+func _handle_sync_push(data: Dictionary) -> void:
+	var target_name = data.get("target_name")
+	var dest = Vector2i(data.x, data.y)
+	
+	for w in players:
+		if w.name == target_name:
+			w.push_to(dest)
+			break
 
 func _get_wrestler_by_peer_id(peer_id: String) -> Wrestler:
 	if peer_id == null: return null

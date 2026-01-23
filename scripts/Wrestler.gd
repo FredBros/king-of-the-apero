@@ -1,8 +1,9 @@
 class_name Wrestler
-extends Node3D
+extends CharacterBody3D
 
 signal died(wrestler: Wrestler)
 signal health_changed(current: int, max: int)
+signal ejected
 
 @export var max_health: int = 10
 var current_health: int
@@ -13,6 +14,7 @@ var grid_position: Vector2i = Vector2i.ZERO
 
 # Reference to the grid manager to convert grid pos to world pos
 var grid_manager: GridManager
+var is_ejected: bool = false
 
 # Sets the initial position of the wrestler
 func set_initial_position(pos: Vector2i, manager: GridManager) -> void:
@@ -70,6 +72,7 @@ func attack(target: Wrestler, is_remote: bool = false) -> void:
 func take_damage(amount: int) -> void:
 	current_health -= amount
 	health_changed.emit(current_health, max_health)
+	show_floating_text("-" + str(amount) + " HP", Color.RED)
 	print(name, " took ", amount, " damage. HP: ", current_health)
 	
 	if current_health <= 0:
@@ -80,7 +83,8 @@ func take_damage(amount: int) -> void:
 		_play_anim("Hurt")
 		# Wait for Hurt animation to finish roughly
 		await get_tree().create_timer(0.5).timeout
-		_play_anim("Idle")
+		if not is_ejected:
+			_play_anim("Idle")
 
 func block() -> void:
 	_play_anim("Block")
@@ -104,19 +108,49 @@ func set_network_health(value: int) -> void:
 
 # Force move the wrestler (can push out of bounds)
 func push_to(new_pos: Vector2i) -> void:
+	var old_pos = grid_position
 	grid_position = new_pos
 	var target_world_pos = grid_manager.grid_to_world(grid_position)
 	
 	# Check if ejected
 	if not grid_manager.is_valid_cell(grid_position):
 		print(name, " EJECTED!")
-		target_world_pos.y = -5.0 # Fall into the abyss
-		died.emit(self)
-	else:
-		pass
+		is_ejected = true
+		ejected.emit()
 		
-	var tween = create_tween()
-	tween.tween_property(self, "position", target_world_pos, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		# Visuals: Keep on ground level for now
+		
+		var tween = create_tween()
+		tween.tween_property(self, "position", target_world_pos, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween.tween_callback(func(): _play_anim("KO"))
+		
+		# Recovery Sequence (4 seconds later)
+		get_tree().create_timer(4.0).timeout.connect(func(): _recover_from_ejection(old_pos))
+	else:
+		var tween = create_tween()
+		tween.tween_property(self, "position", target_world_pos, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+func _recover_from_ejection(original_pos: Vector2i) -> void:
+	is_ejected = false
+	# If dead, do not recover
+	if current_health <= 0: return
+	
+	var return_pos = original_pos
+	
+	# Check if original position is occupied
+	var occupant = grid_manager._get_wrestler_at(return_pos)
+	if occupant and occupant != self:
+		# Find a valid adjacent cell (fallback)
+		var offsets = [Vector2i(0, 1), Vector2i(0, -1), Vector2i(1, 0), Vector2i(-1, 0)]
+		for offset in offsets:
+			var neighbor = original_pos + offset
+			if grid_manager.is_valid_cell(neighbor) and grid_manager._get_wrestler_at(neighbor) == null:
+				return_pos = neighbor
+				break
+	
+	grid_position = return_pos
+	position = grid_manager.grid_to_world(grid_position)
+	_play_anim("Idle")
 
 # Rotate the wrestler to face a target position (keeping Y axis upright)
 func look_at_target(target_pos: Vector3) -> void:

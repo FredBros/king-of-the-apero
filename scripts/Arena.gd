@@ -9,6 +9,7 @@ func _ready() -> void:
 	# Connect the UI signal to the GridManager
 	if game_ui and grid_manager:
 		game_ui.card_selected.connect(grid_manager.on_card_selected)
+		game_ui.card_dropped_on_world.connect(grid_manager.on_card_dropped_on_world)
 		grid_manager.game_over.connect(func(winner_name):
 			game_ui.show_game_over(winner_name)
 			game_manager.is_game_active = false
