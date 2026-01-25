@@ -8,6 +8,7 @@ signal ejected
 @export var max_health: int = 10
 var current_health: int
 var grid_position: Vector2i = Vector2i.ZERO
+@export var wrestler_data: WrestlerData
 
 # The AnimationPlayer must be assigned in the Inspector or found dynamically
 @export var animation_player: AnimationPlayer
@@ -15,6 +16,28 @@ var grid_position: Vector2i = Vector2i.ZERO
 # Reference to the grid manager to convert grid pos to world pos
 var grid_manager: GridManager
 var is_ejected: bool = false
+
+@onready var collision_shape: CollisionShape3D = $CollisionShape3D
+
+func _ready() -> void:
+	set_collision_enabled(false)
+	if wrestler_data:
+		initialize(wrestler_data)
+
+# Initialize the wrestler from data (Model, Stats)
+func initialize(data: WrestlerData) -> void:
+	# 1. Stats
+	max_health = data.max_health
+	current_health = max_health
+	
+	# 2. Visuals (Instantiate Model)
+	if data.model_scene:
+		var model_instance = data.model_scene.instantiate()
+		add_child(model_instance)
+		
+		# 3. Animation Connection
+		# We look for the AnimationPlayer inside the new model
+		animation_player = model_instance.find_child("AnimationPlayer", true, false)
 
 # Sets the initial position of the wrestler
 func set_initial_position(pos: Vector2i, manager: GridManager) -> void:
@@ -204,3 +227,7 @@ func show_floating_text(text: String, color: Color) -> void:
 	tween.tween_property(label, "position:y", label.position.y + 1.0, 1.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tween.tween_property(label, "modulate:a", 0.0, 0.5).set_delay(1.0)
 	tween.chain().tween_callback(label.queue_free)
+
+func set_collision_enabled(enabled: bool) -> void:
+	if collision_shape:
+		collision_shape.disabled = not enabled

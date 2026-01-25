@@ -661,3 +661,15 @@ func _deserialize_card(data: Dictionary) -> CardData:
 	card.suit = data.suit
 	card.pattern = int(data.pattern) # Force int for Enum
 	return card
+
+func set_wrestler_collisions(enabled: bool) -> void:
+	if grid_manager:
+		grid_manager.set_wrestler_collisions(enabled)
+
+func preview_swipe(card: CardData, screen_offset: Vector2) -> void:
+	if grid_manager and (is_local_player_active() or not pending_defense_context.is_empty()):
+		grid_manager.handle_swipe_preview(card, screen_offset)
+
+func commit_swipe(card: CardData, screen_offset: Vector2, global_pos: Vector2) -> void:
+	if grid_manager and (is_local_player_active() or not pending_defense_context.is_empty()):
+		grid_manager.handle_swipe_commit(card, screen_offset, global_pos)

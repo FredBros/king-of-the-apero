@@ -13,6 +13,8 @@ var game_manager: # Untyped to avoid cyclic dependency
 
 # Scene reference for the wrestler pawn. We'll link this in the editor.
 @export var wrestler_scene: PackedScene
+@export var player_1_data: WrestlerData
+@export var player_2_data: WrestlerData
 
 # Reference to the currently active wrestler for testing inputs
 var active_wrestler: Wrestler
@@ -36,6 +38,7 @@ var highlight_instances: Array[MeshInstance3D] = []
 var highlight_material_move: StandardMaterial3D
 var highlight_material_attack: StandardMaterial3D
 var active_indicator: MeshInstance3D
+var swipe_highlight: MeshInstance3D
 
 var is_dodging: bool = false
 var dodging_wrestler: Wrestler
@@ -44,6 +47,7 @@ func _ready() -> void:
 	_calculate_offset()
 	_init_materials()
 	_init_active_indicator()
+	_init_swipe_highlight()
 	# Debug: Print the world position of the first cell (0,0)
 	print("Grid initialized. Cell (0,0) is at World Pos: ", grid_to_world(Vector2i(0, 0)))
 	_create_arena_visuals()
@@ -57,6 +61,10 @@ func _unhandled_input(event: InputEvent) -> void:
 # Called by the Game Loop/UI when a card is selected
 func on_card_selected(card: CardData) -> void:
 	current_card = card
+	if not card:
+		_clear_highlights()
+		return
+		
 	print("GridManager received card: ", card.title)
 	
 	# Empêcher l'affichage des déplacements si ce n'est pas notre tour
@@ -214,6 +222,20 @@ func _init_active_indicator() -> void:
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	active_indicator.material_override = material
 
+func _init_swipe_highlight() -> void:
+	swipe_highlight = MeshInstance3D.new()
+	var plane = PlaneMesh.new()
+	plane.size = Vector2(cell_size * 0.9, cell_size * 0.9)
+	swipe_highlight.mesh = plane
+	
+	var material = StandardMaterial3D.new()
+	material.albedo_color = Color(1.0, 1.0, 0.0, 0.6) # Yellow/Gold
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	swipe_highlight.material_override = material
+	add_child(swipe_highlight)
+	swipe_highlight.hide()
+
 func _update_active_indicator() -> void:
 	if not active_indicator: return
 	
@@ -278,6 +300,7 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 	
 	# Cleanup local
 	_clear_highlights()
+	if swipe_highlight: swipe_highlight.hide()
 	current_card = null
 
 func _on_grid_action_received(data: Dictionary) -> void:
@@ -404,6 +427,7 @@ func _clear_highlights() -> void:
 	for inst in highlight_instances:
 		inst.queue_free()
 	highlight_instances.clear()
+	if swipe_highlight: swipe_highlight.hide()
 
 func _consume_card(card: CardData, is_remote: bool = false) -> void:
 	if is_remote: return
@@ -412,6 +436,7 @@ func _consume_card(card: CardData, is_remote: bool = false) -> void:
 		game_manager.use_card(card)
 		
 	_clear_highlights()
+	if swipe_highlight: swipe_highlight.hide()
 	current_card = null
 
 func enter_dodge_mode(card: CardData, wrestler: Wrestler) -> void:
@@ -556,6 +581,9 @@ func _spawn_debug_wrestler() -> void:
 	wrestler_instance.name = "Player" # Nommer AVANT d'ajouter à l'arbre pour éviter les conflits RPC
 	add_child(wrestler_instance)
 	
+	if player_1_data:
+		wrestler_instance.initialize(player_1_data)
+	
 	# Place it on a starting cell (Top-Left Corner)
 	var start_pos = Vector2i(0, 0)
 	wrestler_instance.set_initial_position(start_pos, self)
@@ -565,6 +593,10 @@ func _spawn_debug_wrestler() -> void:
 	wrestlers.append(dummy)
 	dummy.name = "Dummy" # Nommer AVANT d'ajouter à l'arbre
 	add_child(dummy)
+	
+	if player_2_data:
+		dummy.initialize(player_2_data)
+	
 	# Place it on opposite corner (Bottom-Right)
 	dummy.set_initial_position(grid_size - Vector2i(1, 1), self)
 	
@@ -581,6 +613,105 @@ func _on_wrestler_died(w: Wrestler) -> void:
 	# Simple win condition: Last man standing
 	if wrestlers.size() == 1:
 		game_over.emit(wrestlers[0].name)
+
+func set_wrestler_collisions(enabled: bool) -> void:
+	for w in wrestlers:
+		w.set_collision_enabled(enabled)
+
+func handle_swipe_preview(card: CardData, screen_offset: Vector2) -> void:
+	if screen_offset.length() < 10.0:
+		swipe_highlight.hide()
+		return
+		
+	var target_cell = _get_swipe_target_cell(card, screen_offset)
+	if target_cell != Vector2i(-1, -1):
+		swipe_highlight.show()
+		swipe_highlight.position = grid_to_world(target_cell)
+		swipe_highlight.position.y = 0.15 # Above normal highlights
+	else:
+		swipe_highlight.hide()
+
+func handle_swipe_commit(card: CardData, screen_offset: Vector2, global_pos: Vector2) -> void:
+	swipe_highlight.hide()
+	
+	# 1. Check for Push (Drop on Wrestler) - Only for Attack/Joker
+	if not is_dodging and (card.type == CardData.CardType.ATTACK or card.suit == "Joker"):
+		var target = _get_wrestler_under_mouse(global_pos)
+		if target and target != active_wrestler:
+			# Check Range (Must be adjacent)
+			var diff = (target.grid_position - active_wrestler.grid_position).abs()
+			var is_valid_range = false
+			if card.suit == "Joker":
+				if max(diff.x, diff.y) == 1: is_valid_range = true
+			elif card.pattern == CardData.MovePattern.ORTHOGONAL:
+				if diff.x + diff.y == 1: is_valid_range = true
+			elif card.pattern == CardData.MovePattern.DIAGONAL:
+				if diff.x == 1 and diff.y == 1: is_valid_range = true
+				
+			if is_valid_range:
+				print("Initiating Push Attack on ", target.name)
+				active_wrestler.look_at_target(to_global(grid_to_world(target.grid_position)))
+				_consume_card(card, false)
+				game_manager.initiate_attack_sequence(target, card, true) # is_push = true
+				return
+	
+	# 2. Directional Logic (Swipe)
+	var target_cell = _get_swipe_target_cell(card, screen_offset)
+	
+	# FIX: Auto-target for Attack cards if only one target exists (Relaxed Swipe)
+	# This allows "throwing" the card to attack without precise directional aiming if there's only one choice.
+	if target_cell == Vector2i(-1, -1) and card.type == CardData.CardType.ATTACK:
+		if valid_cells.size() == 1:
+			target_cell = valid_cells[0]
+			print("Swipe Auto-Targeting: ", target_cell)
+	
+	if target_cell != Vector2i(-1, -1):
+		# Simulate a click on that cell
+		if current_card == card:
+			var actor = _get_acting_wrestler()
+			actor.look_at_target(to_global(grid_to_world(target_cell)))
+			
+			var action_data = {
+				"x": target_cell.x,
+				"y": target_cell.y,
+				"card": _serialize_card(card),
+				"player_name": actor.name
+			}
+			game_manager.send_grid_action(action_data)
+			_execute_action(target_cell, card, false, actor.name)
+			
+			if is_dodging:
+				is_dodging = false
+				dodging_wrestler = null
+				if game_manager:
+					game_manager.on_dodge_complete(card)
+			
+			_clear_highlights()
+			current_card = null
+
+func _get_swipe_target_cell(card: CardData, screen_offset: Vector2) -> Vector2i:
+	var actor = _get_acting_wrestler()
+	if not actor: return Vector2i(-1, -1)
+	
+	var camera = get_viewport().get_camera_3d()
+	# On projette la position du catcheur sur l'écran pour avoir l'origine du vecteur
+	var origin_world = grid_to_world(actor.grid_position)
+	var origin_screen = camera.unproject_position(origin_world)
+	
+	var best_cell = Vector2i(-1, -1)
+	var max_dot = 0.5 # Seuil de tolérance (cône de direction)
+	
+	for cell in valid_cells:
+		var cell_world = grid_to_world(cell)
+		var cell_screen = camera.unproject_position(cell_world)
+		var dir = (cell_screen - origin_screen).normalized()
+		var dot = dir.dot(screen_offset.normalized())
+		
+		if dot > max_dot:
+			max_dot = dot
+			best_cell = cell
+			
+	return best_cell
 
 # --- Helpers Serialization (Dupliqué pour éviter les dépendances circulaires complexes) ---
 func _serialize_card(card: CardData) -> Dictionary:

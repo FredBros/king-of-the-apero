@@ -32,6 +32,8 @@ var is_reaction_phase: bool = false
 # Drop Zone for Push mechanic
 var drop_zone: DropZone
 
+var game_manager_ref
+
 func _ready() -> void:
 	# Connect restart button manually since we added it via code/tscn edit
 	var restart_btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/RestartButton
@@ -48,6 +50,7 @@ func _ready() -> void:
 	# Connexion dynamique au GameManager
 	# On cherche le GameManager dans la scène (il devrait être un frère ou un parent)
 	var game_manager = get_tree().root.find_child("GameManager", true, false)
+	game_manager_ref = game_manager
 	if game_manager:
 		if not game_manager.card_drawn.is_connected(add_card_to_hand):
 			game_manager.card_drawn.connect(add_card_to_hand)
@@ -127,6 +130,11 @@ func add_card_to_hand(card_data: CardData) -> void:
 	card.setup(card_data)
 	card.clicked.connect(_on_card_clicked)
 	card.discard_requested.connect(_on_card_discard_requested)
+	card.drag_started.connect(_on_card_drag_started)
+	card.drag_ended.connect(_on_card_drag_ended)
+	card.swipe_pending.connect(_on_card_swipe_pending)
+	card.swipe_committed.connect(_on_card_swipe_committed)
+	card.selection_canceled.connect(_on_card_selection_canceled)
 
 func remove_card_from_hand(card_data: CardData) -> void:
 	for child in hand_container.get_children():
@@ -165,6 +173,13 @@ func _on_card_clicked(card_ui: CardUI) -> void:
 	selected_card_ui = card_ui
 	selected_card_ui.set_selected(true)
 	card_selected.emit(card_ui.card_data)
+
+func _on_card_selection_canceled(card_ui: CardUI) -> void:
+	if selected_card_ui == card_ui:
+		selected_card_ui.set_selected(false)
+		selected_card_ui = null
+		# Notify GridManager to clear highlights
+		card_selected.emit(null)
 
 func start_reaction_request(attack_card: CardData, valid_cards: Array[CardData]) -> void:
 	is_reaction_phase = true
@@ -252,3 +267,19 @@ func on_wrestler_health_changed(current: int, max_hp: int, wrestler: Wrestler) -
 		bottom_player_info.update_health(current, max_hp)
 	elif wrestler == opponent_wrestler_ref and top_player_info:
 		top_player_info.update_health(current, max_hp)
+
+func _on_card_drag_started(card_data: CardData) -> void:
+	if game_manager_ref:
+		game_manager_ref.set_wrestler_collisions(true)
+
+func _on_card_drag_ended() -> void:
+	if game_manager_ref:
+		game_manager_ref.set_wrestler_collisions(false)
+
+func _on_card_swipe_pending(card_ui: CardUI, offset: Vector2) -> void:
+	if game_manager_ref:
+		game_manager_ref.preview_swipe(card_ui.card_data, offset)
+
+func _on_card_swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vector2) -> void:
+	if game_manager_ref:
+		game_manager_ref.commit_swipe(card_ui.card_data, offset, global_pos)
