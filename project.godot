@@ -36,6 +36,12 @@ window/handheld/orientation=1
 
 enabled=PackedStringArray("res://addons/com.heroiclabs.nakama/plugin.cfg")
 
+[file_customization]
+
+folder_colors={
+"res://resources/": "green"
+}
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

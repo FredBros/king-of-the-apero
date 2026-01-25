@@ -27,7 +27,7 @@ var current_card: CardData
 
 # Grid configuration
 @export var grid_size: Vector2i = Vector2i(6, 6) # 6x6 grid
-@export var cell_size: float = 1.0 # Each cell is 1x1 meter
+@export var cell_size: float = 1.5 # Each cell is 1.5x1.5 meter
 
 # Offset to center the grid in the world (0,0,0)
 var board_offset: Vector3
@@ -613,6 +613,22 @@ func _on_wrestler_died(w: Wrestler) -> void:
 	# Simple win condition: Last man standing
 	if wrestlers.size() == 1:
 		game_over.emit(wrestlers[0].name)
+
+func reset_wrestlers() -> void:
+	_clear_highlights()
+	current_card = null
+	is_dodging = false
+	dodging_wrestler = null
+	
+	for i in range(wrestlers.size()):
+		var w = wrestlers[i]
+		w.reset_state()
+		
+		var start_pos = Vector2i(0, 0)
+		if i == 1:
+			start_pos = grid_size - Vector2i(1, 1)
+			
+		w.set_initial_position(start_pos, self)
 
 func set_wrestler_collisions(enabled: bool) -> void:
 	for w in wrestlers:

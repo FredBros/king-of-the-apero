@@ -7,6 +7,8 @@ signal card_discarded(card: CardData)
 signal turn_ended
 signal reaction_phase_started(attack_card: CardData, valid_cards: Array[CardData])
 signal grid_action_received(data: Dictionary)
+signal game_restarted
+signal rematch_update(current_votes: int, total_required: int)
 
 @export var hand_size_limit: int = 5
 @export var cards_drawn_per_turn: int = 2
@@ -32,6 +34,8 @@ var is_network_syncing: bool = false
 var pending_attack_context: Dictionary = {}
 var pending_defense_context: Dictionary = {}
 var is_waiting_for_reaction: bool = false
+var has_acted_this_turn: bool = false
+var rematch_votes: Dictionary = {}
 
 func _ready() -> void:
 	# Listen for network messages
@@ -75,6 +79,7 @@ func _start_turn() -> void:
 	var current_player = players[active_player_index]
 	print("Turn Start: ", current_player.name)
 	
+	has_acted_this_turn = false
 	# Synchroniser le début du tour chez tout le monde (Local + Réseau)
 	_handle_sync_turn(current_player.name)
 	NetworkManager.send_message({
@@ -279,6 +284,10 @@ func _on_network_message(data: Dictionary) -> void:
 			_handle_attack_result(data)
 		"SYNC_PUSH":
 			_handle_sync_push(data)
+		"SYNC_FLOATING_TEXT":
+			_handle_sync_floating_text(data.player_name, data.text, data.color)
+		"REQUEST_RESTART_VOTE":
+			_handle_rematch_vote(data.player_name)
 
 func _handle_sync_turn(player_name: String) -> void:
 	print("Sync Turn: ", player_name)
@@ -316,6 +325,12 @@ func _handle_request_end_turn(sender_id: String) -> void:
 		_server_process_end_turn()
 
 func _server_process_end_turn() -> void:
+	if not has_acted_this_turn:
+		var current_player = players[active_player_index]
+		print("🍅 AFK Penalty! ", current_player.name, " loses 1 HP.")
+		send_floating_text(current_player.name, "AFK PENALTY!", Color(1.0, 0.5, 0.0))
+		current_player.take_damage(1)
+
 	print("Turn End Processed")
 	turn_ended.emit()
 	active_player_index = (active_player_index + 1) % players.size()
@@ -335,6 +350,7 @@ func _handle_request_discard_card(sender_id: String, card_dict: Dictionary) -> v
 
 func server_process_use_card(card: CardData) -> void:
 	var current_player_name = players[active_player_index].name
+	has_acted_this_turn = true
 	
 	# On ne consomme la carte que si on arrive vraiment à l'enlever de la main
 	if not _remove_card_from_hand(current_player_name, card):
@@ -356,6 +372,7 @@ func server_process_use_card(card: CardData) -> void:
 
 func server_process_discard_card(card: CardData) -> void:
 	var current_player_name = players[active_player_index].name
+	has_acted_this_turn = true
 	
 	# Même logique robuste que pour use_card
 	if not _remove_card_from_hand(current_player_name, card):
@@ -406,6 +423,82 @@ func _handle_sync_health(player_name: String, value: int) -> void:
 			break
 			
 	is_network_syncing = false
+
+func send_floating_text(wrestler_name: String, text: String, color: Color) -> void:
+	# Show locally
+	for p in players:
+		if p.name == wrestler_name:
+			p.show_floating_text(text, color)
+			break
+	
+	# Send to network
+	NetworkManager.send_message({
+		"type": "SYNC_FLOATING_TEXT",
+		"player_name": wrestler_name,
+		"text": text,
+		"color": color.to_html()
+	})
+
+func _handle_sync_floating_text(player_name: String, text: String, color_html: String) -> void:
+	var color = Color.from_string(color_html, Color.WHITE)
+	for p in players:
+		if p.name == player_name:
+			p.show_floating_text(text, color)
+			break
+
+func request_restart() -> void:
+	var my_name = _get_my_player_name()
+	# Avoid double voting
+	if rematch_votes.has(my_name): return
+	
+	# Register local vote
+	_handle_rematch_vote(my_name)
+	
+	NetworkManager.send_message({
+		"type": "REQUEST_RESTART_VOTE",
+		"player_name": my_name
+	})
+
+func _handle_rematch_vote(player_name: String) -> void:
+	if not rematch_votes.has(player_name):
+		rematch_votes[player_name] = true
+		print("🔄 Rematch vote from: ", player_name)
+		
+		# Check condition: Votes >= Connected Players (Self + Network Peers)
+		var required_votes = NetworkManager.match_presences.size() + 1
+		
+		if rematch_votes.size() >= required_votes:
+			_handle_restart_game()
+		else:
+			rematch_update.emit(rematch_votes.size(), required_votes)
+
+func _handle_restart_game() -> void:
+	print("🔄 Restarting Game...")
+	rematch_votes.clear()
+	is_game_active = true
+	active_player_index = 0 # Player 1 starts
+	has_acted_this_turn = false
+	pending_attack_context.clear()
+	pending_defense_context.clear()
+	is_waiting_for_reaction = false
+	
+	# Reset Deck
+	deck_manager.initialize_deck()
+	
+	# Reset Hands
+	player_hands.clear()
+	
+	# Reset Wrestlers
+	if grid_manager:
+		grid_manager.reset_wrestlers()
+	
+	game_restarted.emit()
+	
+	# Draw initial hands
+	for player in players:
+		_draw_up_to_limit(player.name)
+		
+	_start_turn()
 
 # --- Attack / Reaction Sequence ---
 

@@ -24,6 +24,7 @@ wrestler_scene = ExtResource("2_q751w")
 player_1_data = ExtResource("6_gcrh0")
 player_2_data = ExtResource("7_vyqrf")
 grid_size = Vector2i(5, 5)
+cell_size = 1.2
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 8, 6)

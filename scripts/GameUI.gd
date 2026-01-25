@@ -58,6 +58,10 @@ func _ready() -> void:
 			game_manager.card_drawn.connect(add_card_to_hand)
 		if not game_manager.card_discarded.is_connected(remove_card_from_hand):
 			game_manager.card_discarded.connect(remove_card_from_hand)
+		if not game_manager.game_restarted.is_connected(_on_game_restarted):
+			game_manager.game_restarted.connect(_on_game_restarted)
+		if not game_manager.rematch_update.is_connected(_on_rematch_update):
+			game_manager.rematch_update.connect(_on_rematch_update)
 	else:
 		printerr("GameUI: GameManager not found!")
 	
@@ -164,9 +168,13 @@ func _on_end_turn_button_pressed() -> void:
 	end_turn_pressed.emit()
 
 func _on_restart_button_pressed() -> void:
-	# Request a rematch (reload scene keeping connection)
-	# NetworkManager.request_rematch() # TODO: Re-implement rematch logic with JSON messages
-	pass
+	if game_manager_ref:
+		game_manager_ref.request_restart()
+		# Visual feedback
+		var btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/RestartButton
+		if btn:
+			btn.disabled = true
+			btn.text = "WAITING FOR OPPONENT..."
 
 func _on_quit_button_pressed() -> void:
 	# Return to lobby properly closing connection
@@ -175,6 +183,21 @@ func _on_quit_button_pressed() -> void:
 func update_turn_info(player_name: String) -> void:
 	turn_label.text = player_name + "'s Turn"
 	_update_discard_zone_visibility()
+
+func _on_game_restarted() -> void:
+	game_over_container.hide()
+	clear_hand()
+	# Reset button state if needed
+	var restart_btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/RestartButton
+	if restart_btn:
+		restart_btn.disabled = false
+		restart_btn.text = "RESTART MATCH"
+
+func _on_rematch_update(current: int, total: int) -> void:
+	# Si l'adversaire a voté avant nous, on peut afficher un message
+	var btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/RestartButton
+	if btn and not btn.disabled:
+		btn.text = "OPPONENT WANTS REMATCH!"
 
 func _on_card_dropped_on_zone(card_data: CardData, pos: Vector2) -> void:
 	card_dropped_on_world.emit(card_data, pos)

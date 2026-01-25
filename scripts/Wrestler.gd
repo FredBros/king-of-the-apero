@@ -240,6 +240,11 @@ func _recover_from_ejection(original_pos: Vector2i) -> void:
 	_play_anim("Idle")
 	is_busy = false
 
+func reset_state() -> void:
+	is_ejected = false
+	is_busy = false
+	_play_anim("Idle")
+
 # Rotate the wrestler to face a target position (keeping Y axis upright)
 func look_at_target(target_pos: Vector3) -> void:
 	# Local visual update immediately
