@@ -2,7 +2,6 @@ class_name CardUI
 extends PanelContainer
 
 signal clicked(card_ui: CardUI)
-signal discard_requested(card_ui: CardUI)
 signal drag_started(card_data: CardData)
 signal drag_ended
 signal swipe_pending(card_ui: CardUI, offset: Vector2)
@@ -10,7 +9,6 @@ signal swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vector2)
 signal selection_canceled(card_ui: CardUI)
 
 @onready var title_label: Label = $MarginContainer/VBoxContainer/Header/TitleLabel
-@onready var discard_button: Button = $MarginContainer/VBoxContainer/Header/DiscardButton
 @onready var type_label: Label = $MarginContainer/VBoxContainer/TypeLabel
 @onready var value_label: Label = $MarginContainer/VBoxContainer/ValueLabel
 
@@ -24,6 +22,8 @@ var _start_pos_local: Vector2
 var _tween: Tween
 var _is_selected: bool = false
 var _has_moved_significantly: bool = false
+var is_destroying: bool = false
+var _shake_tween: Tween
 
 func setup(data: CardData) -> void:
 	card_data = data
@@ -31,9 +31,6 @@ func setup(data: CardData) -> void:
 		_update_visuals()
 
 func _ready() -> void:
-	if discard_button:
-		discard_button.pressed.connect(func(): discard_requested.emit(self))
-	
 	# Set pivot to center for nice scaling
 	resized.connect(func(): pivot_offset = size / 2)
 	pivot_offset = size / 2
@@ -89,17 +86,18 @@ func _gui_input(event: InputEvent) -> void:
 			_is_swiping = false
 			swipe_pending.emit(self, Vector2.ZERO) # Reset visuel
 			
-			# Reset Position (Snap back)
-			var pos_tween = create_tween()
-			pos_tween.tween_property(self, "position", _start_pos_local, 0.2).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
-			
-			# Reset Z-Index and Scale based on selection state
-			if _is_selected:
-				z_index = 1
-				_animate_scale(Vector2(1.2, 1.2))
-			else:
-				z_index = 0
-				_animate_scale(Vector2(1.0, 1.0))
+			if not is_destroying:
+				# Reset Position (Snap back)
+				var pos_tween = create_tween()
+				pos_tween.tween_property(self, "position", _start_pos_local, 0.2).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+				
+				# Reset Z-Index and Scale based on selection state
+				if _is_selected:
+					z_index = 1
+					_animate_scale(Vector2(1.2, 1.2))
+				else:
+					z_index = 0
+					_animate_scale(Vector2(1.0, 1.0))
 			
 	elif event is InputEventMouseMotion and _is_touching:
 		var offset = event.global_position - _touch_start_pos
@@ -124,12 +122,10 @@ func set_selected(selected: bool) -> void:
 		# Highlight by making it brighter
 		self.modulate = base_color.lightened(0.4)
 		_animate_scale(Vector2(1.2, 1.2))
-		discard_button.show()
 		z_index = 1
 	else:
 		self.modulate = base_color
 		_animate_scale(Vector2(1.0, 1.0))
-		discard_button.hide()
 		z_index = 0
 
 func _animate_scale(target: Vector2) -> void:
@@ -158,3 +154,31 @@ func _get_suit_icon(suit: String) -> String:
 		"Diamonds": return "♦"
 		"Joker": return "★"
 	return ""
+
+func set_discard_hover_state(state: bool) -> void:
+	if is_destroying: return
+	
+	if state:
+		if not _shake_tween or not _shake_tween.is_valid():
+			_start_shake()
+	else:
+		if _shake_tween:
+			_shake_tween.kill()
+			_shake_tween = null
+			rotation_degrees = 0
+
+func _start_shake() -> void:
+	if _shake_tween: _shake_tween.kill()
+	_shake_tween = create_tween().set_loops()
+	_shake_tween.tween_property(self, "rotation_degrees", 5.0, 0.05)
+	_shake_tween.tween_property(self, "rotation_degrees", -5.0, 0.05)
+
+func animate_destruction() -> void:
+	is_destroying = true
+	# Ensure shake continues or starts
+	if not _shake_tween or not _shake_tween.is_valid():
+		_start_shake()
+	
+	var tween = create_tween()
+	tween.tween_property(self, "scale", Vector2.ZERO, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	tween.finished.connect(queue_free)

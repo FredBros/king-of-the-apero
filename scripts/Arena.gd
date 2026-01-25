@@ -39,7 +39,6 @@ func _ready() -> void:
 		
 		# Connect UI End Turn button
 		game_ui.end_turn_pressed.connect(game_manager.end_turn)
-		game_ui.card_discard_requested.connect(game_manager.discard_hand_card)
 		
 		# Connect Game Manager signals to UI
 		game_manager.turn_started.connect(func(player_name):
@@ -90,6 +89,11 @@ func _ready() -> void:
 				if not game_manager.is_network_syncing:
 					game_manager.send_health_update(w.name, current)
 			)
+
+	# Adjust camera for Portrait Mode (Zoom In)
+	var camera = get_viewport().get_camera_3d()
+	if camera and camera.projection == Camera3D.PROJECTION_PERSPECTIVE:
+		camera.fov = 50.0
 
 func _update_ui_player_positions() -> void:
 	var active = game_manager.get_active_wrestler()

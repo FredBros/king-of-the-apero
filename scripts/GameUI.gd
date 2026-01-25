@@ -2,7 +2,6 @@ class_name GameUI
 extends CanvasLayer
 
 signal card_selected(card_data: CardData)
-signal card_discard_requested(card_data: CardData)
 signal card_dropped_on_world(card_data: CardData, screen_position: Vector2)
 signal end_turn_pressed
 signal reaction_selected(card_data: CardData)
@@ -31,6 +30,9 @@ var is_reaction_phase: bool = false
 
 # Drop Zone for Push mechanic
 var drop_zone: DropZone
+
+# Discard Zone Visual (Red strip at bottom)
+var discard_zone_visual: ColorRect
 
 var game_manager_ref
 
@@ -65,6 +67,7 @@ func _ready() -> void:
 	move_child(drop_zone, 0) # Ensure it's behind everything else
 	drop_zone.card_dropped.connect(_on_card_dropped_on_zone)
 	
+	_setup_discard_zone_visual()
 	_setup_reaction_ui()
 
 func _setup_reaction_ui() -> void:
@@ -103,6 +106,58 @@ func _input(event: InputEvent) -> void:
 		# Ou simplement : Si on clique sur le GridManager (3D), ça trigger le pass.
 		pass
 
+func _setup_discard_zone_visual() -> void:
+	discard_zone_visual = ColorRect.new()
+	discard_zone_visual.color = Color.RED
+	discard_zone_visual.custom_minimum_size.y = 60
+	discard_zone_visual.size.y = 60
+	
+	# Anchor bottom full width
+	discard_zone_visual.anchor_top = 1.0
+	discard_zone_visual.anchor_bottom = 1.0
+	discard_zone_visual.anchor_left = 0.0
+	discard_zone_visual.anchor_right = 1.0
+	discard_zone_visual.offset_top = -60
+	discard_zone_visual.offset_bottom = 0
+	
+	add_child(discard_zone_visual)
+	
+	var label = Label.new()
+	label.text = "🗑️"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	discard_zone_visual.add_child(label)
+	
+	move_child(discard_zone_visual, 0) # Behind cards
+	discard_zone_visual.hide() # Hidden by default
+	
+	# Adjust layout positions deferred to ensure button size is calculated
+	call_deferred("_adjust_layout_positions")
+
+func _adjust_layout_positions() -> void:
+	var end_turn_btn = $EndTurnButton
+	var btn_height = 0.0
+	if end_turn_btn:
+		btn_height = end_turn_btn.size.y
+		# Fallback si la taille n'est pas encore calculée
+		if btn_height <= 1: btn_height = 60.0
+	
+	# Base shift from previous logic (-150)
+	var base_shift = -150.0
+	
+	if hand_container:
+		# Monte de 1/2 hauteur de bouton en plus
+		var shift = base_shift - (btn_height / 2.0)
+		hand_container.offset_bottom += shift
+		hand_container.offset_top += shift
+
+	if end_turn_btn:
+		# Descend de la hauteur du bouton (donc remonte moins)
+		var shift = base_shift + btn_height
+		end_turn_btn.offset_bottom += shift
+		end_turn_btn.offset_top += shift
+
 # --- Reaction Logic ---
 
 func _on_end_turn_button_pressed() -> void:
@@ -119,6 +174,7 @@ func _on_quit_button_pressed() -> void:
 
 func update_turn_info(player_name: String) -> void:
 	turn_label.text = player_name + "'s Turn"
+	_update_discard_zone_visibility()
 
 func _on_card_dropped_on_zone(card_data: CardData, pos: Vector2) -> void:
 	card_dropped_on_world.emit(card_data, pos)
@@ -129,7 +185,6 @@ func add_card_to_hand(card_data: CardData) -> void:
 	hand_container.add_child(card)
 	card.setup(card_data)
 	card.clicked.connect(_on_card_clicked)
-	card.discard_requested.connect(_on_card_discard_requested)
 	card.drag_started.connect(_on_card_drag_started)
 	card.drag_ended.connect(_on_card_drag_ended)
 	card.swipe_pending.connect(_on_card_swipe_pending)
@@ -141,10 +196,13 @@ func remove_card_from_hand(card_data: CardData) -> void:
 		# Comparaison par valeur (car les instances diffèrent via RPC)
 		if child is CardUI and child.card_data.title == card_data.title and \
 		   child.card_data.value == card_data.value and child.card_data.suit == card_data.suit:
-			child.queue_free()
-			if selected_card_ui == child:
-				selected_card_ui = null
-			break
+			# Si la carte est déjà en train de se détruire (animation locale), on la laisse finir
+			if not child.is_destroying:
+				child.queue_free()
+				
+				if selected_card_ui == child:
+					selected_card_ui = null
+				break
 
 func clear_hand() -> void:
 	for child in hand_container.get_children():
@@ -234,9 +292,6 @@ func _end_reaction_phase() -> void:
 			# On remet la couleur normale (car set_reaction_candidate(false) grise tout par défaut dans notre implémentation)
 			child.modulate = child.base_color
 
-func _on_card_discard_requested(card_ui: CardUI) -> void:
-	card_discard_requested.emit(card_ui.card_data)
-
 func show_game_over(winner_name: String) -> void:
 	winner_label.text = winner_name + " WINS!"
 	game_over_container.show()
@@ -277,9 +332,31 @@ func _on_card_drag_ended() -> void:
 		game_manager_ref.set_wrestler_collisions(false)
 
 func _on_card_swipe_pending(card_ui: CardUI, offset: Vector2) -> void:
+	# Check Discard Zone Hover
+	if discard_zone_visual and discard_zone_visual.visible:
+		var card_center = card_ui.get_global_rect().get_center()
+		if discard_zone_visual.get_global_rect().has_point(card_center):
+			card_ui.set_discard_hover_state(true)
+		else:
+			card_ui.set_discard_hover_state(false)
+
 	if game_manager_ref:
 		game_manager_ref.preview_swipe(card_ui.card_data, offset)
 
 func _on_card_swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vector2) -> void:
+	# Check Discard Zone
+	if discard_zone_visual and discard_zone_visual.visible and discard_zone_visual.get_global_rect().has_point(global_pos):
+		card_ui.animate_destruction()
+		if game_manager_ref:
+			game_manager_ref.discard_hand_card(card_ui.card_data)
+		return
+	
+	# Stop shake if dropped elsewhere
+	card_ui.set_discard_hover_state(false)
+
 	if game_manager_ref:
 		game_manager_ref.commit_swipe(card_ui.card_data, offset, global_pos)
+
+func _update_discard_zone_visibility() -> void:
+	if discard_zone_visual and game_manager_ref:
+		discard_zone_visual.visible = game_manager_ref.is_local_player_active()
