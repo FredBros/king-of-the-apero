@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://1pkrxctis4qf"
-path="res://.godot/imported/BigGuy_endesga-32-1x.png-63d15c8c9dd25758aab2f0736213150e.ctex"
+path="res://.godot/imported/BigGuy_endesga-32-1x.png-a0147ec11d0b237590ae99b9d54c483b.ctex"
 metadata={
 "vram_texture": false
 }
@@ -13,8 +13,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://assets/Actors/BigGuy_endesga-32-1x.png"
-dest_files=["res://.godot/imported/BigGuy_endesga-32-1x.png-63d15c8c9dd25758aab2f0736213150e.ctex"]
+source_file="res://assets/Actors/Big_guy/BigGuy_endesga-32-1x.png"
+dest_files=["res://.godot/imported/BigGuy_endesga-32-1x.png-a0147ec11d0b237590ae99b9d54c483b.ctex"]
 
 [params]
 

@@ -17,12 +17,41 @@ var grid_position: Vector2i = Vector2i.ZERO
 var grid_manager: GridManager
 var is_ejected: bool = false
 
+var is_busy: bool = false
+var combat_target: Wrestler
+var trigger_hurt_on_hit: bool = false
+
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
 
 func _ready() -> void:
 	set_collision_enabled(false)
 	if wrestler_data:
 		initialize(wrestler_data)
+
+func _process(delta: float) -> void:
+	if not is_busy and not is_ejected and current_health > 0:
+		_face_opponent(delta)
+
+func _face_opponent(delta: float) -> void:
+	if not grid_manager: return
+	var opponent = null
+	for w in grid_manager.wrestlers:
+		if w != self:
+			opponent = w
+			break
+	
+	if opponent:
+		var target_pos = opponent.global_position
+		target_pos.y = global_position.y
+		
+		# Smooth rotation
+		var current_quat = global_transform.basis.get_rotation_quaternion()
+		var target_transform = global_transform.looking_at(target_pos, Vector3.UP)
+		target_transform = target_transform.rotated_local(Vector3.UP, PI) # Model fix
+		var target_quat = target_transform.basis.get_rotation_quaternion()
+		
+		var new_quat = current_quat.slerp(target_quat, 5.0 * delta)
+		global_transform.basis = Basis(new_quat)
 
 # Initialize the wrestler from data (Model, Stats)
 func initialize(data: WrestlerData) -> void:
@@ -38,6 +67,10 @@ func initialize(data: WrestlerData) -> void:
 		# 3. Animation Connection
 		# We look for the AnimationPlayer inside the new model
 		animation_player = model_instance.find_child("AnimationPlayer", true, false)
+		
+		# 4. Connect Animation Events (Relay from Model)
+		if model_instance.has_signal("hit_triggered"):
+			model_instance.hit_triggered.connect(on_hit_frame)
 
 # Sets the initial position of the wrestler
 func set_initial_position(pos: Vector2i, manager: GridManager) -> void:
@@ -60,6 +93,7 @@ func move_to_grid_position(new_pos: Vector2i) -> void:
 
 func _perform_move(new_pos: Vector2i) -> void:
 	# Logique de mouvement (exécutée chez tout le monde)
+	is_busy = true
 	if not grid_manager:
 		printerr("GridManager not set for this wrestler!")
 		return
@@ -76,43 +110,71 @@ func _perform_move(new_pos: Vector2i) -> void:
 	_play_anim("Walk")
 	var tween = create_tween()
 	tween.tween_property(self, "position", target_world_pos, 0.8).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_callback(func(): _play_anim("Idle"))
+	tween.tween_callback(func():
+		_play_anim("Idle")
+		is_busy = false
+	)
 
 # Perform an attack on a target wrestler
-func attack(target: Wrestler, is_remote: bool = false) -> void:
-	_play_anim("Punch")
+func attack(target: Wrestler, will_hit: bool = false) -> void:
+	is_busy = true
+	combat_target = target
+	trigger_hurt_on_hit = will_hit
 	
-	# Wait for the "impact" moment of the animation (approx 0.2s - 0.4s usually)
-	# Ideally, use AnimationPlayer method track, but a timer is fine for POC
-	await get_tree().create_timer(0.3).timeout
+	# Prefer the custom animation with events if it exists
+	if animation_player and animation_player.has_animation("Punch_Hit"):
+		_play_anim("Punch_Hit")
+	else:
+		_play_anim("Punch")
 	
-	# Damage logic is now handled by GameManager via initiate_attack_sequence -> ATTACK_RESULT
-	# Wait for animation to finish before going back to Idle (if not looped)
-	await get_tree().create_timer(0.5).timeout
+	# Fallback timer (slightly longer to allow anim event to fire)
+	await get_tree().create_timer(0.8).timeout
+	
 	_play_anim("Idle")
+	is_busy = false
+	combat_target = null
+	trigger_hurt_on_hit = false
+
+# Called by AnimationPlayer via Method Track during "Punch"
+func on_hit_frame() -> void:
+	if trigger_hurt_on_hit and combat_target:
+		combat_target.play_hurt_animation()
+		trigger_hurt_on_hit = false
+
+func play_hurt_animation() -> void:
+	perform_hurt_sequence()
 
 # Apply damage to the wrestler
-func take_damage(amount: int) -> void:
+func take_damage(amount: int, skip_anim: bool = false) -> void:
 	current_health -= amount
 	health_changed.emit(current_health, max_health)
 	show_floating_text("-" + str(amount) + " HP", Color.RED)
 	print(name, " took ", amount, " damage. HP: ", current_health)
 	
 	if current_health <= 0:
+		is_busy = true
 		print("Wrestler died. Attempting to play 'KO' animation.")
 		_play_anim("KO")
 		died.emit(self)
 	else:
-		_play_anim("Hurt")
-		# Wait for Hurt animation to finish roughly
-		await get_tree().create_timer(0.5).timeout
-		if not is_ejected:
-			_play_anim("Idle")
+		if not skip_anim:
+			perform_hurt_sequence()
+
+func perform_hurt_sequence() -> void:
+	is_busy = true
+	_play_anim("Hurt")
+	# Wait for Hurt animation to finish roughly
+	await get_tree().create_timer(0.5).timeout
+	if not is_ejected and current_health > 0:
+		_play_anim("Idle")
+		is_busy = false
 
 func block() -> void:
+	is_busy = true
 	_play_anim("Block")
 	await get_tree().create_timer(0.5).timeout
 	_play_anim("Idle")
+	is_busy = false
 
 # Update health from network authority (handles UI sync and animations)
 func set_network_health(value: int) -> void:
@@ -131,6 +193,7 @@ func set_network_health(value: int) -> void:
 
 # Force move the wrestler (can push out of bounds)
 func push_to(new_pos: Vector2i) -> void:
+	is_busy = true
 	var old_pos = grid_position
 	grid_position = new_pos
 	var target_world_pos = grid_manager.grid_to_world(grid_position)
@@ -152,6 +215,7 @@ func push_to(new_pos: Vector2i) -> void:
 	else:
 		var tween = create_tween()
 		tween.tween_property(self, "position", target_world_pos, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween.tween_callback(func(): is_busy = false)
 
 func _recover_from_ejection(original_pos: Vector2i) -> void:
 	is_ejected = false
@@ -174,6 +238,7 @@ func _recover_from_ejection(original_pos: Vector2i) -> void:
 	grid_position = return_pos
 	position = grid_manager.grid_to_world(grid_position)
 	_play_anim("Idle")
+	is_busy = false
 
 # Rotate the wrestler to face a target position (keeping Y axis upright)
 func look_at_target(target_pos: Vector3) -> void:

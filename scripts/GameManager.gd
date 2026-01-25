@@ -533,8 +533,11 @@ func _handle_attack_result(data: Dictionary) -> void:
 	var target = _get_wrestler_by_peer_id(data.get("target_id"))
 	
 	if attacker and target:
+		# Determine if hit
+		var is_hit = not data.is_blocked and not data.get("is_dodged")
+		
 		# L'attaquant frappe toujours (dans le vide si esquivé/bloqué)
-		attacker.attack(target)
+		attacker.attack(target, is_hit)
 		
 		# Animation du défenseur
 		if data.is_blocked:
@@ -554,7 +557,8 @@ func _handle_attack_result(data: Dictionary) -> void:
 							if is_push:
 								_apply_push(attacker, w)
 							else:
-								w.take_damage(1)
+								# Pass skip_anim = true because attacker.attack will trigger it via anim event
+								w.take_damage(1, true)
 							break
 				pending_attack_context.clear()
 			else:

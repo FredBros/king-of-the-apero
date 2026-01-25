@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://chmcp8hgx0esk"
-path.s3tc="res://.godot/imported/MrEggplant_endesga-32-1x.png-70a680107fe21a3c34f767933dc7d738.s3tc.ctex"
+path.s3tc="res://.godot/imported/MrEggplant_endesga-32-1x.png-dda1965260f8527affcb8a0d80fd6eb8.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -14,8 +14,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://assets/Actors/MrEggplant_endesga-32-1x.png"
-dest_files=["res://.godot/imported/MrEggplant_endesga-32-1x.png-70a680107fe21a3c34f767933dc7d738.s3tc.ctex"]
+source_file="res://assets/Actors/Mr_eggplant/MrEggplant_endesga-32-1x.png"
+dest_files=["res://.godot/imported/MrEggplant_endesga-32-1x.png-dda1965260f8527affcb8a0d80fd6eb8.s3tc.ctex"]
 
 [params]
 
