@@ -12,6 +12,7 @@ signal rematch_update(current_votes: int, total_required: int)
 
 @export var hand_size_limit: int = 5
 @export var cards_drawn_per_turn: int = 2
+@export var character_pool: Array[WrestlerData]
 
 var deck_manager: DeckManager
 
@@ -41,11 +42,8 @@ func _ready() -> void:
 	# Listen for network messages
 	NetworkManager.game_message_received.connect(_on_network_message)
 
-func initialize(wrestlers_list: Array[Wrestler], deck_mgr: DeckManager) -> void:
-	players = wrestlers_list
+func initialize_network(deck_mgr: DeckManager) -> void:
 	deck_manager = deck_mgr
-	active_player_index = 0 # Player 1 starts
-	is_game_active = true
 	
 	# Configuration des IDs réseau
 	player_peer_ids.clear()
@@ -58,12 +56,32 @@ func initialize(wrestlers_list: Array[Wrestler], deck_mgr: DeckManager) -> void:
 	all_ids.sort()
 	
 	# Assignation : Le plus petit ID est le Joueur 1 (Pseudo-Host)
-	if all_ids.size() > 0: player_peer_ids[players[0].name] = all_ids[0]
-	if all_ids.size() > 1: player_peer_ids[players[1].name] = all_ids[1]
-	else: player_peer_ids[players[1].name] = all_ids[0] # Fallback Solo/Debug
+	if all_ids.size() > 0: player_peer_ids["Player 1"] = all_ids[0]
+	if all_ids.size() > 1: player_peer_ids["Player 2"] = all_ids[1]
+	else: player_peer_ids["Player 2"] = all_ids[0] # Fallback Solo/Debug
 
 	# Est-ce que je suis le "Pseudo-Host" (Joueur 1) ?
-	var am_i_host = (NetworkManager.self_user_id == player_peer_ids[players[0].name])
+	var am_i_host = (NetworkManager.self_user_id == player_peer_ids["Player 1"])
+
+	# Le Host choisit les personnages et le notifie
+	if am_i_host:
+		_server_select_and_sync_characters()
+
+func initialize_game_state() -> void:
+	if not grid_manager or grid_manager.wrestlers.is_empty():
+		printerr("Cannot initialize game state: wrestlers not spawned yet.")
+		return
+		
+	players = grid_manager.wrestlers
+	active_player_index = 0 # Player 1 starts
+	is_game_active = true
+	
+	# Est-ce que je suis le "Pseudo-Host" (Joueur 1) ?
+	var am_i_host = false
+	if not players.is_empty():
+		var p1_name = players[0].name
+		if player_peer_ids.has(p1_name):
+			am_i_host = (NetworkManager.self_user_id == player_peer_ids[p1_name])
 
 	if am_i_host:
 		# Le "Host" gère le deck et la distribution
@@ -74,6 +92,29 @@ func initialize(wrestlers_list: Array[Wrestler], deck_mgr: DeckManager) -> void:
 			_draw_up_to_limit(player.name)
 			
 		_start_turn()
+
+func _server_select_and_sync_characters():
+	if character_pool.size() < 2:
+		printerr("Character pool needs at least 2 characters!")
+		return
+
+	character_pool.shuffle()
+	var p1_data = character_pool[0]
+	var p2_data = character_pool[1]
+
+	# We need to send resource paths, not the objects themselves
+	var p1_path = p1_data.resource_path
+	var p2_path = p2_data.resource_path
+
+	# Sync with others
+	NetworkManager.send_message({
+		"type": "SYNC_CHARACTERS",
+		"p1_path": p1_path,
+		"p2_path": p2_path
+	})
+
+	# Apply locally for the host
+	_handle_character_selection(p1_path, p2_path)
 
 func _start_turn() -> void:
 	var current_player = players[active_player_index]
@@ -288,6 +329,8 @@ func _on_network_message(data: Dictionary) -> void:
 			_handle_sync_floating_text(data.player_name, data.text, data.color)
 		"REQUEST_RESTART_VOTE":
 			_handle_rematch_vote(data.player_name)
+		"SYNC_CHARACTERS":
+			_handle_character_selection(data.p1_path, data.p2_path)
 
 func _handle_sync_turn(player_name: String) -> void:
 	print("Sync Turn: ", player_name)
@@ -445,6 +488,18 @@ func _handle_sync_floating_text(player_name: String, text: String, color_html: S
 		if p.name == player_name:
 			p.show_floating_text(text, color)
 			break
+
+func _handle_character_selection(p1_path: String, p2_path: String):
+	if grid_manager:
+		var p1_res = load(p1_path)
+		var p2_res = load(p2_path)
+		if p1_res and p2_res:
+			print("Characters selected: P1 is ", p1_res.display_name, ", P2 is ", p2_res.display_name)
+			# Now we tell the grid manager to spawn them, which will then trigger game state init
+			grid_manager.spawn_wrestlers(p1_res, p2_res)
+			initialize_game_state()
+		else:
+			printerr("Failed to load character resources from paths: ", p1_path, ", ", p2_path)
 
 func request_restart() -> void:
 	var my_name = _get_my_player_name()

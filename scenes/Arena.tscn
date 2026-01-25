@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://b8j4k5l6m7n8"]
+[gd_scene load_steps=10 format=3 uid="uid://b8j4k5l6m7n8"]
 
 [ext_resource type="Script" uid="uid://bm7u7p8xw8nbr" path="res://scripts/Arena.gd" id="1_arena"]
 [ext_resource type="Script" uid="uid://mpnorh1sywyd" path="res://scripts/GridManager.gd" id="1_grid"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dnc417x07353p" path="res://scenes/Wrestler.tscn" id="2_q751w"]
 [ext_resource type="Script" uid="uid://dvgxpjr62ex68" path="res://scripts/DeckManager.gd" id="3_deckmanager"]
 [ext_resource type="PackedScene" uid="uid://g1h2i3j4k5l6" path="res://scenes/GameUI.tscn" id="3_gameui"]
+[ext_resource type="Script" uid="uid://c4kx8fgyrsuv6" path="res://scripts/WrestlerData.gd" id="3_vyqrf"]
 [ext_resource type="Resource" uid="uid://c8qk2n6qtfwif" path="res://resources/BigGuy.tres" id="6_gcrh0"]
 [ext_resource type="Resource" uid="uid://drqnd1ajpdodo" path="res://resources/MrEggPlant.tres" id="7_vyqrf"]
 
@@ -14,6 +15,7 @@ script = ExtResource("1_arena")
 
 [node name="GameManager" type="Node" parent="."]
 script = ExtResource("2_gamemanager")
+character_pool = Array[ExtResource("3_vyqrf")]([ExtResource("6_gcrh0"), ExtResource("7_vyqrf")])
 
 [node name="DeckManager" type="Node" parent="."]
 script = ExtResource("3_deckmanager")
@@ -21,8 +23,6 @@ script = ExtResource("3_deckmanager")
 [node name="GridManager" type="Node3D" parent="."]
 script = ExtResource("1_grid")
 wrestler_scene = ExtResource("2_q751w")
-player_1_data = ExtResource("6_gcrh0")
-player_2_data = ExtResource("7_vyqrf")
 grid_size = Vector2i(5, 5)
 cell_size = 1.2
 

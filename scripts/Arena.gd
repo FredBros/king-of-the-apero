@@ -68,7 +68,9 @@ func _ready() -> void:
 					hand_owner = name
 					break
 			
-			# Refresh Hand UI
+			# Refresh Hand UI for the active player
+			# The initial hand is drawn by GameManager and signaled via card_drawn
+			# This is mostly for subsequent turns to ensure UI is in sync.
 			game_ui.clear_hand()
 			if hand_owner != "":
 				var hand = game_manager.get_player_hand(hand_owner)
@@ -76,24 +78,29 @@ func _ready() -> void:
 					game_ui.add_card_to_hand(card)
 		)
 		
-		# Initialize Game Manager directly (Handshake handled by NetworkManager/GameManager logic)
-		game_manager.initialize(grid_manager.wrestlers, deck_manager)
+		# Initialize Game Manager network part. Game state init will be triggered by character selection.
+		game_manager.initialize_network(deck_manager)
 		
 		# Connect Health Signals
-		for w in grid_manager.wrestlers:
-			# We bind the wrestler instance so UI knows WHO changed health
-			w.health_changed.connect(game_ui.on_wrestler_health_changed.bind(w))
-			
-			# Network Sync: Quand la santé change localement, on prévient les autres
-			w.health_changed.connect(func(current, _max):
-				if not game_manager.is_network_syncing:
-					game_manager.send_health_update(w.name, current)
-			)
+		# This is now done after spawning, to ensure wrestlers exist.
+		grid_manager.wrestlers_spawned.connect(_on_wrestlers_spawned)
 
 	# Adjust camera for Portrait Mode (Zoom In)
 	var camera = get_viewport().get_camera_3d()
 	if camera and camera.projection == Camera3D.PROJECTION_PERSPECTIVE:
 		camera.fov = 50.0
+
+func _on_wrestlers_spawned(wrestlers: Array[Wrestler]) -> void:
+	# Connect Health Signals now that wrestlers exist
+	for w in wrestlers:
+		# We bind the wrestler instance so UI knows WHO changed health
+		w.health_changed.connect(game_ui.on_wrestler_health_changed.bind(w))
+		
+		# Network Sync: When health changes locally, notify others
+		w.health_changed.connect(func(current, _max):
+			if not game_manager.is_network_syncing:
+				game_manager.send_health_update(w.name, current)
+		)
 
 func _update_ui_player_positions() -> void:
 	var active = game_manager.get_active_wrestler()

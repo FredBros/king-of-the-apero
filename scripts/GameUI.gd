@@ -345,6 +345,11 @@ func on_wrestler_health_changed(current: int, max_hp: int, wrestler: Wrestler) -
 		bottom_player_info.update_health(current, max_hp)
 	elif wrestler == opponent_wrestler_ref and top_player_info:
 		top_player_info.update_health(current, max_hp)
+	# Fallback: Name match (Robustness against reference mismatch)
+	elif active_wrestler_ref and wrestler.name == active_wrestler_ref.name and bottom_player_info:
+		bottom_player_info.update_health(current, max_hp)
+	elif opponent_wrestler_ref and wrestler.name == opponent_wrestler_ref.name and top_player_info:
+		top_player_info.update_health(current, max_hp)
 
 func _on_card_drag_started(card_data: CardData) -> void:
 	if game_manager_ref:

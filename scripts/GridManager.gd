@@ -2,6 +2,7 @@ class_name GridManager
 extends Node3D
 
 signal game_over(winner_name: String)
+signal wrestlers_spawned(wrestlers: Array[Wrestler])
 
 # Reference to the Game Manager (injected by Arena)
 var game_manager: # Untyped to avoid cyclic dependency
@@ -13,8 +14,6 @@ var game_manager: # Untyped to avoid cyclic dependency
 
 # Scene reference for the wrestler pawn. We'll link this in the editor.
 @export var wrestler_scene: PackedScene
-@export var player_1_data: WrestlerData
-@export var player_2_data: WrestlerData
 
 # Reference to the currently active wrestler for testing inputs
 var active_wrestler: Wrestler
@@ -51,7 +50,6 @@ func _ready() -> void:
 	# Debug: Print the world position of the first cell (0,0)
 	print("Grid initialized. Cell (0,0) is at World Pos: ", grid_to_world(Vector2i(0, 0)))
 	_create_arena_visuals()
-	_spawn_debug_wrestler()
 
 func _unhandled_input(event: InputEvent) -> void:
 	# Handle mouse click on the grid
@@ -563,46 +561,45 @@ func _create_arena_visuals() -> void:
 				
 			add_child(tile)
 
-# Spawns a test wrestler on the grid
-func _spawn_debug_wrestler() -> void:
+func spawn_wrestlers(p1_data: WrestlerData, p2_data: WrestlerData) -> void:
 	if not wrestler_scene:
 		printerr("Wrestler scene not set in GridManager inspector.")
 		return
 		
-	var wrestler_instance = wrestler_scene.instantiate()
-	# Ensure it's a Wrestler node
-	if not wrestler_instance is Wrestler:
-		printerr("The provided scene is not a Wrestler.")
-		return
-		
-	# Add it to the scene tree
-	active_wrestler = wrestler_instance
-	wrestlers.append(wrestler_instance)
-	wrestler_instance.name = "Player" # Nommer AVANT d'ajouter à l'arbre pour éviter les conflits RPC
-	add_child(wrestler_instance)
+	# Clear any previous wrestlers if any (for rematch)
+	for w in wrestlers:
+		w.queue_free()
+	wrestlers.clear()
 	
-	if player_1_data:
-		wrestler_instance.initialize(player_1_data)
+	# Spawn Player 1
+	var p1 = wrestler_scene.instantiate()
+	p1.name = "Player 1" # Nommer AVANT d'ajouter à l'arbre pour éviter les conflits RPC
+	add_child(p1)
+	p1.initialize(p1_data)
+	wrestlers.append(p1)
 	
 	# Place it on a starting cell (Top-Left Corner)
-	var start_pos = Vector2i(0, 0)
-	wrestler_instance.set_initial_position(start_pos, self)
+	var p1_start_pos = Vector2i(0, 0)
+	p1.set_initial_position(p1_start_pos, self)
 	
 	# Spawn a Dummy Opponent
-	var dummy = wrestler_scene.instantiate()
-	wrestlers.append(dummy)
-	dummy.name = "Dummy" # Nommer AVANT d'ajouter à l'arbre
-	add_child(dummy)
-	
-	if player_2_data:
-		dummy.initialize(player_2_data)
+	var p2 = wrestler_scene.instantiate()
+	p2.name = "Player 2" # Nommer AVANT d'ajouter à l'arbre
+	add_child(p2)
+	p2.initialize(p2_data)
+	wrestlers.append(p2)
 	
 	# Place it on opposite corner (Bottom-Right)
-	dummy.set_initial_position(grid_size - Vector2i(1, 1), self)
+	p2.set_initial_position(grid_size - Vector2i(1, 1), self)
 	
 	# Connect signals
-	wrestler_instance.died.connect(_on_wrestler_died)
-	dummy.died.connect(_on_wrestler_died)
+	p1.died.connect(_on_wrestler_died)
+	p2.died.connect(_on_wrestler_died)
+	
+	# Set active wrestler for the first turn (will be updated by GameManager)
+	active_wrestler = p1
+	
+	wrestlers_spawned.emit(wrestlers)
 
 func _on_wrestler_died(w: Wrestler) -> void:
 	print("GAME OVER! ", w.name, " has been eliminated!")

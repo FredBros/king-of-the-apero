@@ -182,14 +182,14 @@ func set_network_health(value: int) -> void:
 	current_health = value
 	health_changed.emit(current_health, max_health)
 	
-	if current_health < previous_health:
-		if current_health <= 0:
+	if current_health <= 0:
+		if previous_health > 0:
 			_play_anim("KO")
-			died.emit(self)
-		else:
-			_play_anim("Hurt")
-			await get_tree().create_timer(0.5).timeout
-			_play_anim("Idle")
+		died.emit(self)
+	elif current_health < previous_health:
+		_play_anim("Hurt")
+		await get_tree().create_timer(0.5).timeout
+		_play_anim("Idle")
 
 # Force move the wrestler (can push out of bounds)
 func push_to(new_pos: Vector2i) -> void:

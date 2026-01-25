@@ -2,18 +2,26 @@
 
 [ext_resource type="Script" uid="uid://cgy4xoay7ixya" path="res://scripts/PlayerInfo.gd" id="1_2eeu7"]
 
-[node name="PlayerInfo" type="HBoxContainer" node_paths=PackedStringArray("name_label", "health_label")]
+[node name="PlayerInfo" type="MarginContainer" node_paths=PackedStringArray("name_label", "health_label")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 60
 script = ExtResource("1_2eeu7")
-name_label = NodePath("NameLabel")
-health_label = NodePath("HealthLabel")
+name_label = NodePath("VBoxContainer/NameLabel")
+health_label = NodePath("VBoxContainer/HealthLabel")
 
-[node name="NameLabel" type="Label" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="HealthLabel" type="Label" parent="."]
+[node name="HealthLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+
+[node name="NameLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
