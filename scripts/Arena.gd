@@ -3,6 +3,7 @@ extends Node3D
 @onready var grid_manager: GridManager = $GridManager
 @onready var game_ui: GameUI = $GameUI
 @onready var game_manager: GameManager = $GameManager
+@onready var camera_pivot: Node3D = $CameraPivot
 @onready var deck_manager: DeckManager = $DeckManager
 
 func _ready() -> void:
@@ -43,7 +44,6 @@ func _ready() -> void:
 		# Connect Game Manager signals to UI
 		game_manager.turn_started.connect(func(player_name):
 			game_ui.update_turn_info(player_name)
-			_update_ui_player_positions()
 		)
 		
 		# Connect Card Discarding to GridManager (to clear highlights)
@@ -81,6 +81,8 @@ func _ready() -> void:
 		# Initialize Game Manager network part. Game state init will be triggered by character selection.
 		game_manager.initialize_network(deck_manager)
 		
+		_setup_player_camera_view()
+		
 		# Connect Health Signals
 		# This is now done after spawning, to ensure wrestlers exist.
 		grid_manager.wrestlers_spawned.connect(_on_wrestlers_spawned)
@@ -89,6 +91,17 @@ func _ready() -> void:
 	var camera = get_viewport().get_camera_3d()
 	if camera and camera.projection == Camera3D.PROJECTION_PERSPECTIVE:
 		camera.fov = 50.0
+
+func _setup_player_camera_view() -> void:
+	if not game_manager: return
+	
+	var my_name = game_manager._get_my_player_name()
+	
+	# Player 1 spawns at Top (Negative Z), so needs rotation to be at Bottom
+	if my_name == "Player 1":
+		if camera_pivot:
+			print("I am Player 1. Rotating camera.")
+			camera_pivot.rotate_y(PI)
 
 func _on_wrestlers_spawned(wrestlers: Array[Wrestler]) -> void:
 	# Connect Health Signals now that wrestlers exist
@@ -101,15 +114,22 @@ func _on_wrestlers_spawned(wrestlers: Array[Wrestler]) -> void:
 			if not game_manager.is_network_syncing:
 				game_manager.send_health_update(w.name, current)
 		)
-
-func _update_ui_player_positions() -> void:
-	var active = game_manager.get_active_wrestler()
-	var opponent = null
 	
-	# Find the opponent (Simple 1v1 logic)
+	# Set UI perspectives (local player at bottom)
+	_update_ui_player_perspectives()
+
+func _update_ui_player_perspectives() -> void:
+	if not game_manager or not game_ui: return
+	
+	var my_name = game_manager._get_my_player_name()
+	var local_wrestler = null
+	var remote_wrestler = null
+	
 	for w in grid_manager.wrestlers:
-		if w != active:
-			opponent = w
-			break
+		if w.name == my_name:
+			local_wrestler = w
+		else:
+			remote_wrestler = w
 			
-	game_ui.update_player_info(active, opponent)
+	if local_wrestler and remote_wrestler:
+		game_ui.set_player_perspectives(local_wrestler, remote_wrestler)

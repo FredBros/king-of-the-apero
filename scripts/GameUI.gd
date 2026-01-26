@@ -10,8 +10,8 @@ signal reaction_skipped
 @export var top_player_info: PlayerInfo
 @export var bottom_player_info: PlayerInfo
 
-var active_wrestler_ref: Wrestler
-var opponent_wrestler_ref: Wrestler
+var local_wrestler_ref: Wrestler
+var remote_wrestler_ref: Wrestler
 
 @export var card_ui_scene: PackedScene
 @onready var hand_container: HBoxContainer = $HandContainer
@@ -327,28 +327,28 @@ func disable_restart_button() -> void:
 
 
 # Met à jour les infos des joueurs (Hotseat : Actif en bas, Adversaire en haut)
-func update_player_info(active: Wrestler, opponent: Wrestler) -> void:
-	active_wrestler_ref = active
-	opponent_wrestler_ref = opponent
+func set_player_perspectives(local_player: Wrestler, remote_player: Wrestler) -> void:
+	local_wrestler_ref = local_player
+	remote_wrestler_ref = remote_player
 	
-	if bottom_player_info and active:
-		bottom_player_info.setup(active.name, active.max_health)
-		bottom_player_info.update_health(active.current_health, active.max_health)
+	if bottom_player_info and local_player:
+		bottom_player_info.setup(local_player.name, local_player.max_health)
+		bottom_player_info.update_health(local_player.current_health, local_player.max_health)
 	
-	if top_player_info and opponent:
-		top_player_info.setup(opponent.name, opponent.max_health)
-		top_player_info.update_health(opponent.current_health, opponent.max_health)
+	if top_player_info and remote_player:
+		top_player_info.setup(remote_player.name, remote_player.max_health)
+		top_player_info.update_health(remote_player.current_health, remote_player.max_health)
 
 # Callback appelé quand un catcheur change de PV
 func on_wrestler_health_changed(current: int, max_hp: int, wrestler: Wrestler) -> void:
-	if wrestler == active_wrestler_ref and bottom_player_info:
+	if wrestler == local_wrestler_ref and bottom_player_info:
 		bottom_player_info.update_health(current, max_hp)
-	elif wrestler == opponent_wrestler_ref and top_player_info:
+	elif wrestler == remote_wrestler_ref and top_player_info:
 		top_player_info.update_health(current, max_hp)
 	# Fallback: Name match (Robustness against reference mismatch)
-	elif active_wrestler_ref and wrestler.name == active_wrestler_ref.name and bottom_player_info:
+	elif local_wrestler_ref and wrestler.name == local_wrestler_ref.name and bottom_player_info:
 		bottom_player_info.update_health(current, max_hp)
-	elif opponent_wrestler_ref and wrestler.name == opponent_wrestler_ref.name and top_player_info:
+	elif remote_wrestler_ref and wrestler.name == remote_wrestler_ref.name and top_player_info:
 		top_player_info.update_health(current, max_hp)
 
 func _on_card_drag_started(card_data: CardData) -> void:

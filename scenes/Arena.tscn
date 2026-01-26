@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://b8j4k5l6m7n8"]
+[gd_scene load_steps=11 format=3 uid="uid://b8j4k5l6m7n8"]
 
 [ext_resource type="Script" uid="uid://bm7u7p8xw8nbr" path="res://scripts/Arena.gd" id="1_arena"]
 [ext_resource type="Script" uid="uid://mpnorh1sywyd" path="res://scripts/GridManager.gd" id="1_grid"]
@@ -9,6 +9,18 @@
 [ext_resource type="Script" uid="uid://c4kx8fgyrsuv6" path="res://scripts/WrestlerData.gd" id="3_vyqrf"]
 [ext_resource type="Resource" uid="uid://c8qk2n6qtfwif" path="res://resources/BigGuy.tres" id="6_gcrh0"]
 [ext_resource type="Resource" uid="uid://drqnd1ajpdodo" path="res://resources/MrEggPlant.tres" id="7_vyqrf"]
+
+[sub_resource type="Environment" id="Environment_setup"]
+background_mode = 1
+background_color = Color(0.101960786, 0.0627451, 0.03137255, 1)
+ambient_light_color = Color(0.06432303, 0.080749236, 0.16730222, 1)
+ambient_light_energy = 0.15
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0.7019608, 0.5058824, 0.40392157, 1)
+fog_light_energy = 0.8
+adjustment_enabled = true
+adjustment_saturation = 0.8
 
 [node name="Arena" type="Node3D"]
 script = ExtResource("1_arena")
@@ -26,12 +38,19 @@ wrestler_scene = ExtResource("2_q751w")
 grid_size = Vector2i(5, 5)
 cell_size = 1.2
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="CameraPivot" type="Node3D" parent="."]
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot"]
 transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 8, 6)
 keep_aspect = 0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 5, 0)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 5, 0)
+light_color = Color(1, 0.8, 0.53333336, 1)
 shadow_enabled = true
+shadow_blur = 3.038
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_setup")
 
 [node name="GameUI" parent="." instance=ExtResource("3_gameui")]
