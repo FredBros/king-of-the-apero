@@ -9,10 +9,12 @@ signal reaction_phase_started(attack_card: CardData, valid_cards: Array[CardData
 signal grid_action_received(data: Dictionary)
 signal game_restarted
 signal rematch_update(current_votes: int, total_required: int)
+signal refresh_hand_requested(player_name: String)
 
 @export var hand_size_limit: int = 5
 @export var cards_drawn_per_turn: int = 2
 @export var character_pool: Array[WrestlerData]
+@export var enable_hotseat_mode: bool = false
 
 var deck_manager: DeckManager
 
@@ -42,43 +44,63 @@ func _ready() -> void:
 	# Listen for network messages
 	NetworkManager.game_message_received.connect(_on_network_message)
 
+func is_in_hotseat_mode() -> bool:
+	return enable_hotseat_mode
+
 func initialize_network(deck_mgr: DeckManager) -> void:
 	deck_manager = deck_mgr
 	
-	# Configuration des IDs réseau
+	if enable_hotseat_mode:
+		_setup_hotseat_game()
+	else:
+		_setup_network_game()
+
+func _setup_hotseat_game() -> void:
+	print("--- LAUNCHING IN HOTSEAT MODE ---")
 	player_peer_ids.clear()
+	player_peer_ids["Player 1"] = "hotseat_p1"
+	player_peer_ids["Player 2"] = "hotseat_p2"
 	
-	# Logique P2P Déterministe : On récupère tous les IDs et on les trie.
-	# Tout le monde aura la même liste triée, donc tout le monde sera d'accord sur qui est J1 et J2.
-	var all_ids = [NetworkManager.self_user_id]
-	for uid in NetworkManager.match_presences:
-		all_ids.append(uid)
-	all_ids.sort()
-	
-	# Assignation : Le plus petit ID est le Joueur 1 (Pseudo-Host)
-	if all_ids.size() > 0: player_peer_ids["Player 1"] = all_ids[0]
-	if all_ids.size() > 1: player_peer_ids["Player 2"] = all_ids[1]
-	else: player_peer_ids["Player 2"] = all_ids[0] # Fallback Solo/Debug
+	# In hotseat, we are always the host.
+	_server_select_and_sync_characters()
 
-	# Est-ce que je suis le "Pseudo-Host" (Joueur 1) ?
-	var am_i_host = (NetworkManager.self_user_id == player_peer_ids["Player 1"])
+func _setup_network_game() -> void:
+		# Configuration des IDs réseau
+		player_peer_ids.clear()
+		
+		# Logique P2P Déterministe : On récupère tous les IDs et on les trie.
+		# Tout le monde aura la même liste triée, donc tout le monde sera d'accord sur qui est J1 et J2.
+		var all_ids = [NetworkManager.self_user_id]
+		for uid in NetworkManager.match_presences:
+			all_ids.append(uid)
+		all_ids.sort()
+		
+		# Assignation : Le plus petit ID est le Joueur 1 (Pseudo-Host)
+		if all_ids.size() > 0: player_peer_ids["Player 1"] = all_ids[0]
+		if all_ids.size() > 1: player_peer_ids["Player 2"] = all_ids[1]
+		else: player_peer_ids["Player 2"] = all_ids[0] # Fallback Solo/Debug
 
-	# Le Host choisit les personnages et le notifie
-	if am_i_host:
-		_server_select_and_sync_characters()
+		# Est-ce que je suis le "Pseudo-Host" (Joueur 1) ?
+		var am_i_host = (NetworkManager.self_user_id == player_peer_ids["Player 1"])
+
+		# Le Host choisit les personnages et le notifie
+		if am_i_host:
+			_server_select_and_sync_characters()
 
 func initialize_game_state() -> void:
 	if not grid_manager or grid_manager.wrestlers.is_empty():
 		printerr("Cannot initialize game state: wrestlers not spawned yet.")
 		return
-		
+
 	players = grid_manager.wrestlers
 	active_player_index = 0 # Player 1 starts
 	is_game_active = true
 	
 	# Est-ce que je suis le "Pseudo-Host" (Joueur 1) ?
 	var am_i_host = false
-	if not players.is_empty():
+	if enable_hotseat_mode:
+		am_i_host = true
+	elif not players.is_empty():
 		var p1_name = players[0].name
 		if player_peer_ids.has(p1_name):
 			am_i_host = (NetworkManager.self_user_id == player_peer_ids[p1_name])
@@ -106,15 +128,18 @@ func _server_select_and_sync_characters():
 	var p1_path = p1_data.resource_path
 	var p2_path = p2_data.resource_path
 
-	# Sync with others
-	NetworkManager.send_message({
-		"type": "SYNC_CHARACTERS",
-		"p1_path": p1_path,
-		"p2_path": p2_path
-	})
-
-	# Apply locally for the host
-	_handle_character_selection(p1_path, p2_path)
+	if enable_hotseat_mode:
+		# Apply locally
+		_handle_character_selection(p1_path, p2_path)
+	else:
+		# Sync with others
+		NetworkManager.send_message({
+			"type": "SYNC_CHARACTERS",
+			"p1_path": p1_path,
+			"p2_path": p2_path
+		})
+		# Apply locally for the host
+		_handle_character_selection(p1_path, p2_path)
 
 func _start_turn() -> void:
 	var current_player = players[active_player_index]
@@ -123,13 +148,14 @@ func _start_turn() -> void:
 	has_acted_this_turn = false
 	# Synchroniser le début du tour chez tout le monde (Local + Réseau)
 	_handle_sync_turn(current_player.name)
-	NetworkManager.send_message({
-		"type": "SYNC_TURN",
-		"player_name": current_player.name
-	})
+	if not enable_hotseat_mode:
+		NetworkManager.send_message({
+			"type": "SYNC_TURN",
+			"player_name": current_player.name
+		})
 	
 	# En P2P, c'est le Pseudo-Host (Joueur 1) qui gère la pioche
-	if NetworkManager.self_user_id == player_peer_ids[players[0].name]:
+	if enable_hotseat_mode or NetworkManager.self_user_id == player_peer_ids[players[0].name]:
 		_draw_turn_cards(current_player.name)
 
 func end_turn() -> void:
@@ -139,6 +165,11 @@ func end_turn() -> void:
 		print("⚠️ Cannot end turn while waiting for reaction.")
 		return
 	
+	# En mode Hotseat, on exécute directement la logique serveur.
+	if enable_hotseat_mode:
+		_server_process_end_turn()
+		return
+		
 	# Si on n'est pas le Pseudo-Host (J1), on demande à J1 de finir le tour
 	var host_id = player_peer_ids[players[0].name]
 	if NetworkManager.self_user_id != host_id:
@@ -162,6 +193,9 @@ func try_use_action() -> bool:
 
 # Vérifie si le joueur local est celui dont c'est le tour
 func is_local_player_active() -> bool:
+	if enable_hotseat_mode:
+		return true
+		
 	if players.is_empty(): return false
 	var current_player_name = players[active_player_index].name
 	var active_id = player_peer_ids.get(current_player_name, -1)
@@ -175,6 +209,10 @@ func get_active_wrestler() -> Wrestler:
 func use_card(card: CardData) -> bool:
 	if try_use_action():
 		# Si on n'est pas le Host, on envoie la requête au Host
+		if enable_hotseat_mode:
+			server_process_use_card(card)
+			return true
+			
 		var host_id = player_peer_ids[players[0].name]
 		if NetworkManager.self_user_id != host_id:
 			NetworkManager.send_message({
@@ -202,6 +240,10 @@ func discard_hand_card(card: CardData) -> void:
 	
 	if try_use_action():
 		# Si on n'est pas le Host, on envoie la requête au Host
+		if enable_hotseat_mode:
+			server_process_discard_card(card)
+			return
+			
 		var host_id = player_peer_ids[players[0].name]
 		if NetworkManager.self_user_id != host_id:
 			NetworkManager.send_message({
@@ -253,6 +295,13 @@ func _draw_turn_cards(player_name: String) -> void:
 			break
 
 func _notify_card_drawn(player_name: String, card: CardData) -> void:
+	if enable_hotseat_mode:
+		# In hotseat, the UI always reflects the active player's hand.
+		# We only need to emit the signal if the card is for the currently active player.
+		if player_name == players[active_player_index].name:
+			card_drawn.emit(card)
+		return
+		
 	var target_id = player_peer_ids.get(player_name)
 	var my_id = NetworkManager.self_user_id
 	
@@ -298,27 +347,29 @@ func _remove_card_from_hand(player_name: String, card: CardData) -> bool:
 # --- RPCs & Network Logic ---
 
 func _on_network_message(data: Dictionary) -> void:
-	match data.type:
+	if enable_hotseat_mode: return
+	
+	match data["type"]:
 		"SYNC_TURN":
-			_handle_sync_turn(data.player_name)
+			_handle_sync_turn(data["player_name"])
 		"RECEIVE_CARD":
 			# Check if this card is for me
-			if data.target_id == NetworkManager.self_user_id:
-				_handle_receive_card(data.card)
+			if data["target_id"] == NetworkManager.self_user_id:
+				_handle_receive_card(data["card"])
 		"REQUEST_END_TURN":
 			_handle_request_end_turn(data.get("_sender_id", ""))
 		"REQUEST_PLAY_CARD":
-			_handle_request_play_card(data.get("_sender_id", ""), data.card)
+			_handle_request_play_card(data.get("_sender_id", ""), data["card"])
 		"REQUEST_DISCARD_CARD":
-			_handle_request_discard_card(data.get("_sender_id", ""), data.card)
+			_handle_request_discard_card(data.get("_sender_id", ""), data["card"])
 		"SYNC_CARD_PLAYED":
 			# Fix Echo: On ignore si c'est notre propre carte (car déjà supprimée localement)
-			if data.player_name != _get_my_player_name():
-				_handle_sync_card_played(data.card, data.player_name)
+			if data["player_name"] != _get_my_player_name():
+				_handle_sync_card_played(data["card"], data["player_name"])
 		"SYNC_GRID_ACTION":
-			grid_action_received.emit(data.action_data)
+			grid_action_received.emit(data["action_data"])
 		"SYNC_HEALTH":
-			_handle_sync_health(data.player_name, data.value)
+			_handle_sync_health(data["player_name"], data["value"])
 		"REQUEST_ATTACK":
 			_handle_request_attack(data)
 		"ATTACK_RESULT":
@@ -326,11 +377,11 @@ func _on_network_message(data: Dictionary) -> void:
 		"SYNC_PUSH":
 			_handle_sync_push(data)
 		"SYNC_FLOATING_TEXT":
-			_handle_sync_floating_text(data.player_name, data.text, data.color)
+			_handle_sync_floating_text(data["player_name"], data["text"], data["color"])
 		"REQUEST_RESTART_VOTE":
-			_handle_rematch_vote(data.player_name)
+			_handle_rematch_vote(data["player_name"])
 		"SYNC_CHARACTERS":
-			_handle_character_selection(data.p1_path, data.p2_path)
+			_handle_character_selection(data["p1_path"], data["p2_path"])
 
 func _handle_sync_turn(player_name: String) -> void:
 	print("Sync Turn: ", player_name)
@@ -354,6 +405,10 @@ func _handle_receive_card(card_data_dict: Dictionary) -> void:
 	card_drawn.emit(card)
 
 func _get_my_player_name() -> String:
+	if enable_hotseat_mode:
+		# In hotseat, "me" is always Player 1 for a stable camera/UI perspective.
+		return "Player 1"
+		
 	var my_id = NetworkManager.self_user_id
 	for name in player_peer_ids:
 		if player_peer_ids[name] == my_id:
@@ -381,13 +436,13 @@ func _server_process_end_turn() -> void:
 
 func _handle_request_play_card(sender_id: String, card_dict: Dictionary) -> void:
 	var current_player_name = players[active_player_index].name
-	if player_peer_ids[current_player_name] == sender_id:
+	if player_peer_ids.get(current_player_name) == sender_id:
 		var card = _deserialize_card(card_dict)
 		server_process_use_card(card)
 
 func _handle_request_discard_card(sender_id: String, card_dict: Dictionary) -> void:
 	var current_player_name = players[active_player_index].name
-	if player_peer_ids[current_player_name] == sender_id:
+	if player_peer_ids.get(current_player_name) == sender_id:
 		var card = _deserialize_card(card_dict)
 		server_process_discard_card(card)
 
@@ -405,13 +460,14 @@ func server_process_use_card(card: CardData) -> void:
 	# Dans tous les cas (succès ou desync), on valide la consommation car l'action (Mvt/Attaque) a eu lieu.
 	deck_manager.discard_card(card)
 	# Informer tout le monde qu'une carte a été jouée (pour l'historique/anim et nettoyage client)
-	# FIX: On émet juste le signal localement au lieu de rappeler _handle_sync_card_played (qui tenterait de supprimer la carte une 2ème fois)
 	card_discarded.emit(card)
-	NetworkManager.send_message({
-		"type": "SYNC_CARD_PLAYED",
-		"card": _serialize_card(card),
-		"player_name": current_player_name
-	})
+	if not enable_hotseat_mode:
+		# FIX: On émet juste le signal localement au lieu de rappeler _handle_sync_card_played (qui tenterait de supprimer la carte une 2ème fois)
+		NetworkManager.send_message({
+			"type": "SYNC_CARD_PLAYED",
+			"card": _serialize_card(card),
+			"player_name": current_player_name
+		})
 
 func server_process_discard_card(card: CardData) -> void:
 	var current_player_name = players[active_player_index].name
@@ -425,14 +481,15 @@ func server_process_discard_card(card: CardData) -> void:
 			print("Server: Force removed '", removed.title, "' to maintain hand count.")
 	
 	deck_manager.discard_card(card)
-	# On réutilise sync_card_played car l'effet est le même (retrait de main + signal discard)
-	# FIX: Idem, on évite la double suppression
 	card_discarded.emit(card)
-	NetworkManager.send_message({
-		"type": "SYNC_CARD_PLAYED",
-		"card": _serialize_card(card),
-		"player_name": current_player_name
-	})
+	if not enable_hotseat_mode:
+		# On réutilise sync_card_played car l'effet est le même (retrait de main + signal discard)
+		# FIX: Idem, on évite la double suppression
+		NetworkManager.send_message({
+			"type": "SYNC_CARD_PLAYED",
+			"card": _serialize_card(card),
+			"player_name": current_player_name
+		})
 
 func _handle_sync_card_played(card_dict: Dictionary, player_name: String) -> void:
 	var card = _deserialize_card(card_dict)
@@ -442,6 +499,7 @@ func _handle_sync_card_played(card_dict: Dictionary, player_name: String) -> voi
 # --- Generic Grid/Health Sync ---
 
 func send_grid_action(action_data: Dictionary) -> void:
+	if enable_hotseat_mode: return
 	# À appeler depuis GridManager pour synchroniser un mouvement/attaque
 	NetworkManager.send_message({
 		"type": "SYNC_GRID_ACTION",
@@ -449,6 +507,7 @@ func send_grid_action(action_data: Dictionary) -> void:
 	})
 
 func send_health_update(wrestler_name: String, new_health: int) -> void:
+	if enable_hotseat_mode: return
 	NetworkManager.send_message({
 		"type": "SYNC_HEALTH",
 		"player_name": wrestler_name,
@@ -474,13 +533,14 @@ func send_floating_text(wrestler_name: String, text: String, color: Color) -> vo
 			p.show_floating_text(text, color)
 			break
 	
-	# Send to network
-	NetworkManager.send_message({
-		"type": "SYNC_FLOATING_TEXT",
-		"player_name": wrestler_name,
-		"text": text,
-		"color": color.to_html()
-	})
+	if not enable_hotseat_mode:
+		# Send to network
+		NetworkManager.send_message({
+			"type": "SYNC_FLOATING_TEXT",
+			"player_name": wrestler_name,
+			"text": text,
+			"color": color.to_html()
+		})
 
 func _handle_sync_floating_text(player_name: String, text: String, color_html: String) -> void:
 	var color = Color.from_string(color_html, Color.WHITE)
@@ -509,10 +569,11 @@ func request_restart() -> void:
 	# Register local vote
 	_handle_rematch_vote(my_name)
 	
-	NetworkManager.send_message({
-		"type": "REQUEST_RESTART_VOTE",
-		"player_name": my_name
-	})
+	if not enable_hotseat_mode:
+		NetworkManager.send_message({
+			"type": "REQUEST_RESTART_VOTE",
+			"player_name": my_name
+		})
 
 func _handle_rematch_vote(player_name: String) -> void:
 	if not rematch_votes.has(player_name):
@@ -520,7 +581,7 @@ func _handle_rematch_vote(player_name: String) -> void:
 		print("🔄 Rematch vote from: ", player_name)
 		
 		# Check condition: Votes >= Connected Players (Self + Network Peers)
-		var required_votes = NetworkManager.match_presences.size() + 1
+		var required_votes = 2 if enable_hotseat_mode else NetworkManager.match_presences.size() + 1
 		
 		if rematch_votes.size() >= required_votes:
 			_handle_restart_game()
@@ -570,32 +631,52 @@ func initiate_attack_sequence(target_wrestler: Wrestler, attack_card: CardData, 
 	}
 	is_waiting_for_reaction = true
 	
-	NetworkManager.send_message({
-		"type": "REQUEST_ATTACK",
-		"attacker_card": _serialize_card(attack_card),
-		"target_id": target_id,
-		"is_push": is_push
-	})
 	print("⚔️ Attack Sequence Initiated against ", target_name)
+	if enable_hotseat_mode:
+		# Loopback for Hotseat: Simulate receiving the request immediately
+		var mock_data = {
+			"target_id": target_id,
+			"attacker_card": _serialize_card(attack_card),
+			"_sender_id": player_peer_ids[players[active_player_index].name]
+		}
+		_handle_request_attack(mock_data)
+	else:
+		NetworkManager.send_message({
+			"type": "REQUEST_ATTACK",
+			"attacker_card": _serialize_card(attack_card),
+			"target_id": target_id,
+			"is_push": is_push
+		})
 
 func _handle_request_attack(data: Dictionary) -> void:
 	# Suis-je la cible ?
-	if data.target_id != NetworkManager.self_user_id:
+	if not enable_hotseat_mode and data["target_id"] != NetworkManager.self_user_id:
 		return
 		
-	var attack_card = _deserialize_card(data.attacker_card)
+	var attack_card = _deserialize_card(data["attacker_card"])
 	
 	# Store context for the response (who is attacking me?)
 	pending_defense_context = {
 		"attacker_id": data.get("_sender_id"),
-		"target_id": NetworkManager.self_user_id,
+		"target_id": data["target_id"],
 		"attack_card": attack_card
 	}
 	
-	var my_name = _get_my_player_name()
-	var my_hand = get_player_hand(my_name)
+	# Identify defender name from target_id
+	var target_id = data["target_id"]
+	var defender_name = ""
+	for name in player_peer_ids:
+		if player_peer_ids[name] == target_id:
+			defender_name = name
+			break
 	
-	var valid_cards = get_valid_reaction_cards(attack_card, my_hand)
+	# In Hotseat, switch UI to defender's hand
+	if enable_hotseat_mode:
+		refresh_hand_requested.emit(defender_name)
+	
+	var defender_hand = get_player_hand(defender_name)
+	
+	var valid_cards = get_valid_reaction_cards(attack_card, defender_hand)
 	
 	if valid_cards.is_empty():
 		print("🛡️ No valid reaction cards. Auto-taking damage.")
@@ -638,11 +719,12 @@ func _consume_reaction_card(card: CardData) -> void:
 	deck_manager.discard_card(card)
 	card_discarded.emit(card)
 	
-	NetworkManager.send_message({
-		"type": "SYNC_CARD_PLAYED",
-		"card": _serialize_card(card),
-		"player_name": my_name
-	})
+	if not enable_hotseat_mode:
+		NetworkManager.send_message({
+			"type": "SYNC_CARD_PLAYED",
+			"card": _serialize_card(card),
+			"player_name": my_name
+		})
 
 func on_reaction_skipped() -> void:
 	print("🛡️ Player skipped reaction.")
@@ -657,13 +739,20 @@ func _send_attack_result(blocked: bool, block_card: CardData, dodged: bool) -> v
 		"target_id": pending_defense_context.get("target_id")
 	}
 	if block_card: msg["block_card"] = _serialize_card(block_card)
-	NetworkManager.send_message(msg)
 	
-	# FIX: Handle local visual update because NetworkManager filters echo
-	_handle_attack_result(msg)
+	if enable_hotseat_mode:
+		_handle_attack_result(msg)
+	else:
+		NetworkManager.send_message(msg)
+		# FIX: Handle local visual update because NetworkManager filters echo
+		_handle_attack_result(msg)
 
 func _handle_attack_result(data: Dictionary) -> void:
 	is_waiting_for_reaction = false
+	
+	# In Hotseat, switch UI back to active player (attacker)
+	if enable_hotseat_mode:
+		refresh_hand_requested.emit(players[active_player_index].name)
 	
 	if data.is_blocked:
 		print("🛡️ Attack was BLOCKED!")
@@ -697,7 +786,7 @@ func _handle_attack_result(data: Dictionary) -> void:
 			# Dégâts réels ou Poussée
 			if is_local_player_active():
 				if pending_attack_context.has("target_name"):
-					var target_name = pending_attack_context.target_name
+					var target_name = pending_attack_context["target_name"]
 					var is_push = pending_attack_context.get("is_push", false)
 					
 					for w in players:
@@ -734,17 +823,18 @@ func _apply_push(attacker: Wrestler, target: Wrestler) -> void:
 	# Appliquer localement
 	target.push_to(dest_cell)
 	
-	# Synchroniser
-	NetworkManager.send_message({
-		"type": "SYNC_PUSH",
-		"target_name": target.name,
-		"x": dest_cell.x,
-		"y": dest_cell.y
-	})
+	if not enable_hotseat_mode:
+		# Synchroniser
+		NetworkManager.send_message({
+			"type": "SYNC_PUSH",
+			"target_name": target.name,
+			"x": dest_cell.x,
+			"y": dest_cell.y
+		})
 
 func _handle_sync_push(data: Dictionary) -> void:
 	var target_name = data.get("target_name")
-	var dest = Vector2i(data.x, data.y)
+	var dest = Vector2i(data["x"], data["y"])
 	
 	for w in players:
 		if w.name == target_name:

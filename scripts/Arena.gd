@@ -57,25 +57,12 @@ func _ready() -> void:
 		# Connect Game Manager to Grid Manager (to sync active wrestler)
 		game_manager.turn_started.connect(func(player_name):
 			grid_manager.set_active_wrestler(game_manager.get_active_wrestler())
-			
-			# Determine whose hand to show
-			var hand_owner = ""
-			
-			# Networked: Find local player name using Nakama ID
-			var my_id = NetworkManager.self_user_id
-			for name in game_manager.player_peer_ids:
-				if game_manager.player_peer_ids[name] == my_id:
-					hand_owner = name
-					break
-			
-			# Refresh Hand UI for the active player
-			# The initial hand is drawn by GameManager and signaled via card_drawn
-			# This is mostly for subsequent turns to ensure UI is in sync.
-			game_ui.clear_hand()
-			if hand_owner != "":
-				var hand = game_manager.get_player_hand(hand_owner)
-				for card in hand:
-					game_ui.add_card_to_hand(card)
+
+			_update_hand_display(player_name)
+		)
+		
+		game_manager.refresh_hand_requested.connect(func(player_name):
+			_update_hand_display(player_name)
 		)
 		
 		# Initialize Game Manager network part. Game state init will be triggered by character selection.
@@ -91,6 +78,15 @@ func _ready() -> void:
 	var camera = get_viewport().get_camera_3d()
 	if camera and camera.projection == Camera3D.PROJECTION_PERSPECTIVE:
 		camera.fov = 50.0
+
+func _update_hand_display(player_name: String) -> void:
+	# In hotseat mode, we refresh the hand to show the specific player's cards.
+	# In network mode, we don't need a full refresh as card_drawn/discarded handle it.
+	if game_manager.is_in_hotseat_mode():
+		game_ui.clear_hand()
+		var hand = game_manager.get_player_hand(player_name)
+		for card in hand:
+			game_ui.add_card_to_hand(card)
 
 func _setup_player_camera_view() -> void:
 	if not game_manager: return
