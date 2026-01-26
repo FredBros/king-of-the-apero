@@ -316,7 +316,10 @@ func _end_reaction_phase() -> void:
 			child.modulate = child.base_color
 
 func show_game_over(winner_name: String) -> void:
-	winner_label.text = winner_name + " WINS!"
+	if winner_name == "DRAW":
+		winner_label.text = "IT'S A DRAW!"
+	else:
+		winner_label.text = winner_name + " WINS!"
 	game_over_container.show()
 
 func disable_restart_button() -> void:

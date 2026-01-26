@@ -10,6 +10,7 @@ signal grid_action_received(data: Dictionary)
 signal game_restarted
 signal rematch_update(current_votes: int, total_required: int)
 signal refresh_hand_requested(player_name: String)
+signal game_over(winner_name: String)
 
 @export var hand_size_limit: int = 5
 @export var cards_drawn_per_turn: int = 2
@@ -292,6 +293,7 @@ func _draw_turn_cards(player_name: String) -> void:
 			current_hand.append(new_card)
 			_notify_card_drawn(player_name, new_card)
 		else:
+			_handle_deck_empty_game_over()
 			break
 
 func _notify_card_drawn(player_name: String, card: CardData) -> void:
@@ -315,6 +317,28 @@ func _notify_card_drawn(player_name: String, card: CardData) -> void:
 			"type": "RECEIVE_CARD",
 			"target_id": target_id,
 			"card": _serialize_card(card)
+		})
+
+func _handle_deck_empty_game_over() -> void:
+	if not is_game_active: return
+	is_game_active = false
+	print("Deck empty! Calculating winner based on HP.")
+	
+	var p1 = players[0]
+	var p2 = players[1]
+	var winner_name = "DRAW"
+	
+	if p1.current_health > p2.current_health:
+		winner_name = p1.name
+	elif p2.current_health > p1.current_health:
+		winner_name = p2.name
+		
+	game_over.emit(winner_name)
+	
+	if not enable_hotseat_mode:
+		NetworkManager.send_message({
+			"type": "GAME_OVER_DECK_EMPTY",
+			"winner": winner_name
 		})
 
 func _remove_card_from_hand(player_name: String, card: CardData) -> bool:
@@ -382,6 +406,9 @@ func _on_network_message(data: Dictionary) -> void:
 			_handle_rematch_vote(data["player_name"])
 		"SYNC_CHARACTERS":
 			_handle_character_selection(data["p1_path"], data["p2_path"])
+		"GAME_OVER_DECK_EMPTY":
+			is_game_active = false
+			game_over.emit(data["winner"])
 
 func _handle_sync_turn(player_name: String) -> void:
 	print("Sync Turn: ", player_name)

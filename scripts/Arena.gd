@@ -46,6 +46,11 @@ func _ready() -> void:
 			game_ui.update_turn_info(player_name)
 		)
 		
+		game_manager.game_over.connect(func(winner_name):
+			game_ui.show_game_over(winner_name)
+			game_manager.is_game_active = false
+		)
+		
 		# Connect Card Discarding to GridManager (to clear highlights)
 		game_manager.card_discarded.connect(grid_manager.on_card_discarded)
 		
