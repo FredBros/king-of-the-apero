@@ -38,7 +38,7 @@ func _ready() -> void:
 		grid_manager.game_manager = game_manager
 		game_manager.grid_manager = grid_manager
 		
-		# Connect UI End Turn button
+		# Connect UI End Turn button with visual reset
 		game_ui.end_turn_pressed.connect(game_manager.end_turn)
 		
 		# Connect Game Manager signals to UI
@@ -64,25 +64,33 @@ func _ready() -> void:
 			grid_manager.set_active_wrestler(game_manager.get_active_wrestler())
 
 			_update_hand_display(player_name)
+			call_deferred("_check_hand_playability")
 		)
 		
 		game_manager.refresh_hand_requested.connect(func(player_name):
 			_update_hand_display(player_name)
 		)
 		
+		# Connect Health Signals
+		# This is now done after spawning, to ensure wrestlers exist.
+		grid_manager.wrestlers_spawned.connect(_on_wrestlers_spawned)
+		
 		# Initialize Game Manager network part. Game state init will be triggered by character selection.
 		game_manager.initialize_network(deck_manager)
 		
 		_setup_player_camera_view()
-		
-		# Connect Health Signals
-		# This is now done after spawning, to ensure wrestlers exist.
-		grid_manager.wrestlers_spawned.connect(_on_wrestlers_spawned)
 
 	# Adjust camera for Portrait Mode (Zoom In)
 	var camera = get_viewport().get_camera_3d()
 	if camera and camera.projection == Camera3D.PROJECTION_PERSPECTIVE:
 		camera.fov = 50.0
+
+func _check_hand_playability() -> void:
+	print("Arena: Checking hand playability...")
+	# Check only if it's our turn to avoid calculations for the opponent
+	if game_manager.is_local_player_active():
+		var playable_cards = game_manager.get_playable_cards_in_hand()
+		game_ui.update_cards_playability(playable_cards)
 
 func _update_hand_display(player_name: String) -> void:
 	# In hotseat mode, we refresh the hand to show the specific player's cards.
@@ -115,6 +123,7 @@ func _on_wrestlers_spawned(wrestlers: Array[Wrestler]) -> void:
 			if not game_manager.is_network_syncing:
 				game_manager.send_health_update(w.name, current)
 		)
+		w.action_completed.connect(_check_hand_playability)
 	
 	# Set UI perspectives (local player at bottom)
 	_update_ui_player_perspectives()

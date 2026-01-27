@@ -205,7 +205,13 @@ func _on_card_dropped_on_zone(card_data: CardData, pos: Vector2) -> void:
 func add_card_to_hand(card_data: CardData) -> void:
 	print("DEBUG UI: Adding card ", card_data.title, " to hand.")
 	var card = card_ui_scene.instantiate()
-	hand_container.add_child(card)
+	
+	# Wrap in CenterContainer to isolate scale transformations from HBoxContainer layout
+	var wrapper = CenterContainer.new()
+	wrapper.mouse_filter = Control.MOUSE_FILTER_PASS
+	hand_container.add_child(wrapper)
+	wrapper.add_child(card)
+	
 	card.setup(card_data)
 	card.clicked.connect(_on_card_clicked)
 	card.drag_started.connect(_on_card_drag_started)
@@ -215,13 +221,14 @@ func add_card_to_hand(card_data: CardData) -> void:
 	card.selection_canceled.connect(_on_card_selection_canceled)
 
 func remove_card_from_hand(card_data: CardData) -> void:
-	for child in hand_container.get_children():
+	for wrapper in hand_container.get_children():
+		var child = wrapper.get_child(0) if wrapper.get_child_count() > 0 else null
 		# Comparaison par valeur (car les instances diffèrent via RPC)
 		if child is CardUI and child.card_data.title == card_data.title and \
 		   child.card_data.value == card_data.value and child.card_data.suit == card_data.suit:
 			# Si la carte est déjà en train de se détruire (animation locale), on la laisse finir
 			if not child.is_destroying:
-				child.queue_free()
+				wrapper.queue_free()
 				
 				if selected_card_ui == child:
 					selected_card_ui = null
@@ -276,7 +283,8 @@ func start_reaction_request(attack_card: CardData, valid_cards: Array[CardData])
 	opponent_card_display.scale = Vector2(1.2, 1.2)
 	
 	# 2. Mettre en valeur la main
-	for child in hand_container.get_children():
+	for wrapper in hand_container.get_children():
+		var child = wrapper.get_child(0) if wrapper.get_child_count() > 0 else null
 		if child is CardUI:
 			var is_valid = false
 			for valid in valid_cards:
@@ -309,11 +317,37 @@ func _end_reaction_phase() -> void:
 		opponent_card_display = null
 	
 	# Reset hand visuals
-	for child in hand_container.get_children():
+	for wrapper in hand_container.get_children():
+		var child = wrapper.get_child(0) if wrapper.get_child_count() > 0 else null
 		if child is CardUI:
 			child.set_reaction_candidate(false)
 			# On remet la couleur normale (car set_reaction_candidate(false) grise tout par défaut dans notre implémentation)
 			child.modulate = child.base_color
+
+func update_cards_playability(playable_cards: Array[CardData]) -> void:
+	var playable_keys = []
+	for card in playable_cards:
+		playable_keys.append(card.title + "_" + card.suit)
+
+	for wrapper in hand_container.get_children():
+		var card_ui = wrapper.get_child(0) if wrapper.get_child_count() > 0 else null
+		if card_ui is CardUI:
+			var key = card_ui.card_data.title + "_" + card_ui.card_data.suit
+			var is_playable = key in playable_keys
+			
+			var target_scale = Vector2(1.0, 1.0) if is_playable else Vector2(0.8, 0.8)
+			
+			# On utilise la couleur de base de la carte pour ne pas perdre le Rouge/Noir
+			var base = card_ui.base_color if "base_color" in card_ui else Color.WHITE
+			var target_modulate = base if is_playable else base.darkened(0.5)
+
+			# Avoid creating tweens if already in the target state
+			if card_ui.scale.is_equal_approx(target_scale) and card_ui.modulate.is_equal_approx(target_modulate):
+				continue
+
+			var tween = create_tween().set_parallel()
+			tween.tween_property(card_ui, "scale", target_scale, 0.2).set_trans(Tween.TRANS_SINE)
+			tween.tween_property(card_ui, "modulate", target_modulate, 0.2).set_trans(Tween.TRANS_SINE)
 
 func show_game_over(winner_name: String) -> void:
 	if winner_name == "DRAW":

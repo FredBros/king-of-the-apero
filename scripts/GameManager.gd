@@ -261,6 +261,58 @@ func discard_hand_card(card: CardData) -> void:
 		# Logique Serveur (ou Local)
 		server_process_discard_card(card)
 
+func get_playable_cards_in_hand() -> Array[CardData]:
+	var playable_cards: Array[CardData] = []
+	
+	var active_wrestler = get_active_wrestler()
+	if not active_wrestler: return []
+	
+	print("GM: Calculating playable cards for ", active_wrestler.name, " at ", active_wrestler.grid_position)
+
+	var opponent = null
+	for p in players:
+		if p != active_wrestler:
+			opponent = p
+			break
+	
+	var hand = get_player_hand(active_wrestler.name)
+	
+	# If no opponent, only non-attack cards are playable
+	if not opponent:
+		for card in hand:
+			if card.type != CardData.CardType.ATTACK:
+				playable_cards.append(card)
+		return playable_cards
+
+	var distance_v = opponent.grid_position - active_wrestler.grid_position
+	print("GM: Opponent relative distance: ", distance_v)
+	
+	for card in hand:
+		if card.type != CardData.CardType.ATTACK:
+			playable_cards.append(card)
+		else:
+			var is_playable = false
+			var dx = abs(distance_v.x)
+			var dy = abs(distance_v.y)
+
+			if card.pattern == CardData.MovePattern.ORTHOGONAL:
+				if dx + dy == 1:
+					is_playable = true
+			elif card.pattern == CardData.MovePattern.DIAGONAL:
+				if dx == 1 and dy == 1:
+					is_playable = true
+			elif card.suit == "Joker": # Joker attack is range 1 any direction
+				if dx <= 1 and dy <= 1 and not (dx == 0 and dy == 0):
+					is_playable = true
+			
+			if is_playable:
+				playable_cards.append(card)
+				print("GM: Card ", card.title, " ", card.suit, " is PLAYABLE")
+			else:
+				print("GM: Card ", card.title, " ", card.suit, " is NOT playable")
+	
+	return playable_cards
+
 func get_player_hand(player_name: String) -> Array:
 	return player_hands.get(player_name, [])
 

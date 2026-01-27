@@ -3,6 +3,7 @@ extends CharacterBody3D
 
 signal died(wrestler: Wrestler)
 signal health_changed(current: int, max: int)
+signal action_completed
 signal ejected
 
 @export var max_health: int = 10
@@ -113,6 +114,8 @@ func _perform_move(new_pos: Vector2i) -> void:
 	tween.tween_callback(func():
 		_play_anim("Idle")
 		is_busy = false
+		print(name, " move action completed.")
+		action_completed.emit()
 	)
 
 # Perform an attack on a target wrestler
@@ -132,6 +135,7 @@ func attack(target: Wrestler, will_hit: bool = false) -> void:
 	
 	_play_anim("Idle")
 	is_busy = false
+	action_completed.emit()
 	combat_target = null
 	trigger_hurt_on_hit = false
 
@@ -168,6 +172,7 @@ func perform_hurt_sequence() -> void:
 	if not is_ejected and current_health > 0:
 		_play_anim("Idle")
 		is_busy = false
+		action_completed.emit()
 
 func block() -> void:
 	is_busy = true
@@ -175,6 +180,7 @@ func block() -> void:
 	await get_tree().create_timer(0.5).timeout
 	_play_anim("Idle")
 	is_busy = false
+	action_completed.emit()
 
 # Update health from network authority (handles UI sync and animations)
 func set_network_health(value: int) -> void:
@@ -215,7 +221,10 @@ func push_to(new_pos: Vector2i) -> void:
 	else:
 		var tween = create_tween()
 		tween.tween_property(self, "position", target_world_pos, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tween.tween_callback(func(): is_busy = false)
+		tween.tween_callback(func():
+			is_busy = false
+			action_completed.emit()
+		)
 
 func _recover_from_ejection(original_pos: Vector2i) -> void:
 	is_ejected = false
@@ -239,6 +248,7 @@ func _recover_from_ejection(original_pos: Vector2i) -> void:
 	position = grid_manager.grid_to_world(grid_position)
 	_play_anim("Idle")
 	is_busy = false
+	action_completed.emit()
 
 func reset_state() -> void:
 	is_ejected = false

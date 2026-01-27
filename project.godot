@@ -8,16 +8,20 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="KotA"
 run/main_scene="uid://0cle83moyvrj"
-config/features=PackedStringArray("4.5", "GL Compatibility")
+config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
 
-Nakama="*res://addons/com.heroiclabs.nakama/Nakama.gd"
+Nakama="*uid://cjh0vi0ccoqk7"
 NakamaManager="*res://server/NakamaManager.gd"
 NetworkManager="*res://scripts/NetworkManager.gd"
 

@@ -28,7 +28,6 @@ script = ExtResource("1_arena")
 [node name="GameManager" type="Node" parent="."]
 script = ExtResource("2_gamemanager")
 character_pool = Array[ExtResource("3_vyqrf")]([ExtResource("6_gcrh0"), ExtResource("7_vyqrf")])
-enable_hotseat_mode = true
 
 [node name="DeckManager" type="Node" parent="."]
 script = ExtResource("3_deckmanager")
