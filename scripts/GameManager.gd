@@ -218,7 +218,7 @@ func use_card(card: CardData) -> bool:
 		if NetworkManager.self_user_id != host_id:
 			NetworkManager.send_message({
 				"type": "REQUEST_PLAY_CARD",
-				"card": _serialize_card(card)
+				"card": CardData.serialize(card)
 			})
 			# On retourne true pour que l'UI locale soit réactive (Optimistic UI)
 			# On retire la carte de notre main locale pour qu'elle ne revienne pas au refresh
@@ -249,7 +249,7 @@ func discard_hand_card(card: CardData) -> void:
 		if NetworkManager.self_user_id != host_id:
 			NetworkManager.send_message({
 				"type": "REQUEST_DISCARD_CARD",
-				"card": _serialize_card(card)
+				"card": CardData.serialize(card)
 			})
 			var my_name = _get_my_player_name()
 			_remove_card_from_hand(my_name, card)
@@ -368,7 +368,7 @@ func _notify_card_drawn(player_name: String, card: CardData) -> void:
 		NetworkManager.send_message({
 			"type": "RECEIVE_CARD",
 			"target_id": target_id,
-			"card": _serialize_card(card)
+			"card": CardData.serialize(card)
 		})
 
 func _handle_deck_empty_game_over() -> void:
@@ -431,17 +431,17 @@ func _on_network_message(data: Dictionary) -> void:
 		"RECEIVE_CARD":
 			# Check if this card is for me
 			if data["target_id"] == NetworkManager.self_user_id:
-				_handle_receive_card(data["card"])
+				_handle_receive_card(data.get("card", {}))
 		"REQUEST_END_TURN":
 			_handle_request_end_turn(data.get("_sender_id", ""))
 		"REQUEST_PLAY_CARD":
-			_handle_request_play_card(data.get("_sender_id", ""), data["card"])
+			_handle_request_play_card(data.get("_sender_id", ""), data.get("card", {}))
 		"REQUEST_DISCARD_CARD":
-			_handle_request_discard_card(data.get("_sender_id", ""), data["card"])
+			_handle_request_discard_card(data.get("_sender_id", ""), data.get("card", {}))
 		"SYNC_CARD_PLAYED":
 			# Fix Echo: On ignore si c'est notre propre carte (car déjà supprimée localement)
 			if data["player_name"] != _get_my_player_name():
-				_handle_sync_card_played(data["card"], data["player_name"])
+				_handle_sync_card_played(data.get("card", {}), data["player_name"])
 		"SYNC_GRID_ACTION":
 			grid_action_received.emit(data["action_data"])
 		"SYNC_HEALTH":
@@ -473,7 +473,7 @@ func _handle_sync_turn(player_name: String) -> void:
 
 func _handle_receive_card(card_data_dict: Dictionary) -> void:
 	print("Client received card RPC")
-	var card = _deserialize_card(card_data_dict)
+	var card = CardData.deserialize(card_data_dict)
 	# On l'ajoute à notre main locale (pour l'UI)
 	var my_name = _get_my_player_name()
 	if not my_name.is_empty():
@@ -516,13 +516,13 @@ func _server_process_end_turn() -> void:
 func _handle_request_play_card(sender_id: String, card_dict: Dictionary) -> void:
 	var current_player_name = players[active_player_index].name
 	if player_peer_ids.get(current_player_name) == sender_id:
-		var card = _deserialize_card(card_dict)
+		var card = CardData.deserialize(card_dict)
 		server_process_use_card(card)
 
 func _handle_request_discard_card(sender_id: String, card_dict: Dictionary) -> void:
 	var current_player_name = players[active_player_index].name
 	if player_peer_ids.get(current_player_name) == sender_id:
-		var card = _deserialize_card(card_dict)
+		var card = CardData.deserialize(card_dict)
 		server_process_discard_card(card)
 
 func server_process_use_card(card: CardData) -> void:
@@ -544,7 +544,7 @@ func server_process_use_card(card: CardData) -> void:
 		# FIX: On émet juste le signal localement au lieu de rappeler _handle_sync_card_played (qui tenterait de supprimer la carte une 2ème fois)
 		NetworkManager.send_message({
 			"type": "SYNC_CARD_PLAYED",
-			"card": _serialize_card(card),
+			"card": CardData.serialize(card),
 			"player_name": current_player_name
 		})
 
@@ -566,12 +566,12 @@ func server_process_discard_card(card: CardData) -> void:
 		# FIX: Idem, on évite la double suppression
 		NetworkManager.send_message({
 			"type": "SYNC_CARD_PLAYED",
-			"card": _serialize_card(card),
+			"card": CardData.serialize(card),
 			"player_name": current_player_name
 		})
 
 func _handle_sync_card_played(card_dict: Dictionary, player_name: String) -> void:
-	var card = _deserialize_card(card_dict)
+	var card = CardData.deserialize(card_dict)
 	_remove_card_from_hand(player_name, card)
 	card_discarded.emit(card)
 
@@ -715,14 +715,14 @@ func initiate_attack_sequence(target_wrestler: Wrestler, attack_card: CardData, 
 		# Loopback for Hotseat: Simulate receiving the request immediately
 		var mock_data = {
 			"target_id": target_id,
-			"attacker_card": _serialize_card(attack_card),
+			"attacker_card": CardData.serialize(attack_card),
 			"_sender_id": player_peer_ids[players[active_player_index].name]
 		}
 		_handle_request_attack(mock_data)
 	else:
 		NetworkManager.send_message({
 			"type": "REQUEST_ATTACK",
-			"attacker_card": _serialize_card(attack_card),
+			"attacker_card": CardData.serialize(attack_card),
 			"target_id": target_id,
 			"is_push": is_push
 		})
@@ -732,7 +732,7 @@ func _handle_request_attack(data: Dictionary) -> void:
 	if not enable_hotseat_mode and data["target_id"] != NetworkManager.self_user_id:
 		return
 		
-	var attack_card = _deserialize_card(data["attacker_card"])
+	var attack_card = CardData.deserialize(data["attacker_card"])
 	
 	# Store context for the response (who is attacking me?)
 	pending_defense_context = {
@@ -801,7 +801,7 @@ func _consume_reaction_card(card: CardData) -> void:
 	if not enable_hotseat_mode:
 		NetworkManager.send_message({
 			"type": "SYNC_CARD_PLAYED",
-			"card": _serialize_card(card),
+			"card": CardData.serialize(card),
 			"player_name": my_name
 		})
 
@@ -817,7 +817,7 @@ func _send_attack_result(blocked: bool, block_card: CardData, dodged: bool) -> v
 		"attacker_id": pending_defense_context.get("attacker_id"),
 		"target_id": pending_defense_context.get("target_id")
 	}
-	if block_card: msg["block_card"] = _serialize_card(block_card)
+	if block_card: msg["block_card"] = CardData.serialize(block_card)
 	
 	if enable_hotseat_mode:
 		_handle_attack_result(msg)
@@ -962,27 +962,7 @@ func get_valid_reaction_cards(attack_card: CardData, hand: Array) -> Array[CardD
 			valid_cards.append(card)
 			
 	return valid_cards
-
-# --- Helpers Serialization ---
-
-func _serialize_card(card: CardData) -> Dictionary:
-	return {
-		"type": int(card.type),
-		"value": card.value,
-		"title": card.title,
-		"suit": card.suit,
-		"pattern": int(card.pattern)
-	}
-
-func _deserialize_card(data: Dictionary) -> CardData:
-	var card = CardData.new()
-	card.type = int(data.type) # Force int for Enum
-	card.value = int(data.value) # Force int
-	card.title = data.title
-	card.suit = data.suit
-	card.pattern = int(data.pattern) # Force int for Enum
-	return card
-
+	
 func set_wrestler_collisions(enabled: bool) -> void:
 	if grid_manager:
 		grid_manager.set_wrestler_collisions(enabled)

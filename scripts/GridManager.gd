@@ -281,7 +281,7 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 	var action_data = {
 		"x": clicked_cell.x,
 		"y": clicked_cell.y,
-		"card": _serialize_card(card_to_play),
+		"card": CardData.serialize(card_to_play),
 		"player_name": actor.name # On précise QUI bouge
 	}
 	game_manager.send_grid_action(action_data)
@@ -304,7 +304,7 @@ func _handle_grid_click(mouse_pos: Vector2) -> void:
 func _on_grid_action_received(data: Dictionary) -> void:
 	print("DEBUG: Grid action received: ", data)
 	var cell = Vector2i(data.x, data.y)
-	var card = _deserialize_card(data.card)
+	var card = CardData.deserialize(data.card)
 	var player_name = data.get("player_name", "")
 	_execute_action(cell, card, true, player_name) # is_remote = true
 
@@ -687,7 +687,7 @@ func handle_swipe_commit(card: CardData, screen_offset: Vector2, global_pos: Vec
 			var action_data = {
 				"x": target_cell.x,
 				"y": target_cell.y,
-				"card": _serialize_card(card),
+				"card": CardData.serialize(card),
 				"player_name": actor.name
 			}
 			game_manager.send_grid_action(action_data)
@@ -725,22 +725,3 @@ func _get_swipe_target_cell(card: CardData, screen_offset: Vector2) -> Vector2i:
 			best_cell = cell
 			
 	return best_cell
-
-# --- Helpers Serialization (Dupliqué pour éviter les dépendances circulaires complexes) ---
-func _serialize_card(card: CardData) -> Dictionary:
-	return {
-		"type": int(card.type),
-		"value": card.value,
-		"title": card.title,
-		"suit": card.suit,
-		"pattern": int(card.pattern)
-	}
-
-func _deserialize_card(data: Dictionary) -> CardData:
-	var card = CardData.new()
-	card.type = int(data.type)
-	card.value = int(data.value)
-	card.title = data.title
-	card.suit = data.suit
-	card.pattern = int(data.pattern)
-	return card
