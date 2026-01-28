@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://0cle83moyvrj"]
+[gd_scene format=3 uid="uid://0cle83moyvrj"]
 
 [ext_resource type="Script" uid="uid://cvfke4vmqc10k" path="res://scripts/Lobby.gd" id="1_o1atq"]
 
-[node name="Lobby" type="Control" node_paths=PackedStringArray("host_button", "join_button", "ip_input", "status_label")]
+[node name="Lobby" type="Control" unique_id=724538796 node_paths=PackedStringArray("host_button", "join_button", "ip_input", "status_label")]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_o1atq")
@@ -11,27 +11,27 @@ join_button = NodePath("VBoxContainer/JoinButton")
 ip_input = NodePath("VBoxContainer/IPInput")
 status_label = NodePath("VBoxContainer/StatusLabel")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=308580756]
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="Lobby" type="Label" parent="VBoxContainer"]
+[node name="Lobby" type="Label" parent="VBoxContainer" unique_id=1998797680]
 layout_mode = 2
 text = "Lobby"
 
-[node name="HostButton" type="Button" parent="VBoxContainer"]
+[node name="HostButton" type="Button" parent="VBoxContainer" unique_id=598056250]
 layout_mode = 2
 text = "Host Game"
 
-[node name="IPInput" type="LineEdit" parent="VBoxContainer"]
+[node name="IPInput" type="LineEdit" parent="VBoxContainer" unique_id=2103086952]
 layout_mode = 2
 placeholder_text = "127.0.0.1"
 
-[node name="JoinButton" type="Button" parent="VBoxContainer"]
+[node name="JoinButton" type="Button" parent="VBoxContainer" unique_id=587214496]
 layout_mode = 2
 text = "Join Game"
 
-[node name="StatusLabel" type="Label" parent="VBoxContainer"]
+[node name="StatusLabel" type="Label" parent="VBoxContainer" unique_id=1768009761]
 layout_mode = 2
 text = "Ready"
