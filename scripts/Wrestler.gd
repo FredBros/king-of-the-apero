@@ -23,6 +23,8 @@ var grid_position: Vector2i = Vector2i.ZERO
 # The AnimationPlayer must be assigned in the Inspector or found dynamically
 @export var animation_player: AnimationPlayer
 
+const FLOATING_FONT = preload("res://assets/fonts/Bangers-Regular.ttf")
+
 # Reference to the grid manager to convert grid pos to world pos
 var grid_manager: GridManager
 var is_ejected: bool = false
@@ -285,6 +287,7 @@ func _play_anim(anim_name: String) -> void:
 func show_floating_text(text: String, color: Color) -> void:
 	var label = Label3D.new()
 	label.text = text
+	label.font = FLOATING_FONT
 	label.modulate = color
 	label.font_size = 128
 	label.pixel_size = 0.004 # Ajuste la taille dans le monde 3D

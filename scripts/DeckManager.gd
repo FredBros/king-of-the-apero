@@ -34,7 +34,7 @@ func _create_standard_deck() -> void:
 	var suits = ["Spades", "Clubs", "Hearts", "Diamonds"]
 	
 	for suit in suits:
-		for rank in range(1, 14):
+		for rank in range(1, 13):
 			var card = CardData.new()
 			card.value = rank
 			card.suit = suit
@@ -47,9 +47,6 @@ func _create_standard_deck() -> void:
 			
 			# Set Rank Label
 			if rank == 1: card.rank_label = "A"
-			elif rank == 11: card.rank_label = "J"
-			elif rank == 12: card.rank_label = "Q"
-			elif rank == 13: card.rank_label = "K"
 			else: card.rank_label = str(rank)
 			
 			card.title = card.symbol + " " + card.rank_label

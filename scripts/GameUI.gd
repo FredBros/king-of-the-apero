@@ -49,6 +49,9 @@ func _ready() -> void:
 	var end_turn_btn = $EndTurnButton
 	end_turn_btn.pressed.connect(_on_end_turn_button_pressed)
 	
+	if hand_container:
+		hand_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	
 	# Connexion dynamique au GameManager
 	# On cherche le GameManager dans la scène (il devrait être un frère ou un parent)
 	var game_manager = get_tree().root.find_child("GameManager", true, false)

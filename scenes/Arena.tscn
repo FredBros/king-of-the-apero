@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://b8j4k5l6m7n8"]
+[gd_scene format=3 uid="uid://b8j4k5l6m7n8"]
 
 [ext_resource type="Script" uid="uid://bm7u7p8xw8nbr" path="res://scripts/Arena.gd" id="1_arena"]
 [ext_resource type="Script" uid="uid://mpnorh1sywyd" path="res://scripts/GridManager.gd" id="1_grid"]
@@ -22,35 +22,36 @@ fog_light_energy = 0.8
 adjustment_enabled = true
 adjustment_saturation = 0.8
 
-[node name="Arena" type="Node3D"]
+[node name="Arena" type="Node3D" unique_id=883135720]
 script = ExtResource("1_arena")
 
-[node name="GameManager" type="Node" parent="."]
+[node name="GameManager" type="Node" parent="." unique_id=1155179461]
 script = ExtResource("2_gamemanager")
 character_pool = Array[ExtResource("3_vyqrf")]([ExtResource("6_gcrh0"), ExtResource("7_vyqrf")])
+enable_hotseat_mode = true
 
-[node name="DeckManager" type="Node" parent="."]
+[node name="DeckManager" type="Node" parent="." unique_id=310878470]
 script = ExtResource("3_deckmanager")
 
-[node name="GridManager" type="Node3D" parent="."]
+[node name="GridManager" type="Node3D" parent="." unique_id=1846341533]
 script = ExtResource("1_grid")
 wrestler_scene = ExtResource("2_q751w")
 grid_size = Vector2i(5, 5)
 cell_size = 1.2
 
-[node name="CameraPivot" type="Node3D" parent="."]
+[node name="CameraPivot" type="Node3D" parent="." unique_id=1837482611]
 
-[node name="Camera3D" type="Camera3D" parent="CameraPivot"]
+[node name="Camera3D" type="Camera3D" parent="CameraPivot" unique_id=483330696]
 transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 8, 6)
 keep_aspect = 0
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2041952401]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 5, 0)
 light_color = Color(1, 0.8, 0.53333336, 1)
 shadow_enabled = true
 shadow_blur = 3.038
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1938561449]
 environment = SubResource("Environment_setup")
 
-[node name="GameUI" parent="." instance=ExtResource("3_gameui")]
+[node name="GameUI" parent="." unique_id=2022869753 instance=ExtResource("3_gameui")]
