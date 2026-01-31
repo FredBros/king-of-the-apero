@@ -296,6 +296,7 @@ func start_reaction_request(attack_card: CardData, valid_cards: Array[CardData])
 					is_valid = true
 					break
 			child.set_reaction_candidate(is_valid)
+			child.set_playable(is_valid) # Assure que les non-candidates soient grisées/réduites
 	
 	# 3. UI Controls
 	pass_button.show()
@@ -324,8 +325,6 @@ func _end_reaction_phase() -> void:
 		var child = wrapper.get_child(0) if wrapper.get_child_count() > 0 else null
 		if child is CardUI:
 			child.set_reaction_candidate(false)
-			# On remet la couleur normale (car set_reaction_candidate(false) grise tout par défaut dans notre implémentation)
-			child.modulate = child.base_color
 
 func update_cards_playability(playable_cards: Array[CardData]) -> void:
 	var playable_keys = []
@@ -338,19 +337,7 @@ func update_cards_playability(playable_cards: Array[CardData]) -> void:
 			var key = card_ui.card_data.title + "_" + card_ui.card_data.suit
 			var is_playable = key in playable_keys
 			
-			var target_scale = Vector2(1.0, 1.0) if is_playable else Vector2(0.8, 0.8)
-			
-			# On utilise la couleur de base de la carte pour ne pas perdre le Rouge/Noir
-			var base = card_ui.base_color if "base_color" in card_ui else Color.WHITE
-			var target_modulate = base if is_playable else base.darkened(0.5)
-
-			# Avoid creating tweens if already in the target state
-			if card_ui.scale.is_equal_approx(target_scale) and card_ui.modulate.is_equal_approx(target_modulate):
-				continue
-
-			var tween = create_tween().set_parallel()
-			tween.tween_property(card_ui, "scale", target_scale, 0.2).set_trans(Tween.TRANS_SINE)
-			tween.tween_property(card_ui, "modulate", target_modulate, 0.2).set_trans(Tween.TRANS_SINE)
+			card_ui.set_playable(is_playable)
 
 func show_game_over(winner_name: String) -> void:
 	if winner_name == "DRAW":

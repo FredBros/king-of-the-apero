@@ -24,12 +24,17 @@ var _touch_start_pos: Vector2
 var _is_touching: bool = false
 var _is_swiping: bool = false
 var _start_pos_local: Vector2
-var _tween: Tween
 var _is_selected: bool = false
 var _has_moved_significantly: bool = false
 var is_destroying: bool = false
-var _shake_tween: Tween
-var _idle_tween: Tween
+
+var is_playable: bool = true
+var is_reaction_candidate: bool = false
+var current_tier: int = 1
+var _target_scale: Vector2 = Vector2.ONE
+var _target_modulate: Color = Color.WHITE
+var _current_base_scale: Vector2 = Vector2.ONE
+var _discard_shake_intensity: float = 0.0
 
 func setup(data: CardData) -> void:
 	card_data = data
@@ -40,6 +45,8 @@ func _ready() -> void:
 	# Set pivot to center for nice scaling
 	resized.connect(func(): pivot_offset = size / 2)
 	pivot_offset = size / 2
+	
+	set_process(true)
 	
 	# Force un ratio carré pour correspondre au sous-bock
 	# Réduction de la taille (220 -> 140) pour que 5 cartes rentrent sur mobile
@@ -111,6 +118,46 @@ func _ready() -> void:
 	if card_data:
 		_update_visuals()
 
+func _process(delta: float) -> void:
+	if is_destroying: return
+	
+	# --- 1. Gestion de l'Échelle (Smooth Lerp) ---
+	# On lisse le changement d'échelle de base (Sélection, Drag...)
+	_current_base_scale = _current_base_scale.lerp(_target_scale, delta * 15.0)
+	
+	if card_visual:
+		card_visual.modulate = card_visual.modulate.lerp(_target_modulate, delta * 15.0)
+	
+	# --- 2. Vibration (Vibes.md) ---
+	# On ne vibre pas si on est en train de draguer la carte (pour la lisibilité)
+	var apply_vibe = not _is_touching
+	
+	var power = 1.0
+	match current_tier:
+		1: power = 1.0
+		2: power = 4.0
+		3: power = 7.0
+		4: power = 10.0
+	
+	# Intensité globale
+	var intensity = power * 0.5
+	
+	# Jitter de Rotation (Chaos contrôlé)
+	# On ajoute l'intensité du "Discard Shake" si nécessaire
+	var total_rot_intensity = intensity + _discard_shake_intensity
+	var rot_jitter = 0.0
+	if apply_vibe or _discard_shake_intensity > 0.0:
+		rot_jitter = deg_to_rad(randf_range(-total_rot_intensity * 0.5, total_rot_intensity * 0.5))
+	
+	rotation = rot_jitter
+	
+	# Jitter d'Échelle (Effet "Pulsation / Envie de sauter")
+	var s_jitter = 1.0
+	if apply_vibe:
+		s_jitter = 1.0 + (randf_range(0.0, intensity) * 0.005)
+	
+	scale = _current_base_scale * s_jitter
+
 func _update_aura_geometry() -> void:
 	if not aura_rect: return
 	var margin = 30
@@ -139,6 +186,7 @@ func _update_visuals() -> void:
 	if card_data.suit == "Joker":
 		filename = "coaster_joker.png"
 		tier = 4 # Joker est considéré Tier Max pour les effets
+	current_tier = int(tier)
 	
 	var texture_path = "res://assets/Cards/" + filename
 	if ResourceLoader.exists(texture_path):
@@ -177,33 +225,33 @@ func _update_visuals() -> void:
 		aura_rect.material.set_shader_parameter("speed", pulse_speed * 0.5) # Ajustement vitesse shader
 		aura_rect.material.set_shader_parameter("intensity", intensity)
 
-	# --- 3. Animation Idle (Frétillement) ---
-	_start_idle_anim(tier)
+func set_playable(playable: bool) -> void:
+	is_playable = playable
+	_update_visual_state()
 
-func _start_idle_anim(tier: int) -> void:
-	if _idle_tween: _idle_tween.kill()
-	_idle_tween = create_tween().set_loops()
-	
-	var shake_angle = 0.0
-	var duration = 1.0
-	
-	match tier:
-		1:
-			shake_angle = 1.0
-			duration = 2.0
-		2:
-			shake_angle = 2.0
-			duration = 1.0
-		3:
-			shake_angle = 3.0
-			duration = 0.5
-		4:
-			shake_angle = 5.0
-			duration = 0.2
-	
-	# Petit mouvement de rotation aléatoire/organique
-	_idle_tween.tween_property(self , "rotation_degrees", shake_angle, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	_idle_tween.tween_property(self , "rotation_degrees", -shake_angle, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+func _update_visual_state() -> void:
+	if is_reaction_candidate:
+		_target_modulate = Color(1.5, 1.5, 1.5)
+		_target_scale = Vector2(1.4, 1.4)
+		z_index = 10
+		return
+
+	if _is_touching:
+		_target_modulate = Color(1.5, 1.5, 1.5)
+		_target_scale = Vector2(1.2, 1.2)
+		z_index = 10
+	elif _is_selected:
+		_target_modulate = Color(1.5, 1.5, 1.5)
+		_target_scale = Vector2(1.2, 1.2)
+		z_index = 1
+	else:
+		z_index = 0
+		if is_playable:
+			_target_modulate = Color.WHITE
+			_target_scale = Vector2.ONE
+		else:
+			_target_modulate = Color(0.5, 0.5, 0.5)
+			_target_scale = Vector2(0.8, 0.8)
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -214,10 +262,10 @@ func _gui_input(event: InputEvent) -> void:
 			_is_touching = true
 			_is_swiping = false
 			_has_moved_significantly = false
+			_update_visual_state()
 			
 			# Visual feedback on press
 			z_index = 10
-			_animate_scale(Vector2(1.2, 1.2))
 		else:
 			# Release
 			if _is_swiping:
@@ -235,13 +283,7 @@ func _gui_input(event: InputEvent) -> void:
 				var pos_tween = create_tween()
 				pos_tween.tween_property(self , "position", _start_pos_local, 0.2).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 				
-				# Reset Z-Index and Scale based on selection state
-				if _is_selected:
-					z_index = 1
-					_animate_scale(Vector2(1.2, 1.2))
-				else:
-					z_index = 0
-					_animate_scale(Vector2(1.0, 1.0))
+				_update_visual_state()
 			
 	elif event is InputEventMouseMotion and _is_touching:
 		var offset = event.global_position - _touch_start_pos
@@ -262,33 +304,11 @@ func _gui_input(event: InputEvent) -> void:
 
 func set_selected(selected: bool) -> void:
 	_is_selected = selected
-	if selected:
-		# Highlight by making it brighter
-		card_visual.modulate = Color(1.5, 1.5, 1.5)
-		_animate_scale(Vector2(1.2, 1.2))
-		z_index = 1
-	else:
-		card_visual.modulate = Color.WHITE
-		_animate_scale(Vector2(1.0, 1.0))
-		z_index = 0
-
-func _animate_scale(target: Vector2) -> void:
-	if _tween: _tween.kill()
-	_tween = create_tween()
-	_tween.tween_property(self , "scale", target, 0.15).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_update_visual_state()
 
 func set_reaction_candidate(is_candidate: bool) -> void:
-	if is_candidate:
-		# Zoom et mise en avant
-		self.scale = Vector2(1.4, 1.4)
-		self.z_index = 10 # Passer au premier plan
-		card_visual.modulate = Color(1.5, 1.5, 1.5) # Plus brillant
-		# On pourrait ajouter un shader de contour ici plus tard
-	else:
-		# Retour à la normale (ou grisé si on veut montrer qu'elles sont invalides)
-		self.scale = Vector2(1.0, 1.0)
-		self.z_index = 0
-		card_visual.modulate = Color(0.5, 0.5, 0.5) # On grise les cartes non valides
+	is_reaction_candidate = is_candidate
+	_update_visual_state()
 
 func _get_suit_icon(suit: String) -> String:
 	match suit:
@@ -303,25 +323,12 @@ func set_discard_hover_state(state: bool) -> void:
 	if is_destroying: return
 	
 	if state:
-		if not _shake_tween or not _shake_tween.is_valid():
-			_start_shake()
+		_discard_shake_intensity = 5.0 # Degrés de vibration supplémentaire
 	else:
-		if _shake_tween:
-			_shake_tween.kill()
-			_shake_tween = null
-			rotation_degrees = 0
-
-func _start_shake() -> void:
-	if _shake_tween: _shake_tween.kill()
-	_shake_tween = create_tween().set_loops()
-	_shake_tween.tween_property(self , "rotation_degrees", 5.0, 0.05)
-	_shake_tween.tween_property(self , "rotation_degrees", -5.0, 0.05)
+		_discard_shake_intensity = 0.0
 
 func animate_destruction() -> void:
 	is_destroying = true
-	# Ensure shake continues or starts
-	if not _shake_tween or not _shake_tween.is_valid():
-		_start_shake()
 	
 	var tween = create_tween()
 	tween.tween_property(self , "scale", Vector2.ZERO, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
