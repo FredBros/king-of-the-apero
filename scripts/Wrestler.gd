@@ -121,7 +121,7 @@ func _perform_move(new_pos: Vector2i) -> void:
 	# Animate the movement
 	_play_anim(anim_walk)
 	var tween = create_tween()
-	tween.tween_property(self, "position", target_world_pos, 0.8).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self , "position", target_world_pos, 0.8).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.tween_callback(func():
 		_play_anim(anim_idle)
 		is_busy = false
@@ -170,7 +170,7 @@ func take_damage(amount: int, skip_anim: bool = false) -> void:
 		is_busy = true
 		print("Wrestler died. Attempting to play 'KO' animation.")
 		_play_anim(anim_ko)
-		died.emit(self)
+		died.emit(self )
 	else:
 		if not skip_anim:
 			perform_hurt_sequence()
@@ -202,7 +202,7 @@ func set_network_health(value: int) -> void:
 	if current_health <= 0:
 		if previous_health > 0:
 			_play_anim(anim_ko)
-		died.emit(self)
+		died.emit(self )
 	elif current_health < previous_health:
 		_play_anim(anim_hurt)
 		await get_tree().create_timer(0.5).timeout
@@ -224,14 +224,14 @@ func push_to(new_pos: Vector2i) -> void:
 		# Visuals: Keep on ground level for now
 		
 		var tween = create_tween()
-		tween.tween_property(self, "position", target_world_pos, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween.tween_property(self , "position", target_world_pos, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		tween.tween_callback(func(): _play_anim(anim_ko))
 		
 		# Recovery Sequence (4 seconds later)
 		get_tree().create_timer(4.0).timeout.connect(func(): _recover_from_ejection(old_pos))
 	else:
 		var tween = create_tween()
-		tween.tween_property(self, "position", target_world_pos, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween.tween_property(self , "position", target_world_pos, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		tween.tween_callback(func():
 			is_busy = false
 			action_completed.emit()

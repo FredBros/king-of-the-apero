@@ -1,37 +1,90 @@
 [gd_scene format=3 uid="uid://0cle83moyvrj"]
 
 [ext_resource type="Script" uid="uid://cvfke4vmqc10k" path="res://scripts/Lobby.gd" id="1_o1atq"]
+[ext_resource type="Theme" uid="uid://l8sbafea8ujc" path="res://resources/Themes/bar_theme.tres" id="1_qbi84"]
+[ext_resource type="Texture2D" uid="uid://cfo2dwpsi6etg" path="res://assets/UI/cardboard.png" id="3_oeg6l"]
+[ext_resource type="Texture2D" uid="uid://bpl4twv8iu2tq" path="res://assets/UI/folklore_on_tape_title.png" id="4_1yh37"]
 
 [node name="Lobby" type="Control" unique_id=724538796 node_paths=PackedStringArray("host_button", "join_button", "ip_input", "status_label")]
 layout_mode = 3
-anchors_preset = 0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_qbi84")
 script = ExtResource("1_o1atq")
-host_button = NodePath("VBoxContainer/HostButton")
-join_button = NodePath("VBoxContainer/JoinButton")
-ip_input = NodePath("VBoxContainer/IPInput")
-status_label = NodePath("VBoxContainer/StatusLabel")
+host_button = NodePath("Cardboard/MarginContainer/VBoxContainer/HostButton")
+join_button = NodePath("Cardboard/MarginContainer/VBoxContainer/JoinButton")
+ip_input = NodePath("Cardboard/MarginContainer/VBoxContainer/IPInput")
+status_label = NodePath("Cardboard/MarginContainer/VBoxContainer/StatusLabel")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=308580756]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="Background" type="ColorRect" parent="." unique_id=682701638]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.09411765, 0.078431375, 0.14509805, 1)
 
-[node name="Lobby" type="Label" parent="VBoxContainer" unique_id=1998797680]
+[node name="Cardboard" type="TextureRect" parent="." unique_id=1896768988]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_oeg6l")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MarginContainer" type="MarginContainer" parent="Cardboard" unique_id=1761771700]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 100
+theme_override_constants/margin_top = 150
+theme_override_constants/margin_right = 100
+theme_override_constants/margin_bottom = 150
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Cardboard/MarginContainer" unique_id=308580756]
+layout_mode = 2
+theme_override_constants/separation = 19
+
+[node name="TitleImage" type="TextureRect" parent="Cardboard/MarginContainer/VBoxContainer" unique_id=1041536950]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+size_flags_vertical = 0
+texture = ExtResource("4_1yh37")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Lobby" type="Label" parent="Cardboard/MarginContainer/VBoxContainer" unique_id=1998797680]
+visible = false
 layout_mode = 2
 text = "Lobby"
+horizontal_alignment = 1
 
-[node name="HostButton" type="Button" parent="VBoxContainer" unique_id=598056250]
+[node name="HostButton" type="Button" parent="Cardboard/MarginContainer/VBoxContainer" unique_id=598056250]
 layout_mode = 2
 text = "Host Game"
 
-[node name="IPInput" type="LineEdit" parent="VBoxContainer" unique_id=2103086952]
+[node name="IPInput" type="LineEdit" parent="Cardboard/MarginContainer/VBoxContainer" unique_id=2103086952]
 layout_mode = 2
 placeholder_text = "127.0.0.1"
+alignment = 1
 
-[node name="JoinButton" type="Button" parent="VBoxContainer" unique_id=587214496]
+[node name="JoinButton" type="Button" parent="Cardboard/MarginContainer/VBoxContainer" unique_id=587214496]
 layout_mode = 2
 text = "Join Game"
 
-[node name="StatusLabel" type="Label" parent="VBoxContainer" unique_id=1768009761]
+[node name="StatusLabel" type="Label" parent="Cardboard/MarginContainer/VBoxContainer" unique_id=1768009761]
 layout_mode = 2
+theme_override_font_sizes/font_size = 40
 text = "Ready"
+horizontal_alignment = 1
+autowrap_mode = 2

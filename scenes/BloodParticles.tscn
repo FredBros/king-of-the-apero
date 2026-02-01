@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://b8q4y2x5j3k1"]
+
+[ext_resource type="Script" path="res://scripts/OneShotParticles.gd" id="1_script"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_blood"]
+albedo_color = Color(0.85, 0.1, 0.1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_blood"]
+material = SubResource("StandardMaterial3D_blood")
+size = Vector3(0.15, 0.15, 0.15)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_blood"]
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 3.0
+initial_velocity_max = 6.0
+scale_min = 0.5
+scale_max = 1.2
+
+[node name="BloodParticles" type="GPUParticles3D"]
+emitting = false
+amount = 20
+lifetime = 0.6
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_blood")
+draw_pass_1 = SubResource("BoxMesh_blood")
+script = ExtResource("1_script")

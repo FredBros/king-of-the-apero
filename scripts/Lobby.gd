@@ -63,12 +63,16 @@ func _ready() -> void:
 	qr_texture_rect = TextureRect.new()
 	qr_texture_rect.custom_minimum_size = Vector2(300, 300) # Plus grand pour être lisible de loin
 	qr_texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	qr_texture_rect.size_flags_horizontal = Control.SIZE_SHRINK_CENTER # Centre le QR code horizontalement
 	qr_texture_rect.hide()
 	
 	# Container pour les boutons de partage
-	var buttons_container = HBoxContainer.new()
-	buttons_container.alignment = BoxContainer.ALIGNMENT_CENTER
-	buttons_container.add_theme_constant_override("separation", 20)
+	# Utilisation de HFlowContainer pour que les boutons passent à la ligne si l'écran est étroit
+	var buttons_container = HFlowContainer.new()
+	buttons_container.alignment = FlowContainer.ALIGNMENT_CENTER
+	buttons_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	buttons_container.add_theme_constant_override("h_separation", 20)
+	buttons_container.add_theme_constant_override("v_separation", 10)
 	
 	copy_link_button = Button.new()
 	copy_link_button.text = "COPY"
@@ -128,6 +132,13 @@ func _on_nakama_ready() -> void:
 
 func _on_connection_success() -> void:
 	if status_label: status_label.text = "Connected! Waiting for game..."
+	
+	# Si on est le client qui rejoint, on cache aussi l'interface de connexion
+	if not NetworkManager.is_host:
+		if host_button: host_button.hide()
+		if join_button: join_button.hide()
+		if ip_input: ip_input.hide()
+
 	# Check immediately if we already have peers (e.g. late join or bridge already synced)
 	if start_game_timer.is_inside_tree():
 		start_game_timer.start() # Start polling
@@ -139,6 +150,10 @@ func _on_match_hosted(match_id: String) -> void:
 	if ip_input:
 		ip_input.text = match_id
 		ip_input.editable = false # On verrouille pour montrer que c'est un output
+	
+	# On cache les boutons Host/Join pour épurér l'interface et laisser la place au QR Code
+	if host_button: host_button.hide()
+	if join_button: join_button.hide()
 	
 	# Generate Invite Link
 	# On ajoute un paramètre factice (&v=1) à la fin pour protéger le point final de l'ID.
