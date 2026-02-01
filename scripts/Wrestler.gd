@@ -24,6 +24,7 @@ var grid_position: Vector2i = Vector2i.ZERO
 @export var animation_player: AnimationPlayer
 
 const FLOATING_FONT = preload("res://assets/fonts/Bangers-Regular.ttf")
+const BLOOD_VFX = preload("res://scenes/BloodParticles.tscn")
 
 # Reference to the grid manager to convert grid pos to world pos
 var grid_manager: GridManager
@@ -144,6 +145,11 @@ func attack(target: Wrestler, will_hit: bool = false) -> void:
 	# Fallback timer (slightly longer to allow anim event to fire)
 	await get_tree().create_timer(0.8).timeout
 	
+	# Safety check: If the animation event didn't fire (e.g. missing track), trigger impact now
+	if trigger_hurt_on_hit and combat_target:
+		combat_target.play_hurt_animation()
+		trigger_hurt_on_hit = false
+	
 	_play_anim(anim_idle)
 	is_busy = false
 	action_completed.emit()
@@ -157,6 +163,7 @@ func on_hit_frame() -> void:
 		trigger_hurt_on_hit = false
 
 func play_hurt_animation() -> void:
+	_spawn_blood_effect()
 	perform_hurt_sequence()
 
 # Apply damage to the wrestler
@@ -167,12 +174,14 @@ func take_damage(amount: int, skip_anim: bool = false) -> void:
 	print(name, " took ", amount, " damage. HP: ", current_health)
 	
 	if current_health <= 0:
+		_spawn_blood_effect()
 		is_busy = true
 		print("Wrestler died. Attempting to play 'KO' animation.")
 		_play_anim(anim_ko)
 		died.emit(self )
 	else:
 		if not skip_anim:
+			_spawn_blood_effect()
 			perform_hurt_sequence()
 
 func perform_hurt_sequence() -> void:
@@ -204,9 +213,7 @@ func set_network_health(value: int) -> void:
 			_play_anim(anim_ko)
 		died.emit(self )
 	elif current_health < previous_health:
-		_play_anim(anim_hurt)
-		await get_tree().create_timer(0.5).timeout
-		_play_anim(anim_idle)
+		perform_hurt_sequence()
 
 # Force move the wrestler (can push out of bounds)
 func push_to(new_pos: Vector2i) -> void:
@@ -319,6 +326,13 @@ func show_floating_text(text: String, color: Color) -> void:
 	tween.tween_property(label, "position:y", label.position.y + 1.0, 1.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tween.tween_property(label, "modulate:a", 0.0, 0.5).set_delay(1.0)
 	tween.chain().tween_callback(label.queue_free)
+
+func _spawn_blood_effect() -> void:
+	if BLOOD_VFX:
+		var vfx = BLOOD_VFX.instantiate()
+		if vfx:
+			add_child(vfx)
+			vfx.position = Vector3(0, 1.5, 0) # Hauteur approximative du torse
 
 func set_collision_enabled(enabled: bool) -> void:
 	if collision_shape:

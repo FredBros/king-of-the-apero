@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="WrestlerData" load_steps=3 format=3 uid="uid://drqnd1ajpdodo"]
+[gd_resource type="Resource" script_class="WrestlerData" format=3 uid="uid://drqnd1ajpdodo"]
 
 [ext_resource type="PackedScene" uid="uid://cr44j0ywvb21d" path="res://scenes/Players/MrEggPlant/mr_eggplant.tscn" id="1_2txoo"]
 [ext_resource type="Script" uid="uid://c4kx8fgyrsuv6" path="res://scripts/WrestlerData.gd" id="1_5walk"]
@@ -7,6 +7,5 @@
 script = ExtResource("1_5walk")
 id = "mr_eggplant"
 display_name = "MrEggPlant"
-max_health = 2
 model_scene = ExtResource("1_2txoo")
 metadata/_custom_type_script = "uid://c4kx8fgyrsuv6"

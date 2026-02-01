@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://dnc417x07353p"]
+[gd_scene format=3 uid="uid://dnc417x07353p"]
 
 [ext_resource type="Script" uid="uid://bk0urxjh033xy" path="res://scripts/Wrestler.gd" id="1_83s1c"]
 [ext_resource type="Script" uid="uid://c4kx8fgyrsuv6" path="res://scripts/WrestlerData.gd" id="2_i8vlu"]
@@ -10,11 +10,11 @@ metadata/_custom_type_script = "uid://c4kx8fgyrsuv6"
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_i8vlu"]
 height = 1.8
 
-[node name="Wrestler" type="CharacterBody3D"]
+[node name="Wrestler" type="CharacterBody3D" unique_id=1536401217]
 script = ExtResource("1_83s1c")
 wrestler_data = SubResource("Resource_16ftt")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=618426190]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00785327, 0.9420959, 0)
 shape = SubResource("CapsuleShape3D_i8vlu")
 disabled = true
