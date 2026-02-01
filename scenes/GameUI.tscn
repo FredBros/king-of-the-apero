@@ -1,16 +1,16 @@
-[gd_scene load_steps=4 format=3 uid="uid://g1h2i3j4k5l6"]
+[gd_scene format=3 uid="uid://g1h2i3j4k5l6"]
 
 [ext_resource type="Script" uid="uid://du3ndwc5toxcm" path="res://scripts/GameUI.gd" id="1_gameui"]
 [ext_resource type="PackedScene" uid="uid://c8j2k3l4m5n6" path="res://scenes/CardUI.tscn" id="2_cardui"]
 [ext_resource type="PackedScene" uid="uid://ul6duyq4iklg" path="res://scenes/UI/PlayerInfo/PlayerInfo.tscn" id="3_4s3j0"]
 
-[node name="GameUI" type="CanvasLayer" node_paths=PackedStringArray("top_player_info", "bottom_player_info")]
+[node name="GameUI" type="CanvasLayer" unique_id=77095954 node_paths=PackedStringArray("top_player_info", "bottom_player_info")]
 script = ExtResource("1_gameui")
 top_player_info = NodePath("TopPlayerInfo")
 bottom_player_info = NodePath("BottomPlayerInfo")
 card_ui_scene = ExtResource("2_cardui")
 
-[node name="HandContainer" type="HBoxContainer" parent="."]
+[node name="HandContainer" type="HBoxContainer" parent="." unique_id=1069666716]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -24,7 +24,7 @@ grow_horizontal = 2
 grow_vertical = 0
 alignment = 1
 
-[node name="TurnInfoContainer" type="PanelContainer" parent="."]
+[node name="TurnInfoContainer" type="PanelContainer" parent="." unique_id=1539782180]
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
@@ -34,15 +34,15 @@ offset_right = 100.0
 offset_bottom = 80.0
 grow_horizontal = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TurnInfoContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="TurnInfoContainer" unique_id=1126347876]
 layout_mode = 2
 
-[node name="TurnLabel" type="Label" parent="TurnInfoContainer/VBoxContainer"]
+[node name="TurnLabel" type="Label" parent="TurnInfoContainer/VBoxContainer" unique_id=871603831]
 layout_mode = 2
 text = "Player's Turn"
 horizontal_alignment = 1
 
-[node name="EndTurnButton" type="Button" parent="."]
+[node name="EndTurnButton" type="Button" parent="." unique_id=1388120301]
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -56,7 +56,7 @@ grow_horizontal = 0
 grow_vertical = 0
 text = "END TURN"
 
-[node name="GameOverContainer" type="CenterContainer" parent="."]
+[node name="GameOverContainer" type="CenterContainer" parent="." unique_id=1593983805]
 visible = false
 anchors_preset = 15
 anchor_right = 1.0
@@ -64,35 +64,35 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="PanelContainer" parent="GameOverContainer"]
+[node name="Panel" type="PanelContainer" parent="GameOverContainer" unique_id=2121975109]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="GameOverContainer/Panel"]
+[node name="MarginContainer" type="MarginContainer" parent="GameOverContainer/Panel" unique_id=1141623312]
 layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="VBoxContainer" type="VBoxContainer" parent="GameOverContainer/Panel/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="GameOverContainer/Panel/MarginContainer" unique_id=1471542382]
 layout_mode = 2
 
-[node name="WinnerLabel" type="Label" parent="GameOverContainer/Panel/MarginContainer/VBoxContainer"]
+[node name="WinnerLabel" type="Label" parent="GameOverContainer/Panel/MarginContainer/VBoxContainer" unique_id=1450060083]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "WINNER!"
 horizontal_alignment = 1
 
-[node name="RestartButton" type="Button" parent="GameOverContainer/Panel/MarginContainer/VBoxContainer"]
+[node name="RestartButton" type="Button" parent="GameOverContainer/Panel/MarginContainer/VBoxContainer" unique_id=313932704]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 text = "RESTART MATCH"
 
-[node name="QuitButton" type="Button" parent="GameOverContainer/Panel/MarginContainer/VBoxContainer"]
+[node name="QuitButton" type="Button" parent="GameOverContainer/Panel/MarginContainer/VBoxContainer" unique_id=707802481]
 layout_mode = 2
 text = "QUIT TO MENU"
 
-[node name="TopPlayerInfo" parent="." instance=ExtResource("3_4s3j0")]
+[node name="TopPlayerInfo" parent="." unique_id=1973454056 instance=ExtResource("3_4s3j0")]
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
@@ -101,7 +101,7 @@ offset_bottom = 23.0
 grow_horizontal = 1
 grow_vertical = 1
 
-[node name="BottomPlayerInfo" parent="." instance=ExtResource("3_4s3j0")]
+[node name="BottomPlayerInfo" parent="." unique_id=576959499 instance=ExtResource("3_4s3j0")]
 anchors_preset = 2
 anchor_top = 1.0
 anchor_right = 0.0
