@@ -11,6 +11,7 @@ signal game_restarted
 signal rematch_update(current_votes: int, total_required: int)
 signal refresh_hand_requested(player_name: String)
 signal game_over(winner_name: String)
+signal game_paused(paused: bool, initiator_name: String)
 
 @export var hand_size_limit: int = 5
 @export var cards_drawn_per_turn: int = 2
@@ -461,6 +462,8 @@ func _on_network_message(data: Dictionary) -> void:
 		"GAME_OVER_DECK_EMPTY":
 			is_game_active = false
 			game_over.emit(data["winner"])
+		"SYNC_PAUSE":
+			game_paused.emit(data["paused"], data["player_name"])
 
 func _handle_sync_turn(player_name: String) -> void:
 	print("Sync Turn: ", player_name)
@@ -574,6 +577,16 @@ func _handle_sync_card_played(card_dict: Dictionary, player_name: String) -> voi
 	var card = CardData.deserialize(card_dict)
 	_remove_card_from_hand(player_name, card)
 	card_discarded.emit(card)
+
+func send_pause_state(paused: bool) -> void:
+	if enable_hotseat_mode: return
+	
+	var my_name = _get_my_player_name()
+	NetworkManager.send_message({
+		"type": "SYNC_PAUSE",
+		"paused": paused,
+		"player_name": my_name
+	})
 
 # --- Generic Grid/Health Sync ---
 

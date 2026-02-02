@@ -40,6 +40,12 @@ func _load_config() -> void:
 		PORT = config.get_value("nakama", "port", PORT)
 		SERVER_KEY = config.get_value("nakama", "server_key", SERVER_KEY)
 		print("🔒 Configuration loaded from secrets.cfg")
+	elif not OS.is_debug_build():
+		# Configuration de Production (Export) - S'active automatiquement sur itch.io / Android APK
+		SCHEME = "https"
+		HOST = "kotapero.xyz"
+		PORT = 443 # Caddy gère le SSL sur le port standard HTTPS
+		print("🚀 Release Mode detected. Using Production Server: ", HOST)
 	else:
 		print("⚠️ No secrets.cfg found. Using default (Localhost) configuration.")
 

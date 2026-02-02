@@ -6,6 +6,14 @@ extends Node3D
 @onready var camera_pivot: Node3D = $CameraPivot
 @onready var deck_manager: DeckManager = $DeckManager
 
+@export_group("UI - Tutorial")
+@export var help_button: Button
+@export var tutorial_overlay: Control
+@export var tutorial_close_button: Button
+@export var remote_pause_overlay: Control
+
+var is_remote_paused: bool = false
+
 func _ready() -> void:
 	# Connect the UI signal to the GridManager
 	if game_ui and grid_manager:
@@ -46,6 +54,8 @@ func _ready() -> void:
 			game_ui.update_turn_info(player_name)
 		)
 		
+		game_manager.game_paused.connect(_on_remote_game_paused)
+		
 		game_manager.game_over.connect(func(winner_name):
 			game_ui.show_game_over(winner_name)
 			game_manager.is_game_active = false
@@ -84,6 +94,17 @@ func _ready() -> void:
 	var camera = get_viewport().get_camera_3d()
 	if camera and camera.projection == Camera3D.PROJECTION_PERSPECTIVE:
 		camera.fov = 50.0
+		
+	# Setup Tutorial UI from editor nodes
+	if help_button:
+		help_button.pressed.connect(_toggle_tutorial.bind(true))
+	if tutorial_close_button:
+		tutorial_close_button.pressed.connect(_toggle_tutorial.bind(false))
+	
+	if tutorial_overlay:
+		tutorial_overlay.visible = false
+	if remote_pause_overlay:
+		remote_pause_overlay.visible = false
 
 func _check_hand_playability() -> void:
 	print("Arena: Checking hand playability...")
@@ -143,3 +164,31 @@ func _update_ui_player_perspectives() -> void:
 			
 	if local_wrestler and remote_wrestler:
 		game_ui.set_player_perspectives(local_wrestler, remote_wrestler)
+
+func _toggle_tutorial(show: bool) -> void:
+	if tutorial_overlay:
+		tutorial_overlay.visible = show
+	
+	if game_manager:
+		game_manager.send_pause_state(show)
+		
+	_update_pause_state()
+
+func _on_remote_game_paused(paused: bool, _initiator: String) -> void:
+	is_remote_paused = paused
+	_update_pause_state()
+
+func _update_pause_state() -> void:
+	if not tutorial_overlay: return
+	
+	var local_paused = tutorial_overlay.visible
+	
+	# Show remote overlay only if we are paused remotely AND not looking at our own tutorial
+	if remote_pause_overlay:
+		remote_pause_overlay.visible = is_remote_paused and not local_paused
+	
+	var should_pause = local_paused or is_remote_paused
+	get_tree().paused = should_pause
+	
+	if help_button:
+		help_button.visible = not should_pause

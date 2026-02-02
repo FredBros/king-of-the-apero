@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bm7u7p8xw8nbr" path="res://scripts/Arena.gd" id="1_arena"]
 [ext_resource type="Script" uid="uid://mpnorh1sywyd" path="res://scripts/GridManager.gd" id="1_grid"]
 [ext_resource type="Script" uid="uid://rmsxo0i2est7" path="res://scripts/GameManager.gd" id="2_gamemanager"]
+[ext_resource type="StyleBox" uid="uid://don6iicedepap" path="res://resources/Themes/tuto_quit_btn.tres" id="2_i77e3"]
 [ext_resource type="PackedScene" uid="uid://dnc417x07353p" path="res://scenes/Wrestler.tscn" id="2_q751w"]
 [ext_resource type="Script" uid="uid://dvgxpjr62ex68" path="res://scripts/DeckManager.gd" id="3_deckmanager"]
 [ext_resource type="PackedScene" uid="uid://g1h2i3j4k5l6" path="res://scenes/GameUI.tscn" id="3_gameui"]
@@ -22,8 +23,128 @@ fog_light_energy = 0.8
 adjustment_enabled = true
 adjustment_saturation = 0.8
 
-[node name="Arena" type="Node3D" unique_id=883135720]
+[node name="Arena" type="Node3D" unique_id=883135720 node_paths=PackedStringArray("help_button", "tutorial_overlay", "tutorial_close_button", "remote_pause_overlay")]
 script = ExtResource("1_arena")
+help_button = NodePath("TutorialLayer/HelpButton")
+tutorial_overlay = NodePath("TutorialLayer/TutorialOverlay")
+tutorial_close_button = NodePath("TutorialLayer/TutorialOverlay/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/TutorialCloseButton")
+remote_pause_overlay = NodePath("TutorialLayer/RemotePauseOverlay")
+
+[node name="TutorialLayer" type="CanvasLayer" parent="." unique_id=520697397]
+process_mode = 3
+layer = 100
+
+[node name="HelpButton" type="Button" parent="TutorialLayer" unique_id=1921581909]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -110.0
+offset_top = 20.0
+offset_right = -50.0
+offset_bottom = 80.0
+grow_horizontal = 0
+tooltip_text = "Instructions"
+theme_override_styles/normal = ExtResource("2_i77e3")
+text = "?"
+
+[node name="TutorialOverlay" type="Control" parent="TutorialLayer" unique_id=1608363519]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="TutorialLayer/TutorialOverlay" unique_id=440019432]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="PanelContainer" type="PanelContainer" parent="TutorialLayer/TutorialOverlay" unique_id=1569377714]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="TutorialLayer/TutorialOverlay/PanelContainer" unique_id=244960442]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TutorialLayer/TutorialOverlay/PanelContainer/MarginContainer" unique_id=1344230761]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TutorialLayer/TutorialOverlay/PanelContainer/MarginContainer/VBoxContainer" unique_id=2146772757]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="TutorialLayer/TutorialOverlay/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1756045915]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "REGLES"
+horizontal_alignment = 1
+
+[node name="TutorialCloseButton" type="Button" parent="TutorialLayer/TutorialOverlay/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1917283041]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = ExtResource("2_i77e3")
+text = "X"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TutorialLayer/TutorialOverlay/PanelContainer/MarginContainer/VBoxContainer" unique_id=1798038245]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RulesLabel" type="RichTextLabel" parent="TutorialLayer/TutorialOverlay/PanelContainer/MarginContainer/VBoxContainer/ScrollContainer" unique_id=1484901469]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 30
+theme_override_font_sizes/bold_font_size = 30
+theme_override_font_sizes/bold_italics_font_size = 30
+theme_override_font_sizes/italics_font_size = 30
+theme_override_font_sizes/mono_font_size = 30
+bbcode_enabled = true
+text = "[center]
+[font_size=40][color=#be4a2f]BIENVENUE AU BAR ![/color][/font_size]
+[color=#e4a672]1.[/color] [shake rate=20 level=10][b]PIOCHE[/b][/shake] : [color=#be4a2f]52 [/color][color=#be4a2f]soubocks[/color] en tout. Pioche commune. Pioche maxi [color=#be4a2f]2 [/color] [color=#be4a2f]soubocks[/color], pas plus de [color=#be4a2f]5[/color] [color=#be4a2f]soubocks[/color] en main
+[color=#e4a672]1.[/color] [shake rate=20 level=10][b]JOUE[/b][/shake] : Autant de [color=#be4a2f]soubocks[/color] que tu veux. Les [outline_size=4][outline_color=#e4a672][color=#be4a2f]rouges[/color][/outline_color][/outline_size] cognent, les [outline_size=4][outline_color=#e4a672][color=#262b44]noirs[/color][/outline_color][/outline_size] bougent. Surveille les fleches.  Jette les [color=#be4a2f]soubocks[/color] [outline_size=4][outline_color=#e4a672][color=#262b44]noirs[/color][/outline_color][/outline_size] dans la direction que tu veux pour bouger.Brule ce qui ne t'interresse pas. Tu es AFK ? le public de jette des trucs contendants à la tête.
+[color=#e4a672]2.[/color] [shake rate=20 level=10][b]COGNE[/b][/shake] : Jette les [outline_size=4][outline_color=#e4a672][color=#be4a2f]rouges[/color][/outline_color][/outline_size] sur le bar pour cogner. Ecrase l'adversaire avec un [outline_size=4][outline_color=#e4a672][color=#be4a2f]rouge[/color][/outline_color][/outline_size] pour le pousser. Si possible hors du ring !
+[color=#e4a672]3.[/color] [shake rate=20 level=10][b]DEFEND TOI[/b][/shake] : Une attaque se bloque avec le meme soubock [outline_size=4][outline_color=#e4a672][color=#be4a2f]rouge[/color][/outline_color][/outline_size], plus puissant. Une attaque s'esquive avec le sousbock opposé [outline_size=4][outline_color=#e4a672][color=#262b44]noir[/color][/outline_color][/outline_size], plus puissant.
+
+[font_size=18][i][color=#686e86]\"Pas de pitié, c'est du folklore.\"[/color][/i][/font_size]
+[/center]"
+fit_content = true
+
+[node name="RemotePauseOverlay" type="PanelContainer" parent="TutorialLayer" unique_id=223846687]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="TutorialLayer/RemotePauseOverlay" unique_id=1513491067]
+layout_mode = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="Label" type="Label" parent="TutorialLayer/RemotePauseOverlay" unique_id=999110967]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "GAME PAUSED
+
+Opponent is checking the rules..."
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="GameManager" type="Node" parent="." unique_id=1155179461]
 script = ExtResource("2_gamemanager")
