@@ -1,9 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://d1ru4aj524ukk"]
+[gd_scene format=3 uid="uid://d1ru4aj524ukk"]
 
 [ext_resource type="PackedScene" uid="uid://dbqpm1b4l2myo" path="res://assets/Actors/Big_guy/BigGuy.glb" id="1_lgits"]
 [ext_resource type="Script" uid="uid://douj0bn0qrmym" path="res://scripts/ModelRelay.gd" id="2_2orey"]
 
-[node name="BigGuy" instance=ExtResource("1_lgits")]
+[node name="BigGuy" unique_id=1941350063 instance=ExtResource("1_lgits")]
 script = ExtResource("2_2orey")
 
 [node name="Skeleton3D" parent="Wolverine" index="0"]

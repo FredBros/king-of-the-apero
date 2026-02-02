@@ -5,6 +5,7 @@ extends Control
 @export var join_button: Button
 @export var ip_input: LineEdit
 @export var status_label: Label
+@export var paste_button: Button
 var start_game_timer: Timer
 
 # Port par défaut (doit correspondre à celui dans NetworkManager)
@@ -30,6 +31,7 @@ func _ready() -> void:
 
 	if host_button: host_button.pressed.connect(_on_host_pressed)
 	if join_button: join_button.pressed.connect(_on_join_pressed)
+	if paste_button: paste_button.pressed.connect(_on_paste_pressed)
 	
 	# UI Setup for Host/Join
 	if host_button: host_button.text = "CREATE MATCH"
@@ -99,9 +101,10 @@ func _ready() -> void:
 	buttons_container.add_child(discord_button)
 	
 	# Add UI elements to the layout (below ip_input if possible)
-	if ip_input and ip_input.get_parent():
-		ip_input.get_parent().add_child(qr_texture_rect)
-		ip_input.get_parent().add_child(buttons_container)
+	if ip_input and ip_input.get_parent() and ip_input.get_parent().get_parent():
+		var vbox = ip_input.get_parent().get_parent()
+		vbox.add_child(qr_texture_rect)
+		vbox.add_child(buttons_container)
 	else:
 		add_child(qr_texture_rect)
 		add_child(buttons_container)
@@ -114,7 +117,8 @@ func _on_host_pressed() -> void:
 	_disable_buttons()
 
 func _on_join_pressed() -> void:
-	var match_id = ip_input.text.strip_edges()
+	var match_id = _clean_match_id(ip_input.text)
+	
 	if match_id.is_empty():
 		if status_label: status_label.text = "Please enter a Match ID."
 		return
@@ -125,6 +129,26 @@ func _on_join_pressed() -> void:
 	# On rejoint directement l'ID
 	NetworkManager.join_game(match_id)
 	_disable_buttons()
+
+func _on_paste_pressed() -> void:
+	if ip_input:
+		var clipboard_text = DisplayServer.clipboard_get()
+		ip_input.text = _clean_match_id(clipboard_text)
+
+func _clean_match_id(text: String) -> String:
+	var clean_text = text.strip_edges()
+	
+	# Extraction depuis une URL complète (ex: https://...?match_id=XYZ&v=1)
+	if "match_id=" in clean_text:
+		var parts = clean_text.split("match_id=")
+		if parts.size() > 1:
+			clean_text = parts[1]
+	
+	# Nettoyage des paramètres URL suivants (ex: &v=1)
+	if "&" in clean_text:
+		clean_text = clean_text.split("&")[0]
+		
+	return clean_text
 
 func _on_nakama_ready() -> void:
 	if join_button: join_button.disabled = false
@@ -138,6 +162,7 @@ func _on_connection_success() -> void:
 		if host_button: host_button.hide()
 		if join_button: join_button.hide()
 		if ip_input: ip_input.hide()
+		if paste_button: paste_button.hide()
 
 	# Check immediately if we already have peers (e.g. late join or bridge already synced)
 	if start_game_timer.is_inside_tree():
@@ -154,6 +179,7 @@ func _on_match_hosted(match_id: String) -> void:
 	# On cache les boutons Host/Join pour épurér l'interface et laisser la place au QR Code
 	if host_button: host_button.hide()
 	if join_button: join_button.hide()
+	if paste_button: paste_button.hide()
 	
 	# Generate Invite Link
 	# On ajoute un paramètre factice (&v=1) à la fin pour protéger le point final de l'ID.

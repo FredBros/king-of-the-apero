@@ -299,8 +299,6 @@ func show_floating_text(text: String, color: Color) -> void:
 	label.font_size = 128
 	label.pixel_size = 0.004 # Ajuste la taille dans le monde 3D
 	label.outline_render_priority = 0
-	label.outline_modulate = Color.BLACK
-	label.outline_size = 32
 	label.uppercase = true
 	label.no_depth_test = true # Toujours visible (au-dessus des modèles)
 	
