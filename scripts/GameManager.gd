@@ -751,7 +751,8 @@ func _handle_request_attack(data: Dictionary) -> void:
 	pending_defense_context = {
 		"attacker_id": data.get("_sender_id"),
 		"target_id": data["target_id"],
-		"attack_card": attack_card
+		"attack_card": attack_card,
+		"is_push": data.get("is_push", false)
 	}
 	
 	# Identify defender name from target_id
@@ -828,7 +829,8 @@ func _send_attack_result(blocked: bool, block_card: CardData, dodged: bool) -> v
 		"is_blocked": blocked,
 		"is_dodged": dodged,
 		"attacker_id": pending_defense_context.get("attacker_id"),
-		"target_id": pending_defense_context.get("target_id")
+		"target_id": pending_defense_context.get("target_id"),
+		"is_push": pending_defense_context.get("is_push", false)
 	}
 	if block_card: msg["block_card"] = CardData.serialize(block_card)
 	
@@ -846,11 +848,11 @@ func _handle_attack_result(data: Dictionary) -> void:
 	if enable_hotseat_mode:
 		refresh_hand_requested.emit(players[active_player_index].name)
 	
-	if data.is_blocked:
+	if data.get("is_blocked", false):
 		print("🛡️ Attack was BLOCKED!")
 		var target = _get_wrestler_by_peer_id(data.get("target_id"))
 		if target: target.show_floating_text("BLOCKED!", Color(1.0, 0.6, 0.0)) # Orange
-	elif data.get("is_dodged"):
+	elif data.get("is_dodged", false):
 		print("💨 Attack was DODGED!")
 		var target = _get_wrestler_by_peer_id(data.get("target_id"))
 		if target: target.show_floating_text("DODGED!", Color(0.0, 0.8, 1.0)) # Cyan
@@ -863,15 +865,18 @@ func _handle_attack_result(data: Dictionary) -> void:
 	
 	if attacker and target:
 		# Determine if hit
-		var is_hit = not data.is_blocked and not data.get("is_dodged")
+		var is_blocked = data.get("is_blocked", false)
+		var is_dodged = data.get("is_dodged", false)
+		var is_hit = not is_blocked and not is_dodged
+		var is_push = bool(data.get("is_push", false))
 		
 		# L'attaquant frappe toujours (dans le vide si esquivé/bloqué)
-		attacker.attack(target, is_hit)
+		attacker.attack(target, is_hit, is_push)
 		
 		# Animation du défenseur
-		if data.is_blocked:
+		if is_blocked:
 			target.block()
-		elif data.get("is_dodged"):
+		elif is_dodged:
 			# Le défenseur a déjà bougé via SYNC_GRID_ACTION, pas d'anim spécifique ici (Run déjà joué)
 			pass
 		else:
@@ -879,11 +884,11 @@ func _handle_attack_result(data: Dictionary) -> void:
 			if is_local_player_active():
 				if pending_attack_context.has("target_name"):
 					var target_name = pending_attack_context["target_name"]
-					var is_push = pending_attack_context.get("is_push", false)
+					var is_push_attack = pending_attack_context.get("is_push", false)
 					
 					for w in players:
 						if w.name == target_name:
-							if is_push:
+							if is_push_attack:
 								_apply_push(attacker, w)
 							else:
 								# Pass skip_anim = true because attacker.attack will trigger it via anim event
@@ -980,9 +985,11 @@ func set_wrestler_collisions(enabled: bool) -> void:
 	if grid_manager:
 		grid_manager.set_wrestler_collisions(enabled)
 
-func preview_swipe(card: CardData, screen_offset: Vector2) -> void:
+func preview_swipe(card: CardData, screen_offset: Vector2) -> bool:
 	if grid_manager and (is_local_player_active() or not pending_defense_context.is_empty()):
-		grid_manager.handle_swipe_preview(card, screen_offset)
+		# NOTE: La fonction handle_swipe_preview dans GridManager doit maintenant retourner un booléen.
+		return grid_manager.handle_swipe_preview(card, screen_offset)
+	return false
 
 func commit_swipe(card: CardData, screen_offset: Vector2, global_pos: Vector2) -> void:
 	if grid_manager and (is_local_player_active() or not pending_defense_context.is_empty()):

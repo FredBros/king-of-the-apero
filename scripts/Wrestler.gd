@@ -33,6 +33,8 @@ var is_ejected: bool = false
 var is_busy: bool = false
 var combat_target: Wrestler
 var trigger_hurt_on_hit: bool = false
+# Assurez-vous que cette variable est bien présente
+var current_attack_is_push: bool = false
 
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
 
@@ -131,10 +133,12 @@ func _perform_move(new_pos: Vector2i) -> void:
 	)
 
 # Perform an attack on a target wrestler
-func attack(target: Wrestler, will_hit: bool = false) -> void:
+# La signature doit correspondre à l'appel dans GameManager (3 arguments)
+func attack(target: Wrestler, will_hit: bool = false, is_push: bool = false) -> void:
 	is_busy = true
 	combat_target = target
 	trigger_hurt_on_hit = will_hit
+	current_attack_is_push = is_push
 	
 	# Prefer the custom animation with events if it exists
 	if animation_player and animation_player.has_animation(anim_punch_hit):
@@ -147,7 +151,7 @@ func attack(target: Wrestler, will_hit: bool = false) -> void:
 	
 	# Safety check: If the animation event didn't fire (e.g. missing track), trigger impact now
 	if trigger_hurt_on_hit and combat_target:
-		combat_target.play_hurt_animation()
+		combat_target.play_hurt_animation(not current_attack_is_push)
 		trigger_hurt_on_hit = false
 	
 	_play_anim(anim_idle)
@@ -155,15 +159,17 @@ func attack(target: Wrestler, will_hit: bool = false) -> void:
 	action_completed.emit()
 	combat_target = null
 	trigger_hurt_on_hit = false
+	current_attack_is_push = false
 
 # Called by AnimationPlayer via Method Track during "Punch"
 func on_hit_frame() -> void:
 	if trigger_hurt_on_hit and combat_target:
-		combat_target.play_hurt_animation()
+		combat_target.play_hurt_animation(not current_attack_is_push)
 		trigger_hurt_on_hit = false
 
-func play_hurt_animation() -> void:
-	_spawn_blood_effect()
+func play_hurt_animation(spawn_blood: bool = true) -> void:
+	if spawn_blood:
+		_spawn_blood_effect()
 	perform_hurt_sequence()
 
 # Apply damage to the wrestler

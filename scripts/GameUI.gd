@@ -395,8 +395,12 @@ func _on_card_swipe_pending(card_ui: CardUI, offset: Vector2) -> void:
 		else:
 			card_ui.set_discard_hover_state(false)
 
+	var is_push_hovering = false
 	if game_manager_ref:
-		game_manager_ref.preview_swipe(card_ui.card_data, offset)
+		is_push_hovering = game_manager_ref.preview_swipe(card_ui.card_data, offset)
+	
+	# Met à jour la visibilité de l'icône "kick" sur la carte
+	card_ui.set_push_hover_state(is_push_hovering)
 
 func _on_card_swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vector2) -> void:
 	# Check Discard Zone

@@ -580,7 +580,7 @@ func spawn_wrestlers(p1_data: WrestlerData, p2_data: WrestlerData) -> void:
 	
 	# Place it on a starting cell (Top-Left Corner)
 	var p1_start_pos = Vector2i(0, 0)
-	p1.set_initial_position(p1_start_pos, self)
+	p1.set_initial_position(p1_start_pos, self )
 	
 	# Spawn a Dummy Opponent
 	var p2 = wrestler_scene.instantiate()
@@ -590,7 +590,7 @@ func spawn_wrestlers(p1_data: WrestlerData, p2_data: WrestlerData) -> void:
 	wrestlers.append(p2)
 	
 	# Place it on opposite corner (Bottom-Right)
-	p2.set_initial_position(grid_size - Vector2i(1, 1), self)
+	p2.set_initial_position(grid_size - Vector2i(1, 1), self )
 	
 	# Connect signals
 	p1.died.connect(_on_wrestler_died)
@@ -625,16 +625,35 @@ func reset_wrestlers() -> void:
 		if i == 1:
 			start_pos = grid_size - Vector2i(1, 1)
 			
-		w.set_initial_position(start_pos, self)
+		w.set_initial_position(start_pos, self )
 
 func set_wrestler_collisions(enabled: bool) -> void:
 	for w in wrestlers:
 		w.set_collision_enabled(enabled)
 
-func handle_swipe_preview(card: CardData, screen_offset: Vector2) -> void:
+func handle_swipe_preview(card: CardData, screen_offset: Vector2) -> bool:
+	var is_push_hover = false
+	
+	# Check for Push Hover (Mouse over opponent with Attack card)
+	if active_wrestler and not is_dodging and (card.type == CardData.CardType.ATTACK or card.suit == "Joker"):
+		var mouse_pos = get_viewport().get_mouse_position()
+		var target = _get_wrestler_under_mouse(mouse_pos)
+		if target and target != active_wrestler:
+			var diff = (target.grid_position - active_wrestler.grid_position).abs()
+			var is_valid_range = false
+			if card.suit == "Joker":
+				if max(diff.x, diff.y) == 1: is_valid_range = true
+			elif card.pattern == CardData.MovePattern.ORTHOGONAL:
+				if diff.x + diff.y == 1: is_valid_range = true
+			elif card.pattern == CardData.MovePattern.DIAGONAL:
+				if diff.x == 1 and diff.y == 1: is_valid_range = true
+			
+			if is_valid_range:
+				is_push_hover = true
+
 	if screen_offset.length() < 10.0:
 		swipe_highlight.hide()
-		return
+		return is_push_hover
 		
 	var target_cell = _get_swipe_target_cell(card, screen_offset)
 	if target_cell != Vector2i(-1, -1):
@@ -643,6 +662,8 @@ func handle_swipe_preview(card: CardData, screen_offset: Vector2) -> void:
 		swipe_highlight.position.y = 0.15 # Above normal highlights
 	else:
 		swipe_highlight.hide()
+		
+	return is_push_hover
 
 func handle_swipe_commit(card: CardData, screen_offset: Vector2, global_pos: Vector2) -> void:
 	swipe_highlight.hide()

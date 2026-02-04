@@ -20,6 +20,7 @@ const AURA_SHADER = preload("res://shaders/aura_sous_bock.gdshader")
 var card_visual: TextureRect
 var aura_rect: ColorRect
 var aura_holder: Node2D
+var push_icon: TextureRect
 var _touch_start_pos: Vector2
 var _is_touching: bool = false
 var _is_swiping: bool = false
@@ -104,6 +105,16 @@ func _ready() -> void:
 		add_child(value_label)
 		value_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	
+	# Setup Push Icon (for attack hover)
+	push_icon = TextureRect.new()
+	push_icon.texture = load("res://assets/UI/kick.png")
+	push_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	push_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	push_icon.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	push_icon.mouse_filter = MOUSE_FILTER_IGNORE
+	push_icon.hide()
+	add_child(push_icon)
+	
 	# On cache les anciens labels inutiles pour le nouveau design
 	if title_label: title_label.hide()
 	if type_label: type_label.hide()
@@ -170,8 +181,15 @@ func _update_visuals() -> void:
 	
 	if card_data.suit == "Joker":
 		value_label.text = "★"
+		# Use a dark color for the Joker's star for better visibility
+		value_label.add_theme_color_override("font_color", Color.from_string("#262b44", Color.WHITE))
 	else:
 		value_label.text = str(card_data.value)
+		# Set font color based on card type (red/black)
+		if card_data.type == CardData.CardType.ATTACK: # Red cards
+			value_label.add_theme_color_override("font_color", Color.from_string("#a22633", Color.WHITE))
+		else: # Black cards
+			value_label.add_theme_color_override("font_color", Color.from_string("#262b44", Color.WHITE))
 	
 	# --- 1. Chargement de la Texture (Skin) ---
 	var color_str = "black"
@@ -246,12 +264,11 @@ func _update_visual_state() -> void:
 		z_index = 1
 	else:
 		z_index = 0
+		_target_scale = Vector2.ONE
 		if is_playable:
 			_target_modulate = Color.WHITE
-			_target_scale = Vector2.ONE
 		else:
 			_target_modulate = Color(0.5, 0.5, 0.5)
-			_target_scale = Vector2(0.8, 0.8)
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -326,6 +343,12 @@ func set_discard_hover_state(state: bool) -> void:
 		_discard_shake_intensity = 5.0 # Degrés de vibration supplémentaire
 	else:
 		_discard_shake_intensity = 0.0
+
+func set_push_hover_state(is_hovering: bool) -> void:
+	if is_destroying: return
+	
+	if push_icon:
+		push_icon.visible = is_hovering
 
 func animate_destruction() -> void:
 	is_destroying = true
