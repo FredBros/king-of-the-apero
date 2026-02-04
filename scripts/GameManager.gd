@@ -17,6 +17,7 @@ signal game_paused(paused: bool, initiator_name: String)
 @export var cards_drawn_per_turn: int = 2
 @export var character_pool: Array[WrestlerData]
 @export var enable_hotseat_mode: bool = false
+@export var can_dodge: bool = false
 
 var deck_manager: DeckManager
 
@@ -970,7 +971,7 @@ func get_valid_reaction_cards(attack_card: CardData, hand: Array) -> Array[CardD
 		# 2. ESQUIVE (Mouvement Opposé)
 		# Attaque Ortho (Carreau/Trèfle?) -> Esquive Diag (Pique/Coeur?)
 		# Vérifions les patterns définis dans DeckManager
-		if card.type == CardData.CardType.MOVE or card.suit == "Joker":
+		if can_dodge and (card.type == CardData.CardType.MOVE or card.suit == "Joker"):
 			if attack_card.pattern == CardData.MovePattern.ORTHOGONAL and card.pattern == CardData.MovePattern.DIAGONAL:
 				is_valid = true
 			elif attack_card.pattern == CardData.MovePattern.DIAGONAL and card.pattern == CardData.MovePattern.ORTHOGONAL:
