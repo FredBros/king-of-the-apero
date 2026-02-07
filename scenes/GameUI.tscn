@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://du3ndwc5toxcm" path="res://scripts/GameUI.gd" id="1_gameui"]
 [ext_resource type="PackedScene" uid="uid://c8j2k3l4m5n6" path="res://scenes/CardUI.tscn" id="2_cardui"]
 [ext_resource type="PackedScene" uid="uid://ul6duyq4iklg" path="res://scenes/UI/PlayerInfo/PlayerInfo.tscn" id="3_4s3j0"]
+[ext_resource type="Theme" uid="uid://l8sbafea8ujc" path="res://resources/Themes/bar_theme.tres" id="3_7ro0d"]
+[ext_resource type="Texture2D" uid="uid://kwp8lu25bm1n" path="res://assets/UI/CTA.png" id="4_56cg4"]
 
 [node name="GameUI" type="CanvasLayer" unique_id=77095954 node_paths=PackedStringArray("top_player_info", "bottom_player_info")]
 script = ExtResource("1_gameui")
@@ -57,7 +59,6 @@ grow_vertical = 0
 text = "END TURN"
 
 [node name="GameOverContainer" type="CenterContainer" parent="." unique_id=1593983805]
-visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -76,6 +77,7 @@ theme_override_constants/margin_bottom = 20
 
 [node name="VBoxContainer" type="VBoxContainer" parent="GameOverContainer/Panel/MarginContainer" unique_id=1471542382]
 layout_mode = 2
+theme_override_constants/separation = 30
 
 [node name="WinnerLabel" type="Label" parent="GameOverContainer/Panel/MarginContainer/VBoxContainer" unique_id=1450060083]
 layout_mode = 2
@@ -86,11 +88,21 @@ horizontal_alignment = 1
 [node name="RestartButton" type="Button" parent="GameOverContainer/Panel/MarginContainer/VBoxContainer" unique_id=313932704]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+theme = ExtResource("3_7ro0d")
 text = "RESTART MATCH"
 
 [node name="QuitButton" type="Button" parent="GameOverContainer/Panel/MarginContainer/VBoxContainer" unique_id=707802481]
 layout_mode = 2
+theme = ExtResource("3_7ro0d")
 text = "QUIT TO MENU"
+
+[node name="TextureButton" type="TextureButton" parent="GameOverContainer/Panel/MarginContainer/VBoxContainer" unique_id=1308959961]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("4_56cg4")
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="TopPlayerInfo" parent="." unique_id=1973454056 instance=ExtResource("3_4s3j0")]
 anchors_preset = 0

@@ -45,6 +45,11 @@ func _ready() -> void:
 	var quit_btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/QuitButton
 	quit_btn.pressed.connect(_on_quit_button_pressed)
 	
+	# Connect CTA button manually
+	var cta_btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/TextureButton
+	if cta_btn:
+		cta_btn.pressed.connect(_on_cta_button_pressed)
+	
 	# Connect end turn button manually
 	var end_turn_btn = $EndTurnButton
 	end_turn_btn.pressed.connect(_on_end_turn_button_pressed)
@@ -182,6 +187,9 @@ func _on_restart_button_pressed() -> void:
 func _on_quit_button_pressed() -> void:
 	# Return to lobby properly closing connection
 	NetworkManager.return_to_lobby()
+
+func _on_cta_button_pressed() -> void:
+	OS.shell_open("https://trankil.itch.io/folklore-on-tap")
 
 func update_turn_info(player_name: String) -> void:
 	turn_label.text = player_name + "'s Turn"
