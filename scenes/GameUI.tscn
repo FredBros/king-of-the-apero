@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://kwp8lu25bm1n" path="res://assets/UI/CTA.png" id="4_56cg4"]
 
 [node name="GameUI" type="CanvasLayer" unique_id=77095954 node_paths=PackedStringArray("top_player_info", "bottom_player_info")]
+visible = false
 script = ExtResource("1_gameui")
 top_player_info = NodePath("TopPlayerInfo")
 bottom_player_info = NodePath("BottomPlayerInfo")

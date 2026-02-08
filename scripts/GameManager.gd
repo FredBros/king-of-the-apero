@@ -12,6 +12,8 @@ signal rematch_update(current_votes: int, total_required: int)
 signal refresh_hand_requested(player_name: String)
 signal game_over(winner_name: String)
 signal game_paused(paused: bool, initiator_name: String)
+signal versus_screen_requested(local_data: WrestlerData, remote_data: WrestlerData)
+signal opponent_skipped_versus
 
 @export var hand_size_limit: int = 5
 @export var cards_drawn_per_turn: int = 2
@@ -465,6 +467,8 @@ func _on_network_message(data: Dictionary) -> void:
 			game_over.emit(data["winner"])
 		"SYNC_PAUSE":
 			game_paused.emit(data["paused"], data["player_name"])
+		"SYNC_SKIP_VERSUS":
+			opponent_skipped_versus.emit()
 
 func _handle_sync_turn(player_name: String) -> void:
 	print("Sync Turn: ", player_name)
@@ -650,7 +654,17 @@ func _handle_character_selection(p1_path: String, p2_path: String):
 			print("Characters selected: P1 is ", p1_res.display_name, ", P2 is ", p2_res.display_name)
 			# Now we tell the grid manager to spawn them, which will then trigger game state init
 			grid_manager.spawn_wrestlers(p1_res, p2_res)
-			initialize_game_state()
+			
+			# Determine Local vs Remote for Versus Screen
+			var local_data = p1_res
+			var remote_data = p2_res
+			
+			if _get_my_player_name() == "Player 2":
+				local_data = p2_res
+				remote_data = p1_res
+				
+			# Trigger Versus Screen instead of immediate init
+			versus_screen_requested.emit(local_data, remote_data)
 		else:
 			printerr("Failed to load character resources from paths: ", p1_path, ", ", p2_path)
 
@@ -708,6 +722,18 @@ func _handle_restart_game() -> void:
 		_draw_up_to_limit(player.name)
 		
 	_start_turn()
+
+func start_match_after_versus() -> void:
+	initialize_game_state()
+
+func send_skip_versus() -> void:
+	if enable_hotseat_mode:
+		opponent_skipped_versus.emit() # Simulate instant skip in hotseat
+		return
+
+	NetworkManager.send_message({
+		"type": "SYNC_SKIP_VERSUS"
+	})
 
 # --- Attack / Reaction Sequence ---
 

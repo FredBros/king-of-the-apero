@@ -2,10 +2,12 @@
 
 [ext_resource type="PackedScene" uid="uid://cr44j0ywvb21d" path="res://scenes/Players/MrEggPlant/mr_eggplant.tscn" id="1_2txoo"]
 [ext_resource type="Script" uid="uid://c4kx8fgyrsuv6" path="res://scripts/WrestlerData.gd" id="1_5walk"]
+[ext_resource type="AudioStream" uid="uid://dhdxu2p16x3x4" path="res://assets/Sounds/Voices/MrEggplant/Mr_eggplant_name.wav" id="3_7n5hi"]
 
 [resource]
 script = ExtResource("1_5walk")
 id = "mr_eggplant"
 display_name = "MrEggPlant"
 model_scene = ExtResource("1_2txoo")
+sound_name = ExtResource("3_7n5hi")
 metadata/_custom_type_script = "uid://c4kx8fgyrsuv6"

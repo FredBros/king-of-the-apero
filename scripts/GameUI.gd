@@ -10,6 +10,8 @@ signal reaction_skipped
 @export var top_player_info: PlayerInfo
 @export var bottom_player_info: PlayerInfo
 
+const VERSUS_SCREEN_SCENE = preload("res://scenes/UI/VersusScreen.tscn")
+
 var local_wrestler_ref: Wrestler
 var remote_wrestler_ref: Wrestler
 
@@ -23,6 +25,7 @@ var remote_wrestler_ref: Wrestler
 var selected_card_ui: CardUI
 
 # Reaction UI Elements
+var current_versus_screen: Control
 var reaction_timer: Timer
 var pass_button: Button
 var opponent_card_display: CardUI
@@ -37,6 +40,10 @@ var discard_zone_visual: ColorRect
 var game_manager_ref
 
 func _ready() -> void:
+	# Force la visibilité (au cas où décoché dans l'éditeur) et cache l'écran de fin
+	visible = true
+	game_over_container.hide()
+	
 	# Connect restart button manually since we added it via code/tscn edit
 	var restart_btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/RestartButton
 	restart_btn.pressed.connect(_on_restart_button_pressed)
@@ -70,6 +77,10 @@ func _ready() -> void:
 			game_manager.game_restarted.connect(_on_game_restarted)
 		if not game_manager.rematch_update.is_connected(_on_rematch_update):
 			game_manager.rematch_update.connect(_on_rematch_update)
+		if not game_manager.versus_screen_requested.is_connected(_on_versus_screen_requested):
+			game_manager.versus_screen_requested.connect(_on_versus_screen_requested)
+		if not game_manager.opponent_skipped_versus.is_connected(_on_opponent_skipped_versus):
+			game_manager.opponent_skipped_versus.connect(_on_opponent_skipped_versus)
 	else:
 		printerr("GameUI: GameManager not found!")
 	
@@ -427,3 +438,28 @@ func _on_card_swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vect
 func _update_discard_zone_visibility() -> void:
 	if discard_zone_visual and game_manager_ref:
 		discard_zone_visual.visible = game_manager_ref.is_local_player_active()
+
+func _on_versus_screen_requested(local_data: WrestlerData, remote_data: WrestlerData) -> void:
+	if current_versus_screen:
+		current_versus_screen.queue_free()
+	
+	current_versus_screen = VERSUS_SCREEN_SCENE.instantiate()
+	add_child(current_versus_screen)
+	current_versus_screen.setup(local_data, remote_data)
+	
+	current_versus_screen.skip_pressed.connect(func():
+		if game_manager_ref: game_manager_ref.send_skip_versus()
+	)
+	current_versus_screen.finished.connect(_on_versus_screen_finished)
+
+func _on_opponent_skipped_versus() -> void:
+	if current_versus_screen and current_versus_screen.has_method("set_opponent_skipped"):
+		current_versus_screen.set_opponent_skipped()
+
+func _on_versus_screen_finished() -> void:
+	if current_versus_screen:
+		current_versus_screen.queue_free()
+		current_versus_screen = null
+	
+	if game_manager_ref:
+		game_manager_ref.start_match_after_versus()
