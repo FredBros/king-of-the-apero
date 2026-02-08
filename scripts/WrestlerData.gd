@@ -11,3 +11,9 @@ extends Resource
 @export var sound_name: AudioStream
 @export var sound_hurt: AudioStream
 @export var sound_defeat: AudioStream
+@export var sound_block: AudioStream
+@export var sound_dodge: AudioStream
+@export var sound_shooting_punch: AudioStream
+@export var sound_fall_impact: AudioStream
+@export var sound_death_rattle: AudioStream
+@export var sound_pushed: AudioStream

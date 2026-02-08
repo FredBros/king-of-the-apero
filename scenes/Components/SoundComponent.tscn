@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://c56cj734p40jn"]
+
+[ext_resource type="Script" uid="uid://7eub3runbaia" path="res://scripts/Components/SoundComponent.gd" id="1_script"]
+
+[node name="SoundComponent" type="AudioStreamPlayer3D" unique_id=2003754084]
+max_polyphony = 5
+script = ExtResource("1_script")

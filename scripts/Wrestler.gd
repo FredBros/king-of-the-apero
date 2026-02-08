@@ -25,9 +25,17 @@ var grid_position: Vector2i = Vector2i.ZERO
 
 const FLOATING_FONT = preload("res://assets/fonts/Bangers-Regular.ttf")
 const BLOOD_VFX = preload("res://scenes/BloodParticles.tscn")
+const SOUND_COMPONENT_SCENE = preload("res://scenes/Components/SoundComponent.tscn")
+const DEFAULT_SOUND_SHOOTING_PUNCH = preload("res://assets/Sounds/Punch/Voice/shoutingpunches_male_default.wav")
+const DEFAULT_SOUND_PUNCH = preload("res://assets/Sounds/Punch/Impact/punch_default.mp3")
+const DEFAULT_SOUND_HURT = preload("res://assets/Sounds/Hurt/hurt_default.ogg")
+const DEFAULT_SOUND_BLOCK = preload("res://assets/Sounds/block/block_default.wav")
+const DEFAULT_SOUND_PUSHED = preload("res://assets/Sounds/Push/pushed_defaults.wav")
+const DEFAULT_SOUND_FALL_IMPACT = preload("res://assets/Sounds/KO/Fall Impact/346694__deleted_user_2104797__body-fall_02.wav")
+const DEFAULT_SOUND_DEATH_RATTLE = preload("res://assets/Sounds/KO/Death Rattle/death_rattle_default.wav")
 
 # Reference to the grid manager to convert grid pos to world pos
-var grid_manager: GridManager
+var grid_manager
 var is_ejected: bool = false
 
 var is_busy: bool = false
@@ -37,6 +45,9 @@ var trigger_hurt_on_hit: bool = false
 var current_attack_is_push: bool = false
 
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
+
+var sound_component
+var _pending_push_callback: Callable
 
 func _ready() -> void:
 	set_collision_enabled(false)
@@ -71,6 +82,10 @@ func _face_opponent(delta: float) -> void:
 # Initialize the wrestler from data (Model, Stats)
 func initialize(data: WrestlerData) -> void:
 	# 1. Stats
+	# Setup Audio
+	sound_component = SOUND_COMPONENT_SCENE.instantiate()
+	add_child(sound_component)
+	
 	max_health = data.max_health
 	current_health = max_health
 	
@@ -86,9 +101,11 @@ func initialize(data: WrestlerData) -> void:
 		# 4. Connect Animation Events (Relay from Model)
 		if model_instance.has_signal("hit_triggered"):
 			model_instance.hit_triggered.connect(on_hit_frame)
+		if model_instance.has_signal("ko_impact_triggered"):
+			model_instance.ko_impact_triggered.connect(on_ko_impact)
 
 # Sets the initial position of the wrestler
-func set_initial_position(pos: Vector2i, manager: GridManager) -> void:
+func set_initial_position(pos: Vector2i, manager) -> void:
 	grid_manager = manager
 	current_health = max_health
 	health_changed.emit(current_health, max_health)
@@ -140,6 +157,9 @@ func attack(target: Wrestler, will_hit: bool = false, is_push: bool = false) -> 
 	trigger_hurt_on_hit = will_hit
 	current_attack_is_push = is_push
 	
+	# Son d'effort (Swing) au début de l'attaque
+	_play_sound_or_default(wrestler_data.sound_shooting_punch, DEFAULT_SOUND_SHOOTING_PUNCH)
+	
 	# Prefer the custom animation with events if it exists
 	if animation_player and animation_player.has_animation(anim_punch_hit):
 		_play_anim(anim_punch_hit)
@@ -151,6 +171,9 @@ func attack(target: Wrestler, will_hit: bool = false, is_push: bool = false) -> 
 	
 	# Safety check: If the animation event didn't fire (e.g. missing track), trigger impact now
 	if trigger_hurt_on_hit and combat_target:
+		_play_sound_or_default(wrestler_data.sound_punch, DEFAULT_SOUND_PUNCH, -4.0)
+		if current_attack_is_push:
+			combat_target.execute_pending_push()
 		combat_target.play_hurt_animation(not current_attack_is_push)
 		trigger_hurt_on_hit = false
 	
@@ -164,10 +187,15 @@ func attack(target: Wrestler, will_hit: bool = false, is_push: bool = false) -> 
 # Called by AnimationPlayer via Method Track during "Punch"
 func on_hit_frame() -> void:
 	if trigger_hurt_on_hit and combat_target:
+		# Son d'impact (Punch) seulement si on touche
+		_play_sound_or_default(wrestler_data.sound_punch, DEFAULT_SOUND_PUNCH, -4.0)
+		if current_attack_is_push:
+			combat_target.execute_pending_push()
 		combat_target.play_hurt_animation(not current_attack_is_push)
 		trigger_hurt_on_hit = false
 
 func play_hurt_animation(spawn_blood: bool = true) -> void:
+	_play_sound_or_default(wrestler_data.sound_hurt, DEFAULT_SOUND_HURT, -2.0)
 	if spawn_blood:
 		_spawn_blood_effect()
 	perform_hurt_sequence()
@@ -182,12 +210,14 @@ func take_damage(amount: int, skip_anim: bool = false) -> void:
 	if current_health <= 0:
 		_spawn_blood_effect()
 		is_busy = true
+		# Son de "râle de mort" déplacé dans on_ko_impact
 		print("Wrestler died. Attempting to play 'KO' animation.")
 		_play_anim(anim_ko)
 		died.emit(self )
 	else:
 		if not skip_anim:
 			_spawn_blood_effect()
+			_play_sound_or_default(wrestler_data.sound_hurt, DEFAULT_SOUND_HURT, -2.0)
 			perform_hurt_sequence()
 
 func perform_hurt_sequence() -> void:
@@ -201,6 +231,7 @@ func perform_hurt_sequence() -> void:
 		action_completed.emit()
 
 func block() -> void:
+	_play_sound_or_default(wrestler_data.sound_block, DEFAULT_SOUND_BLOCK)
 	is_busy = true
 	_play_anim(anim_block)
 	await get_tree().create_timer(0.5).timeout
@@ -228,27 +259,39 @@ func push_to(new_pos: Vector2i) -> void:
 	grid_position = new_pos
 	var target_world_pos = grid_manager.grid_to_world(grid_position)
 	
-	# Check if ejected
-	if not grid_manager.is_valid_cell(grid_position):
-		print(name, " EJECTED!")
-		is_ejected = true
-		ejected.emit()
-		
-		# Visuals: Keep on ground level for now
-		
-		var tween = create_tween()
-		tween.tween_property(self , "position", target_world_pos, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tween.tween_callback(func(): _play_anim(anim_ko))
-		
-		# Recovery Sequence (4 seconds later)
-		get_tree().create_timer(4.0).timeout.connect(func(): _recover_from_ejection(old_pos))
-	else:
-		var tween = create_tween()
-		tween.tween_property(self , "position", target_world_pos, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		tween.tween_callback(func():
-			is_busy = false
-			action_completed.emit()
-		)
+	# On prépare la logique visuelle mais on ne l'exécute pas tout de suite.
+	# Elle sera déclenchée par l'attaquant via execute_pending_push() au moment de l'impact (on_hit_frame).
+	_pending_push_callback = func():
+		# Check if ejected
+		if not grid_manager.is_valid_cell(grid_position):
+			print(name, " EJECTED!")
+			is_ejected = true
+			ejected.emit()
+			
+			# Visuals: Keep on ground level for now
+			
+			var tween = create_tween()
+			_play_sound_or_default(wrestler_data.sound_pushed, DEFAULT_SOUND_PUSHED)
+			tween.tween_property(self , "position", target_world_pos, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			tween.tween_callback(func(): _play_anim(anim_ko))
+			
+			# Recovery Sequence (4 seconds later)
+			get_tree().create_timer(4.0).timeout.connect(func(): _recover_from_ejection(old_pos))
+		else:
+			var tween = create_tween()
+			# Son de poussée (réception)
+			_play_sound_or_default(wrestler_data.sound_hurt, DEFAULT_SOUND_HURT, -2.0)
+			_play_sound_or_default(wrestler_data.sound_pushed, DEFAULT_SOUND_PUSHED)
+			tween.tween_property(self , "position", target_world_pos, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			tween.tween_callback(func():
+				is_busy = false
+				action_completed.emit()
+			)
+
+func execute_pending_push() -> void:
+	if _pending_push_callback:
+		_pending_push_callback.call()
+		_pending_push_callback = Callable()
 
 func _recover_from_ejection(original_pos: Vector2i) -> void:
 	is_ejected = false
@@ -296,6 +339,26 @@ func _play_anim(anim_name: String) -> void:
 			animation_player.play(anim_name, 0.2) # 0.2s blend time for smooth transitions
 		else:
 			printerr("Animation not found: '", anim_name, "'. Available animations: ", animation_player.get_animation_list())
+
+func _play_sound(stream: AudioStream) -> void:
+	if stream and sound_component:
+		sound_component.play_varied(stream)
+
+func _play_sound_or_default(stream: AudioStream, default_stream: AudioStream, volume_offset: float = 0.0) -> void:
+	var stream_to_play = stream if stream else default_stream
+	if stream_to_play and sound_component:
+		sound_component.volume_db = volume_offset
+		sound_component.play_varied(stream_to_play)
+
+# Appelé par l'AnimationPlayer via la piste "Call Method" dans l'animation KO
+func on_ko_impact() -> void:
+	_play_sound_or_default(wrestler_data.sound_fall_impact, DEFAULT_SOUND_FALL_IMPACT)
+	_play_sound_or_default(wrestler_data.sound_death_rattle, DEFAULT_SOUND_DEATH_RATTLE)
+	# Ici on pourrait aussi ajouter un Screen Shake via un signal vers l'Arena
+
+# Appelé par le GameManager lors d'une esquive réussie
+func play_dodge_sound() -> void:
+	_play_sound(wrestler_data.sound_dodge)
 
 func show_floating_text(text: String, color: Color) -> void:
 	var label = Label3D.new()

@@ -7,9 +7,11 @@ signal skip_pressed
 @onready var bottom_spawn = $VBoxContainer/BottomContainer/SubViewport/BottomScene/SpawnPoint
 @onready var vs_image = $VSImage
 @onready var skip_label = $SkipLabel
-@onready var audio_player = $AudioStreamPlayer
 
 const VERSUS_SOUND = preload("res://assets/Sounds/Voices/versus.wav")
+const UI_SOUND_COMPONENT_SCENE = preload("res://scenes/Components/UISoundComponent.tscn")
+
+var sound_component
 
 var local_skipped: bool = false
 var remote_skipped: bool = false
@@ -18,6 +20,10 @@ var duration: float = 3.0
 var is_finished: bool = false
 
 func _ready() -> void:
+	# Instanciation du composant son UI
+	sound_component = UI_SOUND_COMPONENT_SCENE.instantiate()
+	add_child(sound_component)
+	
 	# État initial
 	vs_image.scale = Vector2.ZERO
 	skip_label.modulate.a = 0.0
@@ -80,8 +86,7 @@ func _spawn_model(data: WrestlerData, parent: Node3D, delay: float = 0.0) -> voi
 	# Jouer le son d'annonce du personnage
 	if data.sound_name:
 		tween.tween_callback(func():
-			audio_player.stream = data.sound_name
-			audio_player.play()
+			sound_component.play_varied(data.sound_name)
 		)
 		
 	tween.tween_property(model, "scale", Vector3.ONE, 0.8).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -93,8 +98,7 @@ func _start_intro_sequence(delay: float = 0.0) -> void:
 		tween.tween_interval(delay)
 		
 	tween.tween_callback(func():
-		audio_player.stream = VERSUS_SOUND
-		audio_player.play()
+		sound_component.play_varied(VERSUS_SOUND)
 	)
 	# Zoom In rapide (Overshoot)
 	tween.tween_property(vs_image, "scale", Vector2(1.5, 1.5), 0.3).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)

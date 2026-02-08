@@ -882,7 +882,10 @@ func _handle_attack_result(data: Dictionary) -> void:
 	elif data.get("is_dodged", false):
 		print("💨 Attack was DODGED!")
 		var target = _get_wrestler_by_peer_id(data.get("target_id"))
-		if target: target.show_floating_text("DODGED!", Color(0.0, 0.8, 1.0)) # Cyan
+		if target:
+			target.show_floating_text("DODGED!", Color(0.0, 0.8, 1.0)) # Cyan
+			if target.has_method("play_dodge_sound"):
+				target.play_dodge_sound()
 	else:
 		print("💥 Attack CONNECTED!")
 		

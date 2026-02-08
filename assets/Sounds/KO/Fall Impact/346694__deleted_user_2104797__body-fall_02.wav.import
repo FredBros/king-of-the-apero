@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://81e3p8qaw6ay"
+path="res://.godot/imported/346694__deleted_user_2104797__body-fall_02.wav-47b5ac8d753ae46451efe388ea94a1e5.sample"
+
+[deps]
+
+source_file="res://assets/Sounds/KO/Fall Impact/346694__deleted_user_2104797__body-fall_02.wav"
+dest_files=["res://.godot/imported/346694__deleted_user_2104797__body-fall_02.wav-47b5ac8d753ae46451efe388ea94a1e5.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

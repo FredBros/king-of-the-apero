@@ -8,6 +8,7 @@
 script = ExtResource("1_5walk")
 id = "big_guy"
 display_name = "Big Guy"
+max_health = 2
 model_scene = ExtResource("1_a824p")
 sound_name = ExtResource("3_ln851")
 metadata/_custom_type_script = "uid://c4kx8fgyrsuv6"
