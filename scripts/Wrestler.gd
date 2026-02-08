@@ -25,7 +25,7 @@ var grid_position: Vector2i = Vector2i.ZERO
 
 const FLOATING_FONT = preload("res://assets/fonts/Bangers-Regular.ttf")
 const BLOOD_VFX = preload("res://scenes/BloodParticles.tscn")
-const SOUND_COMPONENT_SCENE = preload("res://scenes/Components/SoundComponent.tscn")
+const SOUND_POOL_SCENE = preload("res://scenes/Components/SoundPoolComponent.tscn")
 const DEFAULT_SOUND_SHOOTING_PUNCH = preload("res://assets/Sounds/Punch/Voice/shoutingpunches_male_default.wav")
 const DEFAULT_SOUND_PUNCH = preload("res://assets/Sounds/Punch/Impact/punch_default.mp3")
 const DEFAULT_SOUND_HURT = preload("res://assets/Sounds/Hurt/hurt_default.ogg")
@@ -46,7 +46,7 @@ var current_attack_is_push: bool = false
 
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
 
-var sound_component
+var sound_pool
 var _pending_push_callback: Callable
 
 func _ready() -> void:
@@ -83,8 +83,8 @@ func _face_opponent(delta: float) -> void:
 func initialize(data: WrestlerData) -> void:
 	# 1. Stats
 	# Setup Audio
-	sound_component = SOUND_COMPONENT_SCENE.instantiate()
-	add_child(sound_component)
+	sound_pool = SOUND_POOL_SCENE.instantiate()
+	add_child(sound_pool)
 	
 	max_health = data.max_health
 	current_health = max_health
@@ -341,14 +341,13 @@ func _play_anim(anim_name: String) -> void:
 			printerr("Animation not found: '", anim_name, "'. Available animations: ", animation_player.get_animation_list())
 
 func _play_sound(stream: AudioStream) -> void:
-	if stream and sound_component:
-		sound_component.play_varied(stream)
+	if stream and sound_pool:
+		sound_pool.play_varied(stream)
 
 func _play_sound_or_default(stream: AudioStream, default_stream: AudioStream, volume_offset: float = 0.0) -> void:
 	var stream_to_play = stream if stream else default_stream
-	if stream_to_play and sound_component:
-		sound_component.volume_db = volume_offset
-		sound_component.play_varied(stream_to_play)
+	if stream_to_play and sound_pool:
+		sound_pool.play_varied(stream_to_play, volume_offset)
 
 # Appelé par l'AnimationPlayer via la piste "Call Method" dans l'animation KO
 func on_ko_impact() -> void:

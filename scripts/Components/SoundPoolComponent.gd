@@ -1,10 +1,8 @@
-# On retire le class_name pour éviter le conflit "hides global script class"
-# class_name SoundPoolComponent
 extends Node3D
 
 @export var pool_size: int = 5 # Suffisant pour gérer Impact + Cri + Ambiance simultanés
 
-const SOUND_COMPONENT_SCENE = preload("res://scenes/components/SoundComponent.tscn")
+const SOUND_COMPONENT_SCENE = preload("res://scenes/Components/SoundComponent.tscn")
 
 var _pool: Array = []
 var _current_index: int = 0
@@ -21,11 +19,11 @@ func play_varied(stream: AudioStream, volume_offset: float = 0.0) -> void:
 		return
 	
 	var player = _pool[_current_index]
-	# On joue le son sur le lecteur disponible (ou le plus ancien)
+	
+	# On applique le volume et on joue sur le lecteur disponible
 	if player.has_method("play_varied"):
+		player.volume_db = volume_offset
 		player.play_varied(stream)
-		if volume_offset != 0.0:
-			player.volume_db += volume_offset
 	
 	_current_index = (_current_index + 1) % _pool.size()
 

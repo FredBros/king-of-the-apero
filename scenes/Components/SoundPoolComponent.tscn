@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://sound_pool_component_uid"]
+[gd_scene format=3 uid="uid://nqmqa8m17aim"]
 
-[ext_resource type="Script" path="res://scripts/components/SoundPoolComponent.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://ojapyguaqcb8" path="res://scripts/Components/SoundPoolComponent.gd" id="1_60xp8"]
 
-[node name="SoundPoolComponent" type="Node3D"]
-script = ExtResource("1_script")
+[node name="SoundPoolComponent" type="Node3D" unique_id=1019733488]
+script = ExtResource("1_60xp8")
