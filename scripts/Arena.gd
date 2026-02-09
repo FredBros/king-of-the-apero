@@ -12,6 +12,11 @@ extends Node3D
 @export var tutorial_close_button: Button
 @export var remote_pause_overlay: Control
 
+@onready var fight_image = $FightLayer/FightImage
+const FIGHT_SOUND = preload("res://assets/Sounds/Voices/fight.wav")
+const UI_SOUND_COMPONENT_SCENE = preload("res://scenes/Components/UISoundComponent.tscn")
+var sound_component
+
 var is_remote_paused: bool = false
 
 func _ready() -> void:
@@ -105,6 +110,18 @@ func _ready() -> void:
 		tutorial_overlay.visible = false
 	if remote_pause_overlay:
 		remote_pause_overlay.visible = false
+		
+	# Initialisation Audio
+	sound_component = UI_SOUND_COMPONENT_SCENE.instantiate()
+	add_child(sound_component)
+	
+	# Initialisation Visuelle
+	if fight_image:
+		fight_image.scale = Vector2.ZERO
+		# On ne lance PLUS la séquence ici. On attend que le VersusScreen nous le dise.
+		# _play_fight_sequence()
+	else:
+		printerr("Arena: Fight Image NOT found! Check if FightLayer/FightImage exists in Arena.tscn")
 
 func _check_hand_playability() -> void:
 	print("Arena: Checking hand playability...")
@@ -192,3 +209,31 @@ func _update_pause_state() -> void:
 	
 	if help_button:
 		help_button.visible = not should_pause
+
+# Appelée par le VersusScreen quand il a fini son animation
+func start_fight_sequence() -> void:
+	print("Arena: Starting Fight Sequence (Triggered by VersusScreen)")
+	_play_fight_sequence()
+
+func _play_fight_sequence() -> void:
+	print("Arena: Playing Fight Sequence Animation")
+	var tween = create_tween()
+	# Petit délai pour laisser le temps à la scène de s'afficher proprement
+	tween.tween_interval(0.5)
+	
+	# Son
+	tween.tween_callback(func():
+		if sound_component:
+			sound_component.play_varied(FIGHT_SOUND)
+	)
+	
+	if fight_image:
+		# Apparition Pop
+		tween.tween_property(fight_image, "scale", Vector2(2.25, 2.25), 0.3).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(fight_image, "scale", Vector2(1.5, 1.5), 0.2)
+		
+		# Pause
+		tween.tween_interval(0.5)
+		
+		# Disparition
+		tween.tween_property(fight_image, "scale", Vector2.ZERO, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)

@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://c4kx8fgyrsuv6" path="res://scripts/WrestlerData.gd" id="3_vyqrf"]
 [ext_resource type="Resource" uid="uid://c8qk2n6qtfwif" path="res://resources/BigGuy.tres" id="6_gcrh0"]
 [ext_resource type="Resource" uid="uid://drqnd1ajpdodo" path="res://resources/MrEggPlant.tres" id="7_vyqrf"]
+[ext_resource type="Texture2D" uid="uid://dmwvt7cl86xxv" path="res://assets/UI/Fight.png" id="8_fight"]
 
 [sub_resource type="Environment" id="Environment_setup"]
 background_mode = 1
@@ -175,3 +176,23 @@ shadow_blur = 3.038
 environment = SubResource("Environment_setup")
 
 [node name="GameUI" parent="." unique_id=2022869753 instance=ExtResource("3_gameui")]
+
+[node name="FightLayer" type="CanvasLayer" parent="." unique_id=1337327719]
+layer = 110
+
+[node name="FightImage" type="TextureRect" parent="FightLayer" unique_id=1661586923]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -150.0
+offset_right = 250.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(250, 150)
+texture = ExtResource("8_fight")
+expand_mode = 1
+stretch_mode = 5

@@ -28,6 +28,11 @@ func _ready() -> void:
 	vs_image.scale = Vector2.ZERO
 	skip_label.modulate.a = 0.0
 	
+	# NETTOYAGE : On supprime l'image Fight si elle traîne encore dans cette scène par erreur
+	if has_node("FightImage"):
+		get_node("FightImage").queue_free()
+		print("VersusScreen: Ghost 'FightImage' removed.")
+	
 	# Fade in du label "Tap to Skip" après un court délai
 	var tween = create_tween()
 	tween.tween_property(skip_label, "modulate:a", 1.0, 0.5).set_delay(1.0)
@@ -55,12 +60,14 @@ func setup(local_wrestler_data: WrestlerData, remote_wrestler_data: WrestlerData
 	# 3. Instancier le modèle du bas
 	_spawn_model(remote_wrestler_data, bottom_spawn, current_delay)
 	
-	# Mise à jour de la durée totale de la scène (Délai accumulé + Durée dernier son + Buffer)
+	# Calcul durée étape 3
 	var t3 = 0.8
 	if remote_wrestler_data and remote_wrestler_data.sound_name:
 		t3 = max(remote_wrestler_data.sound_name.get_length(), 0.8)
+	current_delay += t3
 	
-	duration = current_delay + t3 + 1.0
+	# Mise à jour de la durée totale
+	duration = current_delay + 1.0
 
 func _spawn_model(data: WrestlerData, parent: Node3D, delay: float = 0.0) -> void:
 	if not data or not data.model_scene:
@@ -139,5 +146,11 @@ func _finish() -> void:
 	if is_finished: return
 	is_finished = true
 	finished.emit()
-	# L'animation de sortie ou la destruction sera gérée par le parent (GameManager/Arena)
+	
+	# On notifie l'Arena (scène principale) qu'elle peut lancer son intro "FIGHT!"
+	var current_scene = get_tree().current_scene
+	if current_scene and current_scene.has_method("start_fight_sequence"):
+		current_scene.start_fight_sequence()
+		
+	# On se détruit pour laisser place à l'arène (qui est déjà en dessous)
 	queue_free()
