@@ -90,7 +90,8 @@ func _setup_network_game() -> void:
 
 		# Le Host choisit les personnages et le notifie
 		if am_i_host:
-			_server_select_and_sync_characters()
+			# FIX: Petit délai pour laisser le temps aux clients de recharger leur scène avant de recevoir la synchro
+			get_tree().create_timer(1.0).timeout.connect(_server_select_and_sync_characters)
 
 func initialize_game_state() -> void:
 	if not grid_manager or grid_manager.wrestlers.is_empty():
@@ -696,32 +697,11 @@ func _handle_rematch_vote(player_name: String) -> void:
 			rematch_update.emit(rematch_votes.size(), required_votes)
 
 func _handle_restart_game() -> void:
-	print("🔄 Restarting Game...")
-	rematch_votes.clear()
-	is_game_active = true
-	active_player_index = 0 # Player 1 starts
-	has_acted_this_turn = false
-	pending_attack_context.clear()
-	pending_defense_context.clear()
-	is_waiting_for_reaction = false
-	
-	# Reset Deck
-	deck_manager.initialize_deck()
-	
-	# Reset Hands
-	player_hands.clear()
-	
-	# Reset Wrestlers
-	if grid_manager:
-		grid_manager.reset_wrestlers()
-	
-	game_restarted.emit()
-	
-	# Draw initial hands
-	for player in players:
-		_draw_up_to_limit(player.name)
-		
-	_start_turn()
+	print("🔄 Restarting Game (Hard Reset)...")
+	# Hard Reset : On recharge la scène complète.
+	# Cela détruit l'instance actuelle de GameManager et en crée une nouvelle.
+	# NetworkManager (Autoload) reste vivant et garde la connexion.
+	get_tree().change_scene_to_file("res://scenes/Arena.tscn")
 
 func start_match_after_versus() -> void:
 	initialize_game_state()

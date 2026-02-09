@@ -107,6 +107,7 @@ func initialize(data: WrestlerData) -> void:
 # Sets the initial position of the wrestler
 func set_initial_position(pos: Vector2i, manager) -> void:
 	grid_manager = manager
+	reset_state() # On s'assure que le catcheur n'est plus "busy", "ejected" ou mort
 	current_health = max_health
 	health_changed.emit(current_health, max_health)
 	
@@ -116,8 +117,12 @@ func set_initial_position(pos: Vector2i, manager) -> void:
 	
 	_play_anim(anim_idle)
 	
-	# Initial placement is local only, no RPC needed (spawn is deterministic or handled elsewhere)
-	_perform_move(pos)
+	# FIX: Teleport directly instead of walking to avoid issues and visual weirdness during restart
+	grid_position = pos
+	if grid_manager:
+		position = grid_manager.grid_to_world(grid_position)
+		# Force orientation towards center/opponent immediately
+		_face_opponent(1.0)
 
 # Moves the wrestler to a new grid position (instantly for now)
 func move_to_grid_position(new_pos: Vector2i) -> void:

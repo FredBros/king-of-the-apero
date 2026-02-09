@@ -175,6 +175,14 @@ shadow_blur = 3.038
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1938561449]
 environment = SubResource("Environment_setup")
 
+[node name="LoadingCurtain" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
 [node name="GameUI" parent="." unique_id=2022869753 instance=ExtResource("3_gameui")]
 
 [node name="FightLayer" type="CanvasLayer" parent="." unique_id=1337327719]

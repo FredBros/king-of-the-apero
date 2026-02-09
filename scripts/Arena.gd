@@ -12,6 +12,7 @@ extends Node3D
 @export var tutorial_close_button: Button
 @export var remote_pause_overlay: Control
 
+@onready var loading_curtain = $LoadingCurtain
 @onready var fight_image = $FightLayer/FightImage
 const FIGHT_SOUND = preload("res://assets/Sounds/Voices/fight.wav")
 const UI_SOUND_COMPONENT_SCENE = preload("res://scenes/Components/UISoundComponent.tscn")
@@ -125,6 +126,10 @@ func _ready() -> void:
 
 func _check_hand_playability() -> void:
 	print("Arena: Checking hand playability...")
+	
+	if not game_manager.is_game_active:
+		return
+
 	# Check only if it's our turn to avoid calculations for the opponent
 	if game_manager.is_local_player_active():
 		var playable_cards = game_manager.get_playable_cards_in_hand()
@@ -132,8 +137,12 @@ func _check_hand_playability() -> void:
 
 func _update_hand_display(player_name: String) -> void:
 	# In hotseat mode, we refresh the hand to show the specific player's cards.
-	# In network mode, we don't need a full refresh as card_drawn/discarded handle it.
-	if game_manager.is_in_hotseat_mode():
+	# In network mode, we usually rely on signals, but sometimes a full refresh is needed (e.g. restart).
+	var is_local = false
+	if game_manager.has_method("_get_my_player_name"):
+		is_local = (player_name == game_manager._get_my_player_name())
+	
+	if game_manager.is_in_hotseat_mode() or is_local:
 		game_ui.clear_hand()
 		var hand = game_manager.get_player_hand(player_name)
 		for card in hand:
@@ -213,6 +222,13 @@ func _update_pause_state() -> void:
 # Appelée par le VersusScreen quand il a fini son animation
 func start_fight_sequence() -> void:
 	print("Arena: Starting Fight Sequence (Triggered by VersusScreen)")
+	
+	# On lève le rideau pour révéler l'arène
+	if loading_curtain and loading_curtain.visible:
+		var tween = create_tween()
+		tween.tween_property(loading_curtain, "modulate:a", 0.0, 0.5)
+		tween.tween_callback(func(): loading_curtain.visible = false)
+	
 	_play_fight_sequence()
 
 func _play_fight_sequence() -> void:
