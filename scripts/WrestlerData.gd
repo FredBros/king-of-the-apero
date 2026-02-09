@@ -4,7 +4,9 @@ extends Resource
 @export var id: String = "wrestler_id"
 @export var display_name: String = "Wrestler"
 @export var max_health: int = 10
+@export var portrait: Texture2D
 @export var model_scene: PackedScene
+
 
 @export_group("Sounds")
 @export var sound_punch: AudioStream

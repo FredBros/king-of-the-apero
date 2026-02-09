@@ -150,6 +150,7 @@ vertical_alignment = 1
 [node name="GameManager" type="Node" parent="." unique_id=1155179461]
 script = ExtResource("2_gamemanager")
 character_pool = Array[ExtResource("3_vyqrf")]([ExtResource("6_gcrh0"), ExtResource("7_vyqrf")])
+enable_hotseat_mode = true
 
 [node name="DeckManager" type="Node" parent="." unique_id=310878470]
 script = ExtResource("3_deckmanager")
@@ -175,7 +176,7 @@ shadow_blur = 3.038
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1938561449]
 environment = SubResource("Environment_setup")
 
-[node name="LoadingCurtain" type="ColorRect" parent="."]
+[node name="LoadingCurtain" type="ColorRect" parent="." unique_id=1881758263]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

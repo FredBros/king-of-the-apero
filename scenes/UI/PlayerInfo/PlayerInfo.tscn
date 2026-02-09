@@ -1,27 +1,129 @@
-[gd_scene load_steps=2 format=3 uid="uid://ul6duyq4iklg"]
+[gd_scene format=3 uid="uid://ul6duyq4iklg"]
 
 [ext_resource type="Script" uid="uid://cgy4xoay7ixya" path="res://scripts/PlayerInfo.gd" id="1_2eeu7"]
+[ext_resource type="Texture2D" uid="uid://bf6gkvdawcpog" path="res://assets/Actors/Big_guy/portrait.png" id="2_tcjc5"]
+[ext_resource type="FontFile" uid="uid://b238jip1oeqr5" path="res://assets/fonts/Bangers-Regular.ttf" id="3_ok1yx"]
 
-[node name="PlayerInfo" type="MarginContainer" node_paths=PackedStringArray("name_label", "health_label")]
+[sub_resource type="Gradient" id="Gradient_qdpmi"]
+offsets = PackedFloat32Array(0.6525, 0.695)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_4wsdm"]
+gradient = SubResource("Gradient_qdpmi")
+width = 144
+height = 144
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1i43i"]
+bg_color = Color(0.09411765, 0.078431375, 0.14509805, 1)
+corner_radius_top_left = 500
+corner_radius_top_right = 500
+corner_radius_bottom_right = 500
+corner_radius_bottom_left = 500
+
+[node name="PlayerInfo" type="Control" unique_id=1711724964 node_paths=PackedStringArray("health_gauge", "health_gauge_ghost", "portrait_rect", "health_label")]
+custom_minimum_size = Vector2(144, 144)
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 60
 script = ExtResource("1_2eeu7")
-name_label = NodePath("VBoxContainer/NameLabel")
-health_label = NodePath("VBoxContainer/HealthLabel")
+health_gauge = NodePath("HealthGauge")
+health_gauge_ghost = NodePath("HealthGaugeGhost")
+portrait_rect = NodePath("PortraitContainer/Portrait")
+health_label = NodePath("HealthLabel")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 2
+[node name="HealthGaugeGhost" type="TextureProgressBar" parent="." unique_id=1935550770]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -72.0
+offset_top = -72.0
+offset_right = 72.0
+offset_bottom = 72.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 10.0
+step = 0.0
+value = 10.0
+fill_mode = 4
+nine_patch_stretch = true
+texture_progress = SubResource("GradientTexture2D_4wsdm")
+tint_progress = Color(0.99607843, 0.68235296, 0.20392157, 1)
 
-[node name="HealthLabel" type="Label" parent="VBoxContainer"]
-layout_mode = 2
+[node name="HealthGauge" type="TextureProgressBar" parent="." unique_id=832767596]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -72.0
+offset_top = -72.0
+offset_right = 72.0
+offset_bottom = 72.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 10.0
+step = 0.0
+value = 10.0
+fill_mode = 4
+nine_patch_stretch = true
+texture_progress = SubResource("GradientTexture2D_4wsdm")
+tint_progress = Color(0.63529414, 0.14901961, 0.2, 1)
+
+[node name="PortraitContainer" type="Panel" parent="." unique_id=565743873]
+clip_children = 2
+custom_minimum_size = Vector2(112, 112)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -56.0
+offset_top = -56.0
+offset_right = 56.0
+offset_bottom = 56.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_1i43i")
+
+[node name="Portrait" type="TextureRect" parent="PortraitContainer" unique_id=1336013860]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_tcjc5")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HealthLabel" type="Label" parent="." unique_id=2129392710]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = 27.0
+offset_right = 40.0
+offset_bottom = 75.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.7529412, 0.79607844, 0.8627451, 1)
+theme_override_colors/font_outline_color = Color(0.09411765, 0.078431375, 0.14509805, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("3_ok1yx")
 theme_override_font_sizes/font_size = 40
-
-[node name="NameLabel" type="Label" parent="VBoxContainer"]
-layout_mode = 2
+text = "9"
+horizontal_alignment = 1
+vertical_alignment = 1

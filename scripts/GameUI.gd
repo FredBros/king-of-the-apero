@@ -378,11 +378,11 @@ func set_player_perspectives(local_player: Wrestler, remote_player: Wrestler) ->
 	remote_wrestler_ref = remote_player
 	
 	if bottom_player_info and local_player:
-		bottom_player_info.setup(local_player.name, local_player.max_health)
+		bottom_player_info.setup(local_player.wrestler_data)
 		bottom_player_info.update_health(local_player.current_health, local_player.max_health)
 	
 	if top_player_info and remote_player:
-		top_player_info.setup(remote_player.name, remote_player.max_health)
+		top_player_info.setup(remote_player.wrestler_data)
 		top_player_info.update_health(remote_player.current_health, remote_player.max_health)
 
 # Callback appelé quand un catcheur change de PV

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c4kx8fgyrsuv6" path="res://scripts/WrestlerData.gd" id="1_5walk"]
 [ext_resource type="PackedScene" uid="uid://d1ru4aj524ukk" path="res://scenes/Players/BigGuy/big_guy.tscn" id="1_a824p"]
+[ext_resource type="Texture2D" uid="uid://bf6gkvdawcpog" path="res://assets/Actors/Big_guy/portrait.png" id="2_8cwc6"]
 [ext_resource type="AudioStream" uid="uid://cp1xuoq0ny6o8" path="res://assets/Sounds/Voices/Big Guy/big_guy_name.wav" id="3_ln851"]
 
 [resource]
@@ -9,6 +10,7 @@ script = ExtResource("1_5walk")
 id = "big_guy"
 display_name = "Big Guy"
 max_health = 2
+portrait = ExtResource("2_8cwc6")
 model_scene = ExtResource("1_a824p")
 sound_name = ExtResource("3_ln851")
 metadata/_custom_type_script = "uid://c4kx8fgyrsuv6"

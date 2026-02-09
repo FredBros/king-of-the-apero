@@ -901,8 +901,8 @@ func _handle_attack_result(data: Dictionary) -> void:
 							if is_push_attack:
 								_apply_push(attacker, w)
 							else:
-								# Pass skip_anim = true because attacker.attack will trigger it via anim event
-								w.take_damage(1, true)
+								# Damage is now applied via the animation event on the attacker's side
+								pass
 							break
 				pending_attack_context.clear()
 			else:
