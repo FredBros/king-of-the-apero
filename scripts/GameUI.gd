@@ -16,7 +16,7 @@ var local_wrestler_ref: Wrestler
 var remote_wrestler_ref: Wrestler
 
 @export var card_ui_scene: PackedScene
-@onready var hand_container: HBoxContainer = $HandContainer
+@onready var hand_container: HBoxContainer = $PanelContainer/HandContainer
 @onready var game_over_container: CenterContainer = $GameOverContainer
 @onready var winner_label: Label = $GameOverContainer/Panel/MarginContainer/VBoxContainer/WinnerLabel
 
@@ -32,10 +32,11 @@ var opponent_card_display: CardUI
 var is_reaction_phase: bool = false
 
 # Drop Zone for Push mechanic
+@onready var end_turn_button = $EndTurnButton
 var drop_zone: DropZone
 
 # Discard Zone Visual (Red strip at bottom)
-var discard_zone_visual: ColorRect
+@onready var discard_zone_visual: ColorRect = $DiscardZone
 
 var game_manager_ref
 
@@ -58,8 +59,7 @@ func _ready() -> void:
 		cta_btn.pressed.connect(_on_cta_button_pressed)
 	
 	# Connect end turn button manually
-	var end_turn_btn = $EndTurnButton
-	end_turn_btn.pressed.connect(_on_end_turn_button_pressed)
+	end_turn_button.end_turn_pressed.connect(_on_end_turn_button_pressed)
 	
 	if hand_container:
 		hand_container.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -90,7 +90,6 @@ func _ready() -> void:
 	move_child(drop_zone, 0) # Ensure it's behind everything else
 	drop_zone.card_dropped.connect(_on_card_dropped_on_zone)
 	
-	_setup_discard_zone_visual()
 	_setup_reaction_ui()
 
 func _setup_reaction_ui() -> void:
@@ -129,58 +128,6 @@ func _input(event: InputEvent) -> void:
 		# Ou simplement : Si on clique sur le GridManager (3D), ça trigger le pass.
 		pass
 
-func _setup_discard_zone_visual() -> void:
-	discard_zone_visual = ColorRect.new()
-	discard_zone_visual.color = Color.RED
-	discard_zone_visual.custom_minimum_size.y = 60
-	discard_zone_visual.size.y = 60
-	
-	# Anchor bottom full width
-	discard_zone_visual.anchor_top = 1.0
-	discard_zone_visual.anchor_bottom = 1.0
-	discard_zone_visual.anchor_left = 0.0
-	discard_zone_visual.anchor_right = 1.0
-	discard_zone_visual.offset_top = -60
-	discard_zone_visual.offset_bottom = 0
-	
-	add_child(discard_zone_visual)
-	
-	var label = Label.new()
-	label.text = "🗑️"
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	discard_zone_visual.add_child(label)
-	
-	move_child(discard_zone_visual, 0) # Behind cards
-	discard_zone_visual.hide() # Hidden by default
-	
-	# Adjust layout positions deferred to ensure button size is calculated
-	call_deferred("_adjust_layout_positions")
-
-func _adjust_layout_positions() -> void:
-	var end_turn_btn = $EndTurnButton
-	var btn_height = 0.0
-	if end_turn_btn:
-		btn_height = end_turn_btn.size.y
-		# Fallback si la taille n'est pas encore calculée
-		if btn_height <= 1: btn_height = 60.0
-	
-	# Base shift from previous logic (-150)
-	var base_shift = -150.0
-	
-	if hand_container:
-		# Monte de 1/2 hauteur de bouton en plus
-		var shift = base_shift - (btn_height / 2.0)
-		hand_container.offset_bottom += shift
-		hand_container.offset_top += shift
-
-	if end_turn_btn:
-		# Descend de la hauteur du bouton (donc remonte moins)
-		var shift = base_shift + btn_height
-		end_turn_btn.offset_bottom += shift
-		end_turn_btn.offset_top += shift
-
 # --- Reaction Logic ---
 
 func _on_end_turn_button_pressed() -> void:
@@ -202,18 +149,19 @@ func _on_quit_button_pressed() -> void:
 func _on_cta_button_pressed() -> void:
 	OS.shell_open("https://trankil.itch.io/folklore-on-tap")
 
-func update_turn_info(player_name: String) -> void:
-	turn_label.text = player_name + "'s Turn"
+func update_turn_info(player_name: String, skip_anim: bool = false) -> void:
+	var is_my_turn = false
+	if game_manager_ref:
+		is_my_turn = game_manager_ref.is_local_player_active()
+	
+	turn_label.text = "YOUR TURN" if is_my_turn else "OPPONENT'S TURN"
+	end_turn_button.set_player_turn(is_my_turn, skip_anim)
 	_update_discard_zone_visibility()
 
 func _on_game_restarted() -> void:
 	game_over_container.hide()
 	clear_hand()
-	# Reset button state if needed
-	var restart_btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/RestartButton
-	if restart_btn:
-		restart_btn.disabled = false
-		restart_btn.text = "RESTART MATCH"
+	# The scene is reloaded on restart, so UI state is reset automatically.
 
 func _on_rematch_update(current: int, total: int) -> void:
 	# Si l'adversaire a voté avant nous, on peut afficher un message
@@ -463,3 +411,8 @@ func _on_versus_screen_finished() -> void:
 	
 	if game_manager_ref:
 		game_manager_ref.start_match_after_versus()
+		
+		# Force initial UI update (without animation) to ensure correct state for non-starting players
+		if not game_manager_ref.players.is_empty():
+			var current_player_name = game_manager_ref.players[game_manager_ref.active_player_index].name
+			update_turn_info(current_player_name, true)
