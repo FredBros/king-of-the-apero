@@ -16,10 +16,12 @@ var local_wrestler_ref: Wrestler
 var remote_wrestler_ref: Wrestler
 
 @export var card_ui_scene: PackedScene
+@export var opponent_hand_container: HBoxContainer
 @export var smoke_puff_scene: PackedScene
 @export var slap_sound: AudioStream
 @onready var hand_container: HBoxContainer = $PanelContainer/HandContainer
 @onready var slap_anchor: Control = $SlapAnchor
+@onready var opponent_slap_anchor: Control = $OpponentSlapAnchor
 @onready var game_over_container: CenterContainer = $GameOverContainer
 @onready var winner_label: Label = $GameOverContainer/Panel/MarginContainer/VBoxContainer/WinnerLabel
 @onready var slap_sound_player: UISoundComponent = $SlapSoundPlayer
@@ -41,6 +43,8 @@ var drop_zone: DropZone
 
 # Discard Zone Visual (Red strip at bottom)
 @onready var discard_zone_visual: ColorRect = $DiscardZone
+
+const CARD_BACK_TEXTURE = preload("res://assets/Cards/card_back.png")
 
 var game_manager_ref
 
@@ -85,6 +89,10 @@ func _ready() -> void:
 			game_manager.versus_screen_requested.connect(_on_versus_screen_requested)
 		if not game_manager.opponent_skipped_versus.is_connected(_on_opponent_skipped_versus):
 			game_manager.opponent_skipped_versus.connect(_on_opponent_skipped_versus)
+		if not game_manager.player_hand_counts_updated.is_connected(_on_player_hand_counts_updated):
+			game_manager.player_hand_counts_updated.connect(_on_player_hand_counts_updated)
+		if not game_manager.card_played_visual.is_connected(_on_card_played_visual):
+			game_manager.card_played_visual.connect(_on_card_played_visual)
 	else:
 		printerr("GameUI: GameManager not found!")
 	
@@ -177,11 +185,16 @@ func _on_card_dropped_on_zone(card_data: CardData, pos: Vector2) -> void:
 	card_dropped_on_world.emit(card_data, pos)
 
 func add_card_to_hand(card_data: CardData) -> void:
+	if not card_ui_scene:
+		printerr("GameUI: card_ui_scene is not assigned!")
+		return
+
 	print("DEBUG UI: Adding card ", card_data.title, " to hand.")
 	var card = card_ui_scene.instantiate()
 	
 	# Wrap in CenterContainer to isolate scale transformations from HBoxContainer layout
 	var wrapper = CenterContainer.new()
+	wrapper.custom_minimum_size = Vector2(120, 120) # Force size for HBoxContainer
 	wrapper.mouse_filter = Control.MOUSE_FILTER_PASS
 	hand_container.add_child(wrapper)
 	wrapper.add_child(card)
@@ -215,6 +228,74 @@ func clear_hand() -> void:
 	for child in hand_container.get_children():
 		child.queue_free()
 	selected_card_ui = null
+
+func update_opponent_hand_visuals(count: int) -> void:
+	if not opponent_hand_container: return
+	
+	# Vider la main actuelle
+	for child in opponent_hand_container.get_children():
+		child.queue_free()
+	
+	# Remplir avec des dos de cartes
+	for i in range(count):
+		var card_back = TextureRect.new()
+		card_back.texture = CARD_BACK_TEXTURE
+		card_back.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		card_back.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		card_back.custom_minimum_size = Vector2(120, 120) # Même taille de base que CardUI
+		opponent_hand_container.add_child(card_back)
+
+func _on_player_hand_counts_updated(counts: Dictionary) -> void:
+	if remote_wrestler_ref and counts.has(remote_wrestler_ref.name):
+		update_opponent_hand_visuals(counts[remote_wrestler_ref.name])
+
+func _on_card_played_visual(player_name: String, card_data: CardData, is_use: bool) -> void:
+	# On ignore nos propres actions (déjà animées par le drag & drop)
+	# On ignore aussi en Hotseat car les deux joueurs partagent la main du bas
+	if not game_manager_ref or game_manager_ref.enable_hotseat_mode: return
+	if player_name == game_manager_ref._get_my_player_name(): return
+	
+	if is_use:
+		_animate_opponent_slap(card_data)
+	else:
+		# TODO: Animation de défausse adverse (fade out simple ?)
+		pass
+
+func _animate_opponent_slap(card_data: CardData) -> void:
+	if not card_ui_scene: return
+	
+	var card = card_ui_scene.instantiate()
+	add_child(card)
+	card.setup(card_data)
+	
+	# Position de départ : Centre de la main adverse (Haut de l'écran)
+	var start_pos = Vector2.ZERO
+	if opponent_hand_container:
+		start_pos = opponent_hand_container.global_position + (opponent_hand_container.size / 2.0) - (card.size / 2.0)
+	card.global_position = start_pos
+	
+	# Cible : OpponentSlapAnchor (Haut du ring)
+	var target_pos = opponent_slap_anchor.global_position if opponent_slap_anchor else (get_viewport().get_visible_rect().size / 2.0)
+	
+	# Effets d'impact (Même logique que le joueur)
+	var is_attack_card = (card_data.type == CardData.CardType.ATTACK)
+	
+	card.impact_occurred.connect(func():
+		if smoke_puff_scene:
+			var puff = smoke_puff_scene.instantiate()
+			add_child(puff)
+			puff.z_index = 10
+			puff.setup(target_pos)
+			if is_attack_card:
+				puff.modulate = Color(1.0, 0.8, 0.8)
+		
+		if slap_sound_player and slap_sound:
+			slap_sound_player.play_varied(slap_sound)
+		
+		_trigger_screen_shake()
+	)
+	
+	card.animate_slap(target_pos)
 
 func _create_card_data(type: CardData.CardType, value: int, title: String) -> CardData:
 	var card = CardData.new()
@@ -283,6 +364,7 @@ func _on_reaction_timeout() -> void:
 		_on_pass_button_pressed()
 
 func _on_pass_button_pressed() -> void:
+	if not is_reaction_phase: return
 	_end_reaction_phase()
 	reaction_skipped.emit()
 
@@ -339,6 +421,10 @@ func set_player_perspectives(local_player: Wrestler, remote_player: Wrestler) ->
 	if top_player_info and remote_player:
 		top_player_info.setup(remote_player.wrestler_data)
 		top_player_info.update_health(remote_player.current_health, remote_player.max_health)
+		
+		# Force update hand visuals if counts exist (in case of reconnect/reload)
+		if game_manager_ref and game_manager_ref.player_hand_counts.has(remote_player.name):
+			update_opponent_hand_visuals(game_manager_ref.player_hand_counts[remote_player.name])
 
 # Callback appelé quand un catcheur change de PV
 func on_wrestler_health_changed(current: int, max_hp: int, wrestler: Wrestler) -> void:

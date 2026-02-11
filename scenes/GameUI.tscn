@@ -7,10 +7,10 @@
 [ext_resource type="PackedScene" uid="uid://ipdd3fwghaxl" path="res://scenes/SmokePuff.tscn" id="3_g2w7k"]
 [ext_resource type="Script" uid="uid://gvhp5i2exhxf" path="res://scripts/end_turn_button.gd" id="4_4t7g5"]
 [ext_resource type="Texture2D" uid="uid://kwp8lu25bm1n" path="res://assets/UI/CTA.png" id="4_56cg4"]
-[ext_resource type="AudioStream" uid="uid://c6r7s8t9u0v1" path="res://assets/Sounds/UI/card_slap.wav" id="5_slap_sound"]
+[ext_resource type="AudioStream" uid="uid://rhjhqj3hvayj" path="res://assets/Sounds/UI/card_slap.wav" id="5_slap_sound"]
 [ext_resource type="Texture2D" uid="uid://bqx3bhqhswpab" path="res://assets/UI/Btn/coin_player.png" id="6_coin_player"]
 [ext_resource type="Texture2D" uid="uid://dh0j60kl6fs4n" path="res://assets/UI/Btn/coin_opponent.png" id="7_coin_opponent"]
-[ext_resource type="Script" uid="uid://csmx7gq2w4y8" path="res://scripts/Components/UISoundComponent.gd" id="8_u7j5g"]
+[ext_resource type="Script" uid="uid://csrhhsqxb6b3q" path="res://scripts/Components/UISoundComponent.gd" id="8_u7j5g"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dc875"]
 
@@ -23,11 +23,12 @@ gradient = SubResource("Gradient_dc875")
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 
-[node name="GameUI" type="CanvasLayer" unique_id=77095954 node_paths=PackedStringArray("top_player_info", "bottom_player_info")]
+[node name="GameUI" type="CanvasLayer" unique_id=77095954 node_paths=PackedStringArray("top_player_info", "bottom_player_info", "opponent_hand_container")]
 script = ExtResource("1_gameui")
 top_player_info = NodePath("TopPlayerInfo")
 bottom_player_info = NodePath("BottomPlayerInfo")
 card_ui_scene = ExtResource("2_cardui")
+opponent_hand_container = NodePath("OpponentHandContainer")
 smoke_puff_scene = ExtResource("3_g2w7k")
 slap_sound = ExtResource("5_slap_sound")
 
@@ -70,6 +71,19 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_dc875")
 layout_mode = 2
 alignment = 1
 
+[node name="OpponentHandContainer" type="HBoxContainer" parent="." unique_id=998877665]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 120.999985
+offset_right = 200.0
+offset_bottom = 281.0
+grow_horizontal = 2
+scale = Vector2(0.7, 0.7)
+pivot_offset = Vector2(200, 0)
+alignment = 1
+
 [node name="SlapAnchor" type="Control" parent="." unique_id=847592013]
 layout_mode = 3
 anchors_preset = 7
@@ -81,6 +95,15 @@ offset_top = -368.0
 offset_bottom = -368.0
 grow_horizontal = 2
 grow_vertical = 0
+
+[node name="OpponentSlapAnchor" type="Control" parent="." unique_id=554433221]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_top = 300.0
+offset_bottom = 300.0
+grow_horizontal = 2
 
 [node name="TurnInfoContainer" type="PanelContainer" parent="." unique_id=1539782180]
 visible = false

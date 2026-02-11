@@ -14,6 +14,8 @@ signal game_over(winner_name: String)
 signal game_paused(paused: bool, initiator_name: String)
 signal versus_screen_requested(local_data: WrestlerData, remote_data: WrestlerData)
 signal opponent_skipped_versus
+signal player_hand_counts_updated(counts: Dictionary)
+signal card_played_visual(player_name: String, card: CardData, is_use: bool)
 
 @export var hand_size_limit: int = 5
 @export var cards_drawn_per_turn: int = 2
@@ -26,6 +28,7 @@ var deck_manager: DeckManager
 var players: Array[Wrestler] = []
 # Dictionary to store hand for each player: { player_name: [CardData] }
 var player_hands: Dictionary = {}
+var player_hand_counts: Dictionary = {} # { player_name: int } - Track hand size for UI sync
 var active_player_index: int = 0
 var is_game_active: bool = false
 
@@ -101,6 +104,7 @@ func initialize_game_state() -> void:
 	players = grid_manager.wrestlers
 	active_player_index = 0 # Player 1 starts
 	is_game_active = true
+	player_hand_counts.clear()
 	
 	# Est-ce que je suis le "Pseudo-Host" (Joueur 1) ?
 	var am_i_host = false
@@ -229,6 +233,7 @@ func use_card(card: CardData) -> bool:
 			# On retire la carte de notre main locale pour qu'elle ne revienne pas au refresh
 			var my_name = _get_my_player_name()
 			_remove_card_from_hand(my_name, card)
+			_update_hand_count(my_name, -1)
 			
 			# FIX: Mettre à jour l'UI locale immédiatement (Optimistic UI)
 			card_discarded.emit(card)
@@ -258,6 +263,7 @@ func discard_hand_card(card: CardData) -> void:
 			})
 			var my_name = _get_my_player_name()
 			_remove_card_from_hand(my_name, card)
+			_update_hand_count(my_name, -1)
 			
 			# FIX: Mettre à jour l'UI locale immédiatement (Optimistic UI)
 			card_discarded.emit(card)
@@ -354,6 +360,8 @@ func _draw_turn_cards(player_name: String) -> void:
 			break
 
 func _notify_card_drawn(player_name: String, card: CardData) -> void:
+	_update_hand_count(player_name, 1)
+	
 	if enable_hotseat_mode:
 		# In hotseat, the UI always reflects the active player's hand.
 		# We only need to emit the signal if the card is for the currently active player.
@@ -367,6 +375,11 @@ func _notify_card_drawn(player_name: String, card: CardData) -> void:
 	# Si c'est pour moi (Host/Local)
 	if target_id == my_id:
 		card_drawn.emit(card)
+		# Notify others that I drew (without showing card)
+		NetworkManager.send_message({
+			"type": "SYNC_DRAW",
+			"player_name": player_name
+		})
 	else:
 		# Sinon on envoie la carte au client concerné via Message
 		# Note: On broadcast, mais le client filtrera si ce n'est pas pour lui
@@ -425,6 +438,15 @@ func _remove_card_from_hand(player_name: String, card: CardData) -> bool:
 		print("DEBUG: Hand content: ", hand_debug)
 	return false
 
+func _update_hand_count(player_name: String, delta: int) -> void:
+	if not player_hand_counts.has(player_name):
+		player_hand_counts[player_name] = 0
+	player_hand_counts[player_name] += delta
+	# Prevent negative counts
+	if player_hand_counts[player_name] < 0:
+		player_hand_counts[player_name] = 0
+	player_hand_counts_updated.emit(player_hand_counts)
+
 # --- RPCs & Network Logic ---
 
 func _on_network_message(data: Dictionary) -> void:
@@ -433,7 +455,15 @@ func _on_network_message(data: Dictionary) -> void:
 	match data["type"]:
 		"SYNC_TURN":
 			_handle_sync_turn(data["player_name"])
+		"SYNC_DRAW":
+			_update_hand_count(data["player_name"], 1)
 		"RECEIVE_CARD":
+			var target_id = data["target_id"]
+			# Update hand count for target
+			for p_name in player_peer_ids:
+				if player_peer_ids[p_name] == target_id:
+					_update_hand_count(p_name, 1)
+					break
 			# Check if this card is for me
 			if data["target_id"] == NetworkManager.self_user_id:
 				_handle_receive_card(data.get("card", {}))
@@ -446,7 +476,8 @@ func _on_network_message(data: Dictionary) -> void:
 		"SYNC_CARD_PLAYED":
 			# Fix Echo: On ignore si c'est notre propre carte (car déjà supprimée localement)
 			if data["player_name"] != _get_my_player_name():
-				_handle_sync_card_played(data.get("card", {}), data["player_name"])
+				_update_hand_count(data["player_name"], -1)
+				_handle_sync_card_played(data.get("card", {}), data["player_name"], data.get("is_use", true))
 		"SYNC_GRID_ACTION":
 			grid_action_received.emit(data["action_data"])
 		"SYNC_HEALTH":
@@ -454,7 +485,9 @@ func _on_network_message(data: Dictionary) -> void:
 		"REQUEST_ATTACK":
 			_handle_request_attack(data)
 		"ATTACK_RESULT":
-			_handle_attack_result(data)
+			# Fix Echo: On ignore si c'est nous qui avons envoyé le résultat (en tant que défenseur)
+			if data.get("_sender_id") != NetworkManager.self_user_id:
+				_handle_attack_result(data)
 		"SYNC_PUSH":
 			_handle_sync_push(data)
 		"SYNC_FLOATING_TEXT":
@@ -547,14 +580,17 @@ func server_process_use_card(card: CardData) -> void:
 	
 	# Dans tous les cas (succès ou desync), on valide la consommation car l'action (Mvt/Attaque) a eu lieu.
 	deck_manager.discard_card(card)
+	_update_hand_count(current_player_name, -1)
 	# Informer tout le monde qu'une carte a été jouée (pour l'historique/anim et nettoyage client)
 	card_discarded.emit(card)
+	card_played_visual.emit(current_player_name, card, true)
 	if not enable_hotseat_mode:
 		# FIX: On émet juste le signal localement au lieu de rappeler _handle_sync_card_played (qui tenterait de supprimer la carte une 2ème fois)
 		NetworkManager.send_message({
 			"type": "SYNC_CARD_PLAYED",
 			"card": CardData.serialize(card),
-			"player_name": current_player_name
+			"player_name": current_player_name,
+			"is_use": true
 		})
 
 func server_process_discard_card(card: CardData) -> void:
@@ -569,20 +605,24 @@ func server_process_discard_card(card: CardData) -> void:
 			print("Server: Force removed '", removed.title, "' to maintain hand count.")
 	
 	deck_manager.discard_card(card)
+	_update_hand_count(current_player_name, -1)
 	card_discarded.emit(card)
+	card_played_visual.emit(current_player_name, card, false)
 	if not enable_hotseat_mode:
 		# On réutilise sync_card_played car l'effet est le même (retrait de main + signal discard)
 		# FIX: Idem, on évite la double suppression
 		NetworkManager.send_message({
 			"type": "SYNC_CARD_PLAYED",
 			"card": CardData.serialize(card),
-			"player_name": current_player_name
+			"player_name": current_player_name,
+			"is_use": false
 		})
 
-func _handle_sync_card_played(card_dict: Dictionary, player_name: String) -> void:
+func _handle_sync_card_played(card_dict: Dictionary, player_name: String, is_use: bool = true) -> void:
 	var card = CardData.deserialize(card_dict)
 	_remove_card_from_hand(player_name, card)
 	card_discarded.emit(card)
+	card_played_visual.emit(player_name, card, is_use)
 
 func send_pause_state(paused: bool) -> void:
 	if enable_hotseat_mode: return
@@ -719,6 +759,10 @@ func send_skip_versus() -> void:
 
 func initiate_attack_sequence(target_wrestler: Wrestler, attack_card: CardData, is_push: bool = false) -> void:
 	# Appelé par GridManager quand le joueur local attaque
+	if is_waiting_for_reaction:
+		print("⚠️ Attack already in progress. Ignoring duplicate initiation.")
+		return
+
 	var target_name = target_wrestler.name
 	var target_id = player_peer_ids.get(target_name)
 	
@@ -750,6 +794,10 @@ func initiate_attack_sequence(target_wrestler: Wrestler, attack_card: CardData, 
 func _handle_request_attack(data: Dictionary) -> void:
 	# Suis-je la cible ?
 	if not enable_hotseat_mode and data["target_id"] != NetworkManager.self_user_id:
+		return
+		
+	if not pending_defense_context.is_empty():
+		print("⚠️ Already defending. Ignoring duplicate REQUEST_ATTACK.")
 		return
 		
 	var attack_card = CardData.deserialize(data["attacker_card"])
@@ -816,6 +864,7 @@ func on_dodge_complete(card: CardData) -> void:
 func _consume_reaction_card(card: CardData) -> void:
 	var my_name = _get_my_player_name()
 	_remove_card_from_hand(my_name, card)
+	_update_hand_count(my_name, -1)
 	deck_manager.discard_card(card)
 	card_discarded.emit(card)
 	
@@ -849,6 +898,13 @@ func _send_attack_result(blocked: bool, block_card: CardData, dodged: bool) -> v
 		_handle_attack_result(msg)
 
 func _handle_attack_result(data: Dictionary) -> void:
+	# Safety for Defender: Prevent double processing (Double Damage Fix)
+	if not enable_hotseat_mode and data.get("target_id") == NetworkManager.self_user_id:
+		if pending_defense_context.is_empty() and not is_waiting_for_reaction:
+			print("⚠️ Duplicate ATTACK_RESULT ignored on Defender.")
+			return
+		pending_defense_context.clear()
+
 	is_waiting_for_reaction = false
 	
 	# In Hotseat, switch UI back to active player (attacker)
@@ -874,6 +930,14 @@ func _handle_attack_result(data: Dictionary) -> void:
 	var target = _get_wrestler_by_peer_id(data.get("target_id"))
 	
 	if attacker and target:
+		# Check if we are the attacker who initiated this (Context exists)
+		var is_initiator = not pending_attack_context.is_empty()
+		
+		# Safety: Prevent double processing on Attacker (Double Damage Fix)
+		if is_local_player_active() and not is_initiator:
+			print("⚠️ Duplicate ATTACK_RESULT ignored on Attacker.")
+			return
+
 		# Determine if hit
 		var is_blocked = data.get("is_blocked", false)
 		var is_dodged = data.get("is_dodged", false)
@@ -891,7 +955,8 @@ func _handle_attack_result(data: Dictionary) -> void:
 			pass
 		else:
 			# Dégâts réels ou Poussée
-			if is_local_player_active():
+			# FIX: Use is_initiator to ensure we consume the context if it exists, regardless of turn state
+			if is_initiator:
 				if pending_attack_context.has("target_name"):
 					var target_name = pending_attack_context["target_name"]
 					var is_push_attack = pending_attack_context.get("is_push", false)

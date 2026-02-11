@@ -150,7 +150,6 @@ vertical_alignment = 1
 [node name="GameManager" type="Node" parent="." unique_id=1155179461]
 script = ExtResource("2_gamemanager")
 character_pool = Array[ExtResource("3_vyqrf")]([ExtResource("6_gcrh0"), ExtResource("7_vyqrf")])
-enable_hotseat_mode = true
 
 [node name="DeckManager" type="Node" parent="." unique_id=310878470]
 script = ExtResource("3_deckmanager")
