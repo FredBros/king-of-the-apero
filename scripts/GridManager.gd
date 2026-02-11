@@ -665,7 +665,7 @@ func handle_swipe_preview(card: CardData, screen_offset: Vector2) -> bool:
 		
 	return is_push_hover
 
-func handle_swipe_commit(card: CardData, screen_offset: Vector2, global_pos: Vector2) -> void:
+func handle_swipe_commit(card: CardData, screen_offset: Vector2, global_pos: Vector2) -> bool:
 	swipe_highlight.hide()
 	
 	# 1. Check for Push (Drop on Wrestler) - Only for Attack/Joker
@@ -687,7 +687,7 @@ func handle_swipe_commit(card: CardData, screen_offset: Vector2, global_pos: Vec
 				active_wrestler.look_at_target(to_global(grid_to_world(target.grid_position)))
 				_consume_card(card, false)
 				game_manager.initiate_attack_sequence(target, card, true) # is_push = true
-				return
+				return true
 	
 	# 2. Directional Logic (Swipe)
 	var target_cell = _get_swipe_target_cell(card, screen_offset)
@@ -722,6 +722,9 @@ func handle_swipe_commit(card: CardData, screen_offset: Vector2, global_pos: Vec
 			
 			_clear_highlights()
 			current_card = null
+			return true
+			
+	return false
 
 func _get_swipe_target_cell(card: CardData, screen_offset: Vector2) -> Vector2i:
 	var actor = _get_acting_wrestler()

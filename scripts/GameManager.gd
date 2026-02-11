@@ -1001,6 +1001,7 @@ func preview_swipe(card: CardData, screen_offset: Vector2) -> bool:
 		return grid_manager.handle_swipe_preview(card, screen_offset)
 	return false
 
-func commit_swipe(card: CardData, screen_offset: Vector2, global_pos: Vector2) -> void:
+func commit_swipe(card: CardData, screen_offset: Vector2, global_pos: Vector2) -> bool:
 	if grid_manager and (is_local_player_active() or not pending_defense_context.is_empty()):
-		grid_manager.handle_swipe_commit(card, screen_offset, global_pos)
+		return grid_manager.handle_swipe_commit(card, screen_offset, global_pos)
+	return false

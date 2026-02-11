@@ -16,9 +16,13 @@ var local_wrestler_ref: Wrestler
 var remote_wrestler_ref: Wrestler
 
 @export var card_ui_scene: PackedScene
+@export var smoke_puff_scene: PackedScene
+@export var slap_sound: AudioStream
 @onready var hand_container: HBoxContainer = $PanelContainer/HandContainer
+@onready var slap_anchor: Control = $SlapAnchor
 @onready var game_over_container: CenterContainer = $GameOverContainer
 @onready var winner_label: Label = $GameOverContainer/Panel/MarginContainer/VBoxContainer/WinnerLabel
+@onready var slap_sound_player: UISoundComponent = $SlapSoundPlayer
 
 @onready var turn_label: Label = $TurnInfoContainer/VBoxContainer/TurnLabel
 
@@ -181,6 +185,9 @@ func add_card_to_hand(card_data: CardData) -> void:
 	wrapper.mouse_filter = Control.MOUSE_FILTER_PASS
 	hand_container.add_child(wrapper)
 	wrapper.add_child(card)
+	
+	# Ensure wrapper is cleaned up when card is destroyed (e.g. after animation)
+	card.tree_exited.connect(func(): if is_instance_valid(wrapper): wrapper.queue_free())
 	
 	card.setup(card_data)
 	card.clicked.connect(_on_card_clicked)
@@ -381,7 +388,50 @@ func _on_card_swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vect
 	card_ui.set_discard_hover_state(false)
 
 	if game_manager_ref:
-		game_manager_ref.commit_swipe(card_ui.card_data, offset, global_pos)
+		# Prevent premature destruction by remove_card_from_hand signal
+		card_ui.is_destroying = true
+		
+		if game_manager_ref.commit_swipe(card_ui.card_data, offset, global_pos):
+			# Positionner sur le SlapAnchor (centre bas de l'écran)
+			var target_pos = slap_anchor.global_position if slap_anchor else (card_ui.global_position + (card_ui.size / 2.0))
+			
+			# Capture data needed for the lambda to avoid accessing potentially freed card_ui
+			var is_attack_card = (card_ui.card_data.type == CardData.CardType.ATTACK)
+			
+			# Connect to impact signal for sync
+			card_ui.impact_occurred.connect(func():
+				if smoke_puff_scene:
+					var puff = smoke_puff_scene.instantiate()
+					add_child(puff)
+					puff.z_index = 10 # Ensure it's below the card (Z=20)
+					puff.setup(target_pos)
+					if is_attack_card:
+						puff.modulate = Color(1.0, 0.8, 0.8)
+				
+				if slap_sound_player and slap_sound:
+					slap_sound_player.play_varied(slap_sound)
+				
+				_trigger_screen_shake()
+			)
+			
+			# --- SLAP EFFECT ---
+			# Start animation
+			card_ui.animate_slap(target_pos)
+		else:
+			# Revert flag if action failed
+			card_ui.is_destroying = false
+
+func _trigger_screen_shake() -> void:
+	var tween = create_tween()
+	# Secousse rapide de l'interface (CanvasLayer offset)
+	var intensity = 10.0
+	for i in range(5):
+		var rand_offset = Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity))
+		tween.tween_property(self , "offset", rand_offset, 0.05)
+		intensity *= 0.8 # Amortissement
+	
+	# Retour à la normale
+	tween.tween_property(self , "offset", Vector2.ZERO, 0.05)
 
 func _update_discard_zone_visibility() -> void:
 	if discard_zone_visual and game_manager_ref:

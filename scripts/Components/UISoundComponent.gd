@@ -1,5 +1,5 @@
 # Version UI (Non-Spatiale) du SoundComponent
-# class_name UISoundComponent
+class_name UISoundComponent
 extends AudioStreamPlayer
 
 @export var pitch_min: float = 0.9

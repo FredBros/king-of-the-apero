@@ -7,6 +7,7 @@ signal drag_ended
 signal swipe_pending(card_ui: CardUI, offset: Vector2)
 signal swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vector2)
 signal selection_canceled(card_ui: CardUI)
+signal impact_occurred
 
 @onready var title_label: Label = $MarginContainer/VBoxContainer/Header/TitleLabel
 @onready var type_label: Label = $MarginContainer/VBoxContainer/TypeLabel
@@ -355,4 +356,44 @@ func animate_destruction() -> void:
 	
 	var tween = create_tween()
 	tween.tween_property(self , "scale", Vector2.ZERO, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	tween.finished.connect(queue_free)
+
+func animate_slap(target_global_pos: Vector2) -> void:
+	is_destroying = true
+	z_index = 20 # Au-dessus de tout pour l'impact
+	
+	# Détacher du layout pour bouger librement vers la cible
+	top_level = true
+	
+	# Teleport to target (centered)
+	var centered_target = target_global_pos - (size / 2.0)
+	global_position = centered_target
+	
+	# Initial State: Invisible and Big
+	scale = Vector2(2.0, 2.0)
+	modulate.a = 0.0
+	
+	var tween = create_tween()
+	
+	# 1. Slam Down (Fade In + Scale Down)
+	tween.set_parallel(true)
+	tween.tween_property(self , "modulate:a", 1.0, 0.1)
+	tween.tween_property(self , "scale", Vector2(1.0, 1.0), 0.2).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	
+	# 2. Impact Trigger & Effects
+	tween.chain().tween_callback(func():
+		impact_occurred.emit()
+		rotation_degrees = randf_range(-3.0, 3.0)
+	)
+	
+	# 3. Squash
+	tween.set_parallel(true)
+	tween.tween_property(self , "scale", Vector2(1.2, 0.8), 0.05).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	
+	# 4. Return to normal
+	tween.chain().tween_property(self , "scale", Vector2(1.0, 1.0), 0.1).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	
+	# 5. Fade out and destroy
+	tween.chain().tween_interval(1.0)
+	tween.chain().tween_property(self , "modulate:a", 0.0, 0.2)
 	tween.finished.connect(queue_free)

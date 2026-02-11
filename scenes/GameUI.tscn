@@ -4,10 +4,13 @@
 [ext_resource type="PackedScene" uid="uid://c8j2k3l4m5n6" path="res://scenes/CardUI.tscn" id="2_cardui"]
 [ext_resource type="PackedScene" uid="uid://ul6duyq4iklg" path="res://scenes/UI/PlayerInfo/PlayerInfo.tscn" id="3_4s3j0"]
 [ext_resource type="Theme" uid="uid://l8sbafea8ujc" path="res://resources/Themes/bar_theme.tres" id="3_7ro0d"]
+[ext_resource type="PackedScene" uid="uid://ipdd3fwghaxl" path="res://scenes/SmokePuff.tscn" id="3_g2w7k"]
 [ext_resource type="Script" uid="uid://gvhp5i2exhxf" path="res://scripts/end_turn_button.gd" id="4_4t7g5"]
 [ext_resource type="Texture2D" uid="uid://kwp8lu25bm1n" path="res://assets/UI/CTA.png" id="4_56cg4"]
+[ext_resource type="AudioStream" uid="uid://c6r7s8t9u0v1" path="res://assets/Sounds/UI/card_slap.wav" id="5_slap_sound"]
 [ext_resource type="Texture2D" uid="uid://bqx3bhqhswpab" path="res://assets/UI/Btn/coin_player.png" id="6_coin_player"]
 [ext_resource type="Texture2D" uid="uid://dh0j60kl6fs4n" path="res://assets/UI/Btn/coin_opponent.png" id="7_coin_opponent"]
+[ext_resource type="Script" uid="uid://csmx7gq2w4y8" path="res://scripts/Components/UISoundComponent.gd" id="8_u7j5g"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dc875"]
 
@@ -25,6 +28,8 @@ script = ExtResource("1_gameui")
 top_player_info = NodePath("TopPlayerInfo")
 bottom_player_info = NodePath("BottomPlayerInfo")
 card_ui_scene = ExtResource("2_cardui")
+smoke_puff_scene = ExtResource("3_g2w7k")
+slap_sound = ExtResource("5_slap_sound")
 
 [node name="DiscardZone" type="ColorRect" parent="." unique_id=987654321]
 anchors_preset = 12
@@ -65,7 +70,20 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_dc875")
 layout_mode = 2
 alignment = 1
 
+[node name="SlapAnchor" type="Control" parent="." unique_id=847592013]
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_top = -368.0
+offset_bottom = -368.0
+grow_horizontal = 2
+grow_vertical = 0
+
 [node name="TurnInfoContainer" type="PanelContainer" parent="." unique_id=1539782180]
+visible = false
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
@@ -189,3 +207,6 @@ offset_bottom = -61.0
 grow_horizontal = 1
 grow_vertical = 0
 scale = Vector2(0.9, 0.9)
+
+[node name="SlapSoundPlayer" type="AudioStreamPlayer" parent="." unique_id=1234567890]
+script = ExtResource("8_u7j5g")
