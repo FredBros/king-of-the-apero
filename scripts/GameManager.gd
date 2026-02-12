@@ -966,8 +966,10 @@ func _handle_attack_result(data: Dictionary) -> void:
 							if is_push_attack:
 								_apply_push(attacker, w)
 							else:
-								# Damage is now applied via the animation event on the attacker's side
-								pass
+								# Sync Visuals: Wait a bit for the punch animation to reach impact point
+								await get_tree().create_timer(0.3).timeout
+								# Damage is applied authoritatively here (Logic), not by the animation (Visuals)
+								w.take_damage(1)
 							break
 				pending_attack_context.clear()
 			else:

@@ -180,7 +180,8 @@ func attack(target: Wrestler, will_hit: bool = false, is_push: bool = false) -> 
 		_play_sound_or_default(wrestler_data.sound_punch, DEFAULT_SOUND_PUNCH, -4.0)
 		if current_attack_is_push:
 			combat_target.execute_pending_push()
-		combat_target.take_damage(1, current_attack_is_push) # skip_anim is true if it's a push
+		# REMOVED: Damage is now handled by GameManager to prevent double-damage bug.
+		# combat_target.take_damage(1, current_attack_is_push)
 		trigger_hurt_on_hit = false
 	
 	_play_anim(anim_idle)
@@ -197,7 +198,8 @@ func on_hit_frame() -> void:
 		_play_sound_or_default(wrestler_data.sound_punch, DEFAULT_SOUND_PUNCH, -4.0)
 		if current_attack_is_push:
 			combat_target.execute_pending_push()
-		combat_target.take_damage(1, current_attack_is_push) # skip_anim is true if it's a push
+		# REMOVED: Damage is now handled by GameManager.
+		# combat_target.take_damage(1, current_attack_is_push)
 		trigger_hurt_on_hit = false
 
 func play_hurt_animation(spawn_blood: bool = true) -> void:
