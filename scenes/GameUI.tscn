@@ -3,14 +3,15 @@
 [ext_resource type="Script" uid="uid://du3ndwc5toxcm" path="res://scripts/GameUI.gd" id="1_gameui"]
 [ext_resource type="PackedScene" uid="uid://c8j2k3l4m5n6" path="res://scenes/CardUI.tscn" id="2_cardui"]
 [ext_resource type="PackedScene" uid="uid://ul6duyq4iklg" path="res://scenes/UI/PlayerInfo/PlayerInfo.tscn" id="3_4s3j0"]
-[ext_resource type="Theme" uid="uid://l8sbafea8ujc" path="res://resources/Themes/bar_theme.tres" id="3_7ro0d"]
 [ext_resource type="PackedScene" uid="uid://ipdd3fwghaxl" path="res://scenes/SmokePuff.tscn" id="3_g2w7k"]
 [ext_resource type="Script" uid="uid://gvhp5i2exhxf" path="res://scripts/end_turn_button.gd" id="4_4t7g5"]
-[ext_resource type="Texture2D" uid="uid://kwp8lu25bm1n" path="res://assets/UI/CTA.png" id="4_56cg4"]
+[ext_resource type="Texture2D" uid="uid://kwp8lu25bm1n" path="res://assets/UI/Btn/CTA.png" id="4_56cg4"]
 [ext_resource type="AudioStream" uid="uid://rhjhqj3hvayj" path="res://assets/Sounds/UI/card_slap.wav" id="5_slap_sound"]
 [ext_resource type="Texture2D" uid="uid://bqx3bhqhswpab" path="res://assets/UI/Btn/coin_player.png" id="6_coin_player"]
 [ext_resource type="Texture2D" uid="uid://dh0j60kl6fs4n" path="res://assets/UI/Btn/coin_opponent.png" id="7_coin_opponent"]
 [ext_resource type="Script" uid="uid://csrhhsqxb6b3q" path="res://scripts/Components/UISoundComponent.gd" id="8_u7j5g"]
+[ext_resource type="PackedScene" uid="uid://b4y8k5l6m7oa" path="res://scenes/UI/Components/ChalkPanel.tscn" id="9_chalk"]
+[ext_resource type="Shader" uid="uid://fhypsw041brr" path="res://shaders/chalk.gdshader" id="10_shader"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dc875"]
 
@@ -22,6 +23,32 @@ colors = PackedColorArray(0.09411765, 0.078431375, 0.14509805, 1, 0.09411765, 0.
 gradient = SubResource("Gradient_dc875")
 fill = 1
 fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vlvos"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_chalk_text"]
+shader = ExtResource("10_shader")
+shader_parameter/intensity = 0.5
+shader_parameter/grain_size = 100.0
+shader_parameter/jitter_amount = 0.002
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wsaag"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_button"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_yrajj"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
 
 [node name="GameUI" type="CanvasLayer" unique_id=77095954 node_paths=PackedStringArray("top_player_info", "bottom_player_info", "opponent_hand_container")]
 script = ExtResource("1_gameui")
@@ -168,38 +195,65 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="PanelContainer" parent="GameOverContainer" unique_id=2121975109]
+[node name="ChalkPanel" parent="GameOverContainer" unique_id=2121975109 instance=ExtResource("9_chalk")]
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_vlvos")
 
-[node name="MarginContainer" type="MarginContainer" parent="GameOverContainer/Panel" unique_id=1141623312]
+[node name="MarginContainer" type="MarginContainer" parent="GameOverContainer/ChalkPanel" unique_id=1141623312]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
 
-[node name="VBoxContainer" type="VBoxContainer" parent="GameOverContainer/Panel/MarginContainer" unique_id=1471542382]
+[node name="VBoxContainer" type="VBoxContainer" parent="GameOverContainer/ChalkPanel/MarginContainer" unique_id=1471542382]
 layout_mode = 2
 theme_override_constants/separation = 30
 
-[node name="WinnerLabel" type="Label" parent="GameOverContainer/Panel/MarginContainer/VBoxContainer" unique_id=1450060083]
+[node name="WinnerLabel" type="Label" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1450060083]
+material = SubResource("ShaderMaterial_chalk_text")
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 48
 text = "WINNER!"
 horizontal_alignment = 1
 
-[node name="RestartButton" type="Button" parent="GameOverContainer/Panel/MarginContainer/VBoxContainer" unique_id=313932704]
-custom_minimum_size = Vector2(0, 50)
+[node name="RestartButtonPanel" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1618913184 instance=ExtResource("9_chalk")]
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-theme = ExtResource("3_7ro0d")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wsaag")
+
+[node name="RestartButton" type="Button" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/RestartButtonPanel" unique_id=313932704]
+material = SubResource("ShaderMaterial_chalk_text")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
 text = "RESTART MATCH"
 
-[node name="QuitButton" type="Button" parent="GameOverContainer/Panel/MarginContainer/VBoxContainer" unique_id=707802481]
+[node name="QuitButtonPanel" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=2134581709 instance=ExtResource("9_chalk")]
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-theme = ExtResource("3_7ro0d")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_yrajj")
+
+[node name="QuitButton" type="Button" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/QuitButtonPanel" unique_id=707802481]
+material = SubResource("ShaderMaterial_chalk_text")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
 text = "QUIT TO MENU"
 
-[node name="TextureButton" type="TextureButton" parent="GameOverContainer/Panel/MarginContainer/VBoxContainer" unique_id=1308959961]
+[node name="TextureButton" type="TextureButton" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1308959961]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -232,4 +286,5 @@ grow_vertical = 0
 scale = Vector2(0.9, 0.9)
 
 [node name="SlapSoundPlayer" type="AudioStreamPlayer" parent="." unique_id=1234567890]
+bus = &"SFX"
 script = ExtResource("8_u7j5g")

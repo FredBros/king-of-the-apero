@@ -11,6 +11,7 @@ signal reaction_skipped
 @export var bottom_player_info: PlayerInfo
 
 const VERSUS_SCREEN_SCENE = preload("res://scenes/UI/VersusScreen.tscn")
+const OPTION_TUTO_LAYER_SCENE = preload("res://scenes/UI/Tuto_layer.tscn")
 
 var local_wrestler_ref: Wrestler
 var remote_wrestler_ref: Wrestler
@@ -23,7 +24,7 @@ var remote_wrestler_ref: Wrestler
 @onready var slap_anchor: Control = $SlapAnchor
 @onready var opponent_slap_anchor: Control = $OpponentSlapAnchor
 @onready var game_over_container: CenterContainer = $GameOverContainer
-@onready var winner_label: Label = $GameOverContainer/Panel/MarginContainer/VBoxContainer/WinnerLabel
+@onready var winner_label: Label = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/WinnerLabel
 @onready var slap_sound_player: UISoundComponent = $SlapSoundPlayer
 
 @onready var turn_label: Label = $TurnInfoContainer/VBoxContainer/TurnLabel
@@ -36,6 +37,7 @@ var reaction_timer: Timer
 var pass_button: Button
 var opponent_card_display: CardUI
 var is_reaction_phase: bool = false
+var tuto_layer_instance: CanvasLayer
 
 # Drop Zone for Push mechanic
 @onready var end_turn_button = $EndTurnButton
@@ -54,15 +56,17 @@ func _ready() -> void:
 	game_over_container.hide()
 	
 	# Connect restart button manually since we added it via code/tscn edit
-	var restart_btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/RestartButton
+	var restart_btn = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/RestartButtonPanel/RestartButton
 	restart_btn.pressed.connect(_on_restart_button_pressed)
+	_setup_button_feedback(restart_btn)
 	
 	# Connect quit button manually
-	var quit_btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/QuitButton
+	var quit_btn = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/QuitButtonPanel/QuitButton
 	quit_btn.pressed.connect(_on_quit_button_pressed)
+	_setup_button_feedback(quit_btn)
 	
 	# Connect CTA button manually
-	var cta_btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/TextureButton
+	var cta_btn = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/TextureButton
 	if cta_btn:
 		cta_btn.pressed.connect(_on_cta_button_pressed)
 	
@@ -101,6 +105,10 @@ func _ready() -> void:
 	add_child(drop_zone)
 	move_child(drop_zone, 0) # Ensure it's behind everything else
 	drop_zone.card_dropped.connect(_on_card_dropped_on_zone)
+	
+	# Instantiate Option/Tuto Layer
+	tuto_layer_instance = OPTION_TUTO_LAYER_SCENE.instantiate()
+	add_child(tuto_layer_instance)
 	
 	_setup_reaction_ui()
 
@@ -149,7 +157,7 @@ func _on_restart_button_pressed() -> void:
 	if game_manager_ref:
 		game_manager_ref.request_restart()
 		# Visual feedback
-		var btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/RestartButton
+		var btn = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/RestartButtonPanel/RestartButton
 		if btn:
 			btn.disabled = true
 			btn.text = "WAITING FOR OPPONENT..."
@@ -177,7 +185,7 @@ func _on_game_restarted() -> void:
 
 func _on_rematch_update(current: int, total: int) -> void:
 	# Si l'adversaire a voté avant nous, on peut afficher un message
-	var btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/RestartButton
+	var btn = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/RestartButtonPanel/RestartButton
 	if btn and not btn.disabled:
 		btn.text = "OPPONENT WANTS REMATCH!"
 
@@ -403,7 +411,7 @@ func show_game_over(winner_name: String) -> void:
 	game_over_container.show()
 
 func disable_restart_button() -> void:
-	var restart_btn = $GameOverContainer/Panel/MarginContainer/VBoxContainer/RestartButton
+	var restart_btn = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/RestartButtonPanel/RestartButton
 	if restart_btn:
 		restart_btn.disabled = true
 		restart_btn.text = "OPPONENT LEFT"
@@ -527,6 +535,9 @@ func _on_versus_screen_requested(local_data: WrestlerData, remote_data: Wrestler
 	if current_versus_screen:
 		current_versus_screen.queue_free()
 	
+	if tuto_layer_instance:
+		tuto_layer_instance.hide()
+	
 	current_versus_screen = VERSUS_SCREEN_SCENE.instantiate()
 	add_child(current_versus_screen)
 	current_versus_screen.setup(local_data, remote_data)
@@ -545,6 +556,9 @@ func _on_versus_screen_finished() -> void:
 		current_versus_screen.queue_free()
 		current_versus_screen = null
 	
+	if tuto_layer_instance:
+		tuto_layer_instance.show()
+	
 	if game_manager_ref:
 		game_manager_ref.start_match_after_versus()
 		
@@ -552,3 +566,26 @@ func _on_versus_screen_finished() -> void:
 		if not game_manager_ref.players.is_empty():
 			var current_player_name = game_manager_ref.players[game_manager_ref.active_player_index].name
 			update_turn_info(current_player_name, true)
+
+func _setup_button_feedback(btn: Button) -> void:
+	if not btn: return
+	
+	# On centre le pivot pour que le scale se fasse depuis le milieu
+	# On le fait au démarrage et à chaque redimensionnement
+	btn.pivot_offset = btn.size / 2
+	btn.resized.connect(func(): btn.pivot_offset = btn.size / 2)
+	
+	# Effet d'enfoncement (Squash)
+	btn.button_down.connect(func():
+		btn.pivot_offset = btn.size / 2
+		var tween = create_tween()
+		tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(btn, "scale", Vector2(0.95, 0.95), 0.1)
+	)
+	
+	# Effet de relâchement avec rebond (Stretch & Bounce)
+	btn.button_up.connect(func():
+		var tween = create_tween()
+		tween.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(btn, "scale", Vector2(1.0, 1.0), 0.3).from(Vector2(1.05, 1.05))
+	)

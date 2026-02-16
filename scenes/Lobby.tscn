@@ -2,9 +2,34 @@
 
 [ext_resource type="Script" uid="uid://cvfke4vmqc10k" path="res://scripts/Lobby.gd" id="1_o1atq"]
 [ext_resource type="Theme" uid="uid://l8sbafea8ujc" path="res://resources/Themes/bar_theme.tres" id="1_qbi84"]
-[ext_resource type="Texture2D" uid="uid://cfo2dwpsi6etg" path="res://assets/UI/cardboard.png" id="3_oeg6l"]
+[ext_resource type="PackedScene" uid="uid://b4y8k5l6m7oa" path="res://scenes/UI/Components/ChalkPanel.tscn" id="2_chalk"]
 [ext_resource type="Texture2D" uid="uid://bpl4twv8iu2tq" path="res://assets/UI/folklore_on_tape_title.png" id="4_1yh37"]
-[ext_resource type="Texture2D" uid="uid://bgodqm3830f5i" path="res://assets/UI/Btn/coller-le-presse-papiers.png" id="5_oeg6l"]
+[ext_resource type="Texture2D" uid="uid://bcwivwa78ntgs" path="res://assets/UI/Icons/copy.png" id="5_copy"]
+[ext_resource type="Shader" uid="uid://fhypsw041brr" path="res://shaders/chalk.gdshader" id="6_shader"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1yh37"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jp1kc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_chalk_text"]
+shader = ExtResource("6_shader")
+shader_parameter/intensity = 0.5
+shader_parameter/grain_size = 100.0
+shader_parameter/jitter_amount = 0.002
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_button"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_as3ys"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hwwg2"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kayix"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_l31xl"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wuide"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h77bf"]
 
 [node name="Lobby" type="Control" unique_id=724538796 node_paths=PackedStringArray("host_button", "join_button", "ip_input", "status_label", "paste_button")]
 layout_mode = 3
@@ -15,49 +40,28 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_qbi84")
 script = ExtResource("1_o1atq")
-host_button = NodePath("Cardboard/MarginContainer/VBoxContainer/HostButton")
-join_button = NodePath("Cardboard/MarginContainer/VBoxContainer/JoinButton")
-ip_input = NodePath("Cardboard/MarginContainer/VBoxContainer/HBoxContainerIPInput/IPInput")
-status_label = NodePath("Cardboard/MarginContainer/VBoxContainer/StatusLabel")
-paste_button = NodePath("Cardboard/MarginContainer/VBoxContainer/HBoxContainerIPInput/CopyButton")
+host_button = NodePath("ChalkPanel/MarginContainer/VBoxContainer/HostButtonPanel/HostButton")
+join_button = NodePath("ChalkPanel/MarginContainer/VBoxContainer/JoinButtonPanel/JoinButton")
+ip_input = NodePath("ChalkPanel/MarginContainer/VBoxContainer/IPInputContainer/IPInputPanel/IPInput")
+status_label = NodePath("ChalkPanel/MarginContainer/VBoxContainer/StatusLabel")
+paste_button = NodePath("ChalkPanel/MarginContainer/VBoxContainer/IPInputContainer/CopyButton")
 
-[node name="Background" type="ColorRect" parent="." unique_id=682701638]
+[node name="ChalkPanel" parent="." unique_id=173110024 instance=ExtResource("2_chalk")]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.09411765, 0.078431375, 0.14509805, 1)
+theme_override_styles/panel = SubResource("StyleBoxEmpty_1yh37")
 
-[node name="Cardboard" type="TextureRect" parent="." unique_id=1896768988]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("3_oeg6l")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="MarginContainer" type="MarginContainer" parent="Cardboard" unique_id=1761771700]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="MarginContainer" type="MarginContainer" parent="ChalkPanel" unique_id=1761771700]
+layout_mode = 2
 theme_override_constants/margin_left = 100
-theme_override_constants/margin_top = 150
+theme_override_constants/margin_top = 50
 theme_override_constants/margin_right = 100
 theme_override_constants/margin_bottom = 150
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Cardboard/MarginContainer" unique_id=308580756]
+[node name="VBoxContainer" type="VBoxContainer" parent="ChalkPanel/MarginContainer" unique_id=308580756]
 layout_mode = 2
 theme_override_constants/separation = 19
 
-[node name="TitleImage" type="TextureRect" parent="Cardboard/MarginContainer/VBoxContainer" unique_id=1041536950]
+[node name="TitleImage" type="TextureRect" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=1041536950]
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 size_flags_vertical = 0
@@ -65,43 +69,197 @@ texture = ExtResource("4_1yh37")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Lobby" type="Label" parent="Cardboard/MarginContainer/VBoxContainer" unique_id=1998797680]
-visible = false
+[node name="HostButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=259934766 instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-text = "Lobby"
-horizontal_alignment = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_jp1kc")
 
-[node name="HostButton" type="Button" parent="Cardboard/MarginContainer/VBoxContainer" unique_id=598056250]
+[node name="HostButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/HostButtonPanel" unique_id=598056250]
+material = SubResource("ShaderMaterial_chalk_text")
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
 text = "Host Game"
 
-[node name="HBoxContainerIPInput" type="HBoxContainer" parent="Cardboard/MarginContainer/VBoxContainer" unique_id=977706847]
+[node name="IPInputContainer" type="HBoxContainer" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=972354897]
 layout_mode = 2
+theme_override_constants/separation = 10
 alignment = 1
 
-[node name="CopyButton" type="Button" parent="Cardboard/MarginContainer/VBoxContainer/HBoxContainerIPInput" unique_id=409325391]
+[node name="CopyButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/IPInputContainer" unique_id=409325391]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 tooltip_text = "Paste Match ID"
-icon = ExtResource("5_oeg6l")
-expand_icon = true
+theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
 
-[node name="IPInput" type="LineEdit" parent="Cardboard/MarginContainer/VBoxContainer/HBoxContainerIPInput" unique_id=2103086952]
+[node name="Icon" type="TextureRect" parent="ChalkPanel/MarginContainer/VBoxContainer/IPInputContainer/CopyButton" unique_id=901221832]
+material = SubResource("ShaderMaterial_chalk_text")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5_copy")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="IPInputPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/IPInputContainer" unique_id=429315006 instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxEmpty_as3ys")
+
+[node name="IPInput" type="LineEdit" parent="ChalkPanel/MarginContainer/VBoxContainer/IPInputContainer/IPInputPanel" unique_id=2103086952]
+material = SubResource("ShaderMaterial_chalk_text")
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_placeholder_color = Color(1, 1, 1, 0.5)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
 placeholder_text = "127.0.0.1"
 alignment = 1
 
-[node name="JoinButton" type="Button" parent="Cardboard/MarginContainer/VBoxContainer" unique_id=587214496]
+[node name="JoinButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=509396681 instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_hwwg2")
+
+[node name="JoinButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/JoinButtonPanel" unique_id=587214496]
+material = SubResource("ShaderMaterial_chalk_text")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
 text = "Join Game"
 
-[node name="StatusLabel" type="Label" parent="Cardboard/MarginContainer/VBoxContainer" unique_id=1768009761]
+[node name="StatusLabel" type="Label" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=1768009761]
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Ready"
 horizontal_alignment = 1
 autowrap_mode = 2
+
+[node name="ShareContainer" type="VBoxContainer" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=473224988]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="QRCodeRect" type="TextureRect" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer" unique_id=255711724]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 300)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ShareButtons" type="HFlowContainer" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer" unique_id=1640228071]
+layout_mode = 2
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 10
+alignment = 1
+
+[node name="CopyLinkPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=2036579986 instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_kayix")
+
+[node name="CopyLinkButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/CopyLinkPanel" unique_id=1378768595]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_chalk_text")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+text = "COPY"
+
+[node name="WhatsAppPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=928515481 instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_l31xl")
+
+[node name="WhatsAppButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/WhatsAppPanel" unique_id=1729676220]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_chalk_text")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+text = "WHATSAPP"
+
+[node name="SMSPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=94449455 instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wuide")
+
+[node name="SMSButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/SMSPanel" unique_id=209729916]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_chalk_text")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+text = "SMS"
+
+[node name="DiscordPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=1422422002 instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_h77bf")
+
+[node name="DiscordButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/DiscordPanel" unique_id=1028716994]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_chalk_text")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+text = "DISCORD"
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=773785765]
+unique_name_in_owner = true

@@ -1,0 +1,166 @@
+[gd_scene format=3 uid="uid://dp3nx81xf8253"]
+
+[ext_resource type="Script" uid="uid://1ab2cmj4gmfw" path="res://scripts/Home.gd" id="1_home"]
+[ext_resource type="PackedScene" uid="uid://b4y8k5l6m7oa" path="res://scenes/UI/Components/ChalkPanel.tscn" id="2_chalk"]
+[ext_resource type="Theme" uid="uid://l8sbafea8ujc" path="res://resources/Themes/bar_theme.tres" id="3_theme"]
+[ext_resource type="Texture2D" uid="uid://bpl4twv8iu2tq" path="res://assets/UI/folklore_on_tape_title.png" id="4_title"]
+[ext_resource type="Shader" uid="uid://fhypsw041brr" path="res://shaders/chalk.gdshader" id="5_shader"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_72wqp"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_yk4sq"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_chalk_text"]
+shader = ExtResource("5_shader")
+shader_parameter/intensity = 0.5
+shader_parameter/grain_size = 100.0
+shader_parameter/jitter_amount = 0.002
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_btn"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_66mx0"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_p3505"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fs62j"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+
+[node name="Home" type="Control" unique_id=15297]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("3_theme")
+script = ExtResource("1_home")
+
+[node name="ChalkPanel" parent="." unique_id=1438024839 instance=ExtResource("2_chalk")]
+layout_mode = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_72wqp")
+
+[node name="MarginContainer" type="MarginContainer" parent="ChalkPanel" unique_id=153807961]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ChalkPanel/MarginContainer" unique_id=448034162]
+layout_mode = 2
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="Title" type="TextureRect" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=388901181]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+texture = ExtResource("4_title")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Spacer" type="Control" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=233639200]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="PlayButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=781682995 instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(300, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxEmpty_yk4sq")
+
+[node name="PlayButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/PlayButtonPanel" unique_id=995737763]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_chalk_text")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_btn")
+text = "JOUER"
+
+[node name="OptionsButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=1795717091 instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(300, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxEmpty_66mx0")
+
+[node name="OptionsButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/OptionsButtonPanel" unique_id=1259221336]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_chalk_text")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_btn")
+text = "OPTIONS"
+
+[node name="RulesButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=2063581740 instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(300, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxEmpty_p3505")
+
+[node name="RulesButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/RulesButtonPanel" unique_id=1780018653]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_chalk_text")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_btn")
+text = "REGLES"
+
+[node name="QuitButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=1470791055 instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(300, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxEmpty_fs62j")
+
+[node name="QuitButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/QuitButtonPanel" unique_id=808531272]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_chalk_text")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_btn")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_btn")
+text = "QUITTER"

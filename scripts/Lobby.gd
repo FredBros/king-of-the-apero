@@ -12,12 +12,14 @@ var start_game_timer: Timer
 const DEFAULT_PORT = 7000
 const DEFAULT_IP = "127.0.0.1"
 
-var qr_http_request: HTTPRequest
-var qr_texture_rect: TextureRect
-var copy_link_button: Button
-var whatsapp_button: Button
-var sms_button: Button
-var discord_button: Button
+@onready var share_container: VBoxContainer = %ShareContainer
+@onready var qr_http_request: HTTPRequest = %HTTPRequest
+@onready var qr_texture_rect: TextureRect = %QRCodeRect
+@onready var copy_link_button: Button = %CopyLinkButton
+@onready var whatsapp_button: Button = %WhatsAppButton
+@onready var sms_button: Button = %SMSButton
+@onready var discord_button: Button = %DiscordButton
+
 var current_invite_link: String = ""
 const INVITE_BASE_URL = "https://kotapero.xyz/"
 
@@ -57,59 +59,21 @@ func _ready() -> void:
 	# Check for auto-join parameters (URL or Command Line)
 	_check_for_auto_join()
 	
-	# Setup QR Code & Copy Link UI
-	qr_http_request = HTTPRequest.new()
-	add_child(qr_http_request)
+	# Setup Signals for Share UI
 	qr_http_request.request_completed.connect(_on_qr_request_completed)
-	
-	qr_texture_rect = TextureRect.new()
-	qr_texture_rect.custom_minimum_size = Vector2(300, 300) # Plus grand pour être lisible de loin
-	qr_texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	qr_texture_rect.size_flags_horizontal = Control.SIZE_SHRINK_CENTER # Centre le QR code horizontalement
-	qr_texture_rect.hide()
-	
-	# Container pour les boutons de partage
-	# Utilisation de HFlowContainer pour que les boutons passent à la ligne si l'écran est étroit
-	var buttons_container = HFlowContainer.new()
-	buttons_container.alignment = FlowContainer.ALIGNMENT_CENTER
-	buttons_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	buttons_container.add_theme_constant_override("h_separation", 20)
-	buttons_container.add_theme_constant_override("v_separation", 10)
-	
-	copy_link_button = Button.new()
-	copy_link_button.text = "COPY"
-	copy_link_button.hide()
 	copy_link_button.pressed.connect(_on_copy_link_pressed)
-	buttons_container.add_child(copy_link_button)
-	
-	whatsapp_button = Button.new()
-	whatsapp_button.text = "WHATSAPP"
-	whatsapp_button.hide()
 	whatsapp_button.pressed.connect(_on_whatsapp_pressed)
-	buttons_container.add_child(whatsapp_button)
-	
-	sms_button = Button.new()
-	sms_button.text = "SMS"
-	sms_button.hide()
 	sms_button.pressed.connect(_on_sms_pressed)
-	buttons_container.add_child(sms_button)
-	
-	discord_button = Button.new()
-	discord_button.text = "DISCORD"
-	discord_button.hide()
 	discord_button.pressed.connect(_on_discord_pressed)
-	buttons_container.add_child(discord_button)
-	
-	# Add UI elements to the layout (below ip_input if possible)
-	if ip_input and ip_input.get_parent() and ip_input.get_parent().get_parent():
-		var vbox = ip_input.get_parent().get_parent()
-		vbox.add_child(qr_texture_rect)
-		vbox.add_child(buttons_container)
-	else:
-		add_child(qr_texture_rect)
-		add_child(buttons_container)
-		qr_texture_rect.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-		buttons_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+
+	# Setup "Juicy" feedback for all buttons
+	_setup_button_feedback(host_button)
+	_setup_button_feedback(join_button)
+	_setup_button_feedback(paste_button)
+	_setup_button_feedback(copy_link_button)
+	_setup_button_feedback(whatsapp_button)
+	_setup_button_feedback(sms_button)
+	_setup_button_feedback(discord_button)
 
 func _on_host_pressed() -> void:
 	if status_label: status_label.text = "Creating Match..."
@@ -117,6 +81,8 @@ func _on_host_pressed() -> void:
 	_disable_buttons()
 
 func _on_join_pressed() -> void:
+	if not ip_input: return
+	
 	var match_id = _clean_match_id(ip_input.text)
 	
 	if match_id.is_empty():
@@ -159,10 +125,11 @@ func _on_connection_success() -> void:
 	
 	# Si on est le client qui rejoint, on cache aussi l'interface de connexion
 	if not NetworkManager.is_host:
-		if host_button: host_button.hide()
-		if join_button: join_button.hide()
-		if ip_input: ip_input.hide()
-		if paste_button: paste_button.hide()
+		if host_button and host_button.get_parent(): host_button.get_parent().hide()
+		if join_button and join_button.get_parent(): join_button.get_parent().hide()
+		
+		# FIX: On cache le conteneur parent (IPInputContainer) pour tout masquer proprement
+		if paste_button and paste_button.get_parent(): paste_button.get_parent().hide()
 
 	# Check immediately if we already have peers (e.g. late join or bridge already synced)
 	if start_game_timer.is_inside_tree():
@@ -177,8 +144,8 @@ func _on_match_hosted(match_id: String) -> void:
 		ip_input.editable = false # On verrouille pour montrer que c'est un output
 	
 	# On cache les boutons Host/Join pour épurér l'interface et laisser la place au QR Code
-	if host_button: host_button.hide()
-	if join_button: join_button.hide()
+	if host_button and host_button.get_parent(): host_button.get_parent().hide()
+	if join_button and join_button.get_parent(): join_button.get_parent().hide()
 	if paste_button: paste_button.hide()
 	
 	# Generate Invite Link
@@ -186,10 +153,8 @@ func _on_match_hosted(match_id: String) -> void:
 	# Sinon, les messageries (WhatsApp, Discord) risquent de considérer le point comme une ponctuation de fin de phrase et de couper le lien.
 	var invite_link = INVITE_BASE_URL + "?match_id=" + match_id + "&v=1"
 	current_invite_link = invite_link
-	copy_link_button.show()
-	whatsapp_button.show()
-	sms_button.show()
-	discord_button.show()
+	
+	share_container.show()
 	
 	# Fetch QR Code from API
 	if qr_http_request:
@@ -294,3 +259,26 @@ func _on_discord_pressed() -> void:
 		if status_label: status_label.text = "Link copied! Paste it in Discord."
 		# Discord n'a pas de scheme 'share' universel. On ouvre l'app/web sur les DMs.
 		OS.shell_open("https://discord.com/channels/@me")
+
+func _setup_button_feedback(btn: Button) -> void:
+	if not btn: return
+	
+	# On centre le pivot pour que le scale se fasse depuis le milieu
+	# On le fait au démarrage et à chaque redimensionnement
+	btn.pivot_offset = btn.size / 2
+	btn.resized.connect(func(): btn.pivot_offset = btn.size / 2)
+	
+	# Effet d'enfoncement (Squash)
+	btn.button_down.connect(func():
+		btn.pivot_offset = btn.size / 2
+		var tween = create_tween()
+		tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(btn, "scale", Vector2(0.95, 0.95), 0.1)
+	)
+	
+	# Effet de relâchement avec rebond (Stretch & Bounce)
+	btn.button_up.connect(func():
+		var tween = create_tween()
+		tween.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(btn, "scale", Vector2(1.0, 1.0), 0.3).from(Vector2(1.05, 1.05))
+	)

@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://b4y8k5l6m7oa"]
+
+[ext_resource type="Script" path="res://scripts/UI/Components/ChalkPanel.gd" id="1_cp"]
+[ext_resource type="Script" path="res://scripts/UI/Components/ChalkBorder.gd" id="2_cb"]
+[ext_resource type="Shader" path="res://shaders/chalk.gdshader" id="3_sh"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_chalk"]
+shader = ExtResource("3_sh")
+shader_parameter/intensity = 0.5
+shader_parameter/grain_size = 100.0
+shader_parameter/jitter_amount = 0.002
+
+[node name="ChalkPanel" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_cp")
+
+[node name="BorderLayer" type="Control" parent="."]
+z_index = 1
+material = SubResource("ShaderMaterial_chalk")
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("2_cb")

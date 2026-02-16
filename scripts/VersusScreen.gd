@@ -10,6 +10,8 @@ signal skip_pressed
 
 const VERSUS_SOUND = preload("res://assets/Sounds/Voices/versus.wav")
 const UI_SOUND_COMPONENT_SCENE = preload("res://scenes/Components/UISoundComponent.tscn")
+const CHALK_SHADER = preload("res://shaders/chalk.gdshader")
+const BANGERS_FONT = preload("res://assets/fonts/Bangers-Regular.ttf")
 
 var sound_component
 
@@ -23,6 +25,16 @@ func _ready() -> void:
 	# Instanciation du composant son UI
 	sound_component = UI_SOUND_COMPONENT_SCENE.instantiate()
 	add_child(sound_component)
+	
+	# Application forcée du style (Police + Shader Craie) sur le SkipLabel
+	if skip_label:
+		skip_label.add_theme_font_override("font", BANGERS_FONT)
+		var mat = ShaderMaterial.new()
+		mat.shader = CHALK_SHADER
+		mat.set_shader_parameter("intensity", 0.5)
+		mat.set_shader_parameter("grain_size", 100.0)
+		mat.set_shader_parameter("jitter_amount", 0.002)
+		skip_label.material = mat
 	
 	# État initial
 	vs_image.scale = Vector2.ZERO

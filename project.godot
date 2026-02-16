@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="KotA"
-run/main_scene="uid://0cle83moyvrj"
+run/main_scene="uid://dp3nx81xf8253"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -43,7 +43,12 @@ enabled=PackedStringArray("res://addons/com.heroiclabs.nakama/plugin.cfg")
 [file_customization]
 
 folder_colors={
-"res://resources/": "green"
+"res://assets/": "purple",
+"res://resources/": "green",
+"res://scenes/": "blue",
+"res://scripts/": "red",
+"res://server/": "gray",
+"res://shaders/": "pink"
 }
 
 [rendering]

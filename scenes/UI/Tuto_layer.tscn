@@ -1,0 +1,172 @@
+[gd_scene format=3 uid="uid://ltw4bliun6sk"]
+
+[ext_resource type="Script" uid="uid://d1run3cppligi" path="res://scripts/Tuto_layer.gd" id="1_svnd1"]
+[ext_resource type="Shader" uid="uid://fhypsw041brr" path="res://shaders/chalk.gdshader" id="2_rdmdd"]
+[ext_resource type="Texture2D" uid="uid://dlqxr2eiyb5nh" path="res://assets/UI/Icons/book-alt.png" id="3_k0s0j"]
+[ext_resource type="PackedScene" uid="uid://b4y8k5l6m7oa" path="res://scenes/UI/Components/ChalkPanel.tscn" id="4_4kd2s"]
+[ext_resource type="Texture2D" uid="uid://olrcohnoiovf" path="res://assets/UI/Icons/cross-small.png" id="5_n4iax"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_square_bg"]
+bg_color = Color(0.0941176, 0.0784314, 0.145098, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_chalk_icon"]
+shader = ExtResource("2_rdmdd")
+shader_parameter/intensity = 0.5
+shader_parameter/grain_size = 100.0
+shader_parameter/jitter_amount = 0.002
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_svnd1"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rdmdd"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+
+[node name="TutorialLayer" type="CanvasLayer" unique_id=595521162]
+process_mode = 3
+layer = 100
+script = ExtResource("1_svnd1")
+
+[node name="HelpButton" type="Button" parent="." unique_id=2002956326]
+unique_name_in_owner = true
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -90.0
+offset_top = 20.0
+offset_right = -50.0
+offset_bottom = 60.0
+grow_horizontal = 0
+tooltip_text = "Instructions"
+theme_override_styles/normal = SubResource("StyleBoxFlat_square_bg")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_square_bg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_square_bg")
+
+[node name="Icon" type="TextureRect" parent="HelpButton" unique_id=1772096916]
+material = SubResource("ShaderMaterial_chalk_icon")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_k0s0j")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TutorialOverlay" type="Control" parent="." unique_id=1022874652]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="TutorialOverlay" unique_id=2133555520]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.85)
+
+[node name="ChalkPanel" parent="TutorialOverlay" unique_id=1199446011 instance=ExtResource("4_4kd2s")]
+layout_mode = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_svnd1")
+
+[node name="MarginContainer" type="MarginContainer" parent="TutorialOverlay/ChalkPanel" unique_id=1301052653]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TutorialOverlay/ChalkPanel/MarginContainer" unique_id=1245686108]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TutorialOverlay/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1526116202]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="TutorialOverlay/ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=10250875]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "REGLES"
+horizontal_alignment = 1
+
+[node name="TutorialCloseButton" type="Button" parent="TutorialOverlay/ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1455858693]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_square_bg")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_square_bg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_square_bg")
+
+[node name="Icon" type="TextureRect" parent="TutorialOverlay/ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/TutorialCloseButton" unique_id=1587091371]
+material = SubResource("ShaderMaterial_chalk_icon")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5_n4iax")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TutorialOverlay/ChalkPanel/MarginContainer/VBoxContainer" unique_id=22350229]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RulesLabel" type="RichTextLabel" parent="TutorialOverlay/ChalkPanel/MarginContainer/VBoxContainer/ScrollContainer" unique_id=1451416711]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 30
+theme_override_font_sizes/bold_font_size = 30
+theme_override_font_sizes/bold_italics_font_size = 30
+theme_override_font_sizes/italics_font_size = 30
+theme_override_font_sizes/mono_font_size = 30
+bbcode_enabled = true
+text = "[center]
+[font_size=40][color=#be4a2f]BIENVENUE AU BAR ![/color][/font_size]
+[color=#e4a672]1.[/color] [shake rate=20 level=10][b]PIOCHE[/b][/shake] : [color=#be4a2f]52 [/color][color=#be4a2f]soubocks[/color] en tout. Pioche commune. Pioche maxi [color=#be4a2f]2 [/color] [color=#be4a2f]soubocks[/color], pas plus de [color=#be4a2f]5[/color] [color=#be4a2f]soubocks[/color] en main
+[color=#e4a672]1.[/color] [shake rate=20 level=10][b]JOUE[/b][/shake] : Autant de [color=#be4a2f]soubocks[/color] que tu veux. Les [outline_size=4][outline_color=#e4a672][color=#be4a2f]rouges[/color][/outline_color][/outline_size] cognent, les [outline_size=4][outline_color=#e4a672][color=#262b44]noirs[/color][/outline_color][/outline_size] bougent. Surveille les fleches.  Jette les [color=#be4a2f]soubocks[/color] [outline_size=4][outline_color=#e4a672][color=#262b44]noirs[/color][/outline_color][/outline_size] dans la direction que tu veux pour bouger.Brule ce qui ne t'interresse pas. Tu es AFK ? le public de jette des trucs contendants à la tête.
+[color=#e4a672]2.[/color] [shake rate=20 level=10][b]COGNE[/b][/shake] : Jette les [outline_size=4][outline_color=#e4a672][color=#be4a2f]rouges[/color][/outline_color][/outline_size] sur le bar pour cogner. Ecrase l'adversaire avec un [outline_size=4][outline_color=#e4a672][color=#be4a2f]rouge[/color][/outline_color][/outline_size] pour le pousser. Si possible hors du ring !
+[color=#e4a672]3.[/color] [shake rate=20 level=10][b]DEFEND TOI[/b][/shake] : Une attaque se bloque avec le meme soubock [outline_size=4][outline_color=#e4a672][color=#be4a2f]rouge[/color][/outline_color][/outline_size], plus puissant.
+
+[font_size=18][i][color=#686e86]\"Pas de pitié, c'est du folklore.\"[/color][/i][/font_size]
+[/center]"
+fit_content = true
+
+[node name="RemotePauseOverlay" parent="." unique_id=88552380 instance=ExtResource("4_4kd2s")]
+unique_name_in_owner = true
+visible = false
+theme_override_styles/panel = SubResource("StyleBoxEmpty_rdmdd")
+
+[node name="Label" type="Label" parent="RemotePauseOverlay" unique_id=239036418]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "GAME PAUSED
+
+Opponent is checking the rules..."
+horizontal_alignment = 1
+vertical_alignment = 1
