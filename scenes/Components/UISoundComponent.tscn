@@ -1,7 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://ui_sound_component_uid"]
+[gd_scene format=3 uid="uid://c0h0g7c2wf7ki"]
 
-[ext_resource type="Script" path="res://scripts/Components/UISoundComponent.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://csrhhsqxb6b3q" path="res://scripts/Components/UISoundComponent.gd" id="1_script"]
 
-[node name="UISoundComponent" type="AudioStreamPlayer"]
+[node name="UISoundComponent" type="AudioStreamPlayer" unique_id=909688707]
 max_polyphony = 5
+bus = &"SFX"
 script = ExtResource("1_script")

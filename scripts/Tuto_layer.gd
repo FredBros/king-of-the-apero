@@ -1,12 +1,16 @@
 extends CanvasLayer
 
-@onready var help_button: Button = %HelpButton
 @onready var tutorial_overlay: Control = %TutorialOverlay
 @onready var tutorial_close_button: Button = %TutorialCloseButton
 @onready var remote_pause_overlay: Control = %RemotePauseOverlay
 
 var game_manager: GameManager
 var is_remote_paused: bool = false
+
+const UI_SOUND_COMPONENT_SCENE = preload("res://scenes/Components/UISoundComponent.tscn")
+const CHALK_TIC_SOUND = preload("res://assets/Sounds/UI/chalk_tic.wav")
+
+var ui_sound: UISoundComponent
 
 func _ready() -> void:
 	# Find GameManager in the scene tree
@@ -15,8 +19,11 @@ func _ready() -> void:
 	if game_manager:
 		game_manager.game_paused.connect(_on_remote_game_paused)
 	
-	help_button.pressed.connect(_toggle_tutorial.bind(true))
+	ui_sound = UI_SOUND_COMPONENT_SCENE.instantiate()
+	add_child(ui_sound)
+	
 	tutorial_close_button.pressed.connect(_toggle_tutorial.bind(false))
+	_setup_button_feedback(tutorial_close_button)
 	
 	tutorial_overlay.visible = false
 	remote_pause_overlay.visible = false
@@ -41,13 +48,27 @@ func _update_pause_state() -> void:
 	
 	var should_pause = local_paused or is_remote_paused
 	get_tree().paused = should_pause
-	
-	help_button.visible = not should_pause
 
 # --- Public API for Menu usage ---
 
 func open_tutorial() -> void:
 	_toggle_tutorial(true)
 
-func hide_help_button() -> void:
-	if help_button: help_button.hide()
+func _setup_button_feedback(btn: Button) -> void:
+	if not btn: return
+	
+	btn.pivot_offset = btn.size / 2
+	btn.resized.connect(func(): btn.pivot_offset = btn.size / 2)
+	
+	btn.button_down.connect(func():
+		var tween = create_tween()
+		tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(btn, "scale", Vector2(0.95, 0.95), 0.1)
+		if ui_sound: ui_sound.play_varied(CHALK_TIC_SOUND)
+	)
+	
+	btn.button_up.connect(func():
+		var tween = create_tween()
+		tween.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(btn, "scale", Vector2(1.0, 1.0), 0.3).from(Vector2(1.05, 1.05))
+	)

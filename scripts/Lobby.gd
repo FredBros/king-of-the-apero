@@ -23,7 +23,15 @@ const DEFAULT_IP = "127.0.0.1"
 var current_invite_link: String = ""
 const INVITE_BASE_URL = "https://kotapero.xyz/"
 
+const UI_SOUND_COMPONENT_SCENE = preload("res://scenes/Components/UISoundComponent.tscn")
+const CHALK_TIC_SOUND = preload("res://assets/Sounds/UI/chalk_tic.wav")
+
+var ui_sound: UISoundComponent
+
 func _ready() -> void:
+	ui_sound = UI_SOUND_COMPONENT_SCENE.instantiate()
+	add_child(ui_sound)
+
 	# Timer to check for game start conditions periodically
 	# Init at the top to ensure it's ready before any signal callback
 	start_game_timer = Timer.new()
@@ -274,6 +282,7 @@ func _setup_button_feedback(btn: Button) -> void:
 		var tween = create_tween()
 		tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(btn, "scale", Vector2(0.95, 0.95), 0.1)
+		if ui_sound: ui_sound.play_varied(CHALK_TIC_SOUND)
 	)
 	
 	# Effet de relâchement avec rebond (Stretch & Bounce)

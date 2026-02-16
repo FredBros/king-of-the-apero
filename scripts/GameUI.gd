@@ -12,6 +12,7 @@ signal reaction_skipped
 
 const VERSUS_SCREEN_SCENE = preload("res://scenes/UI/VersusScreen.tscn")
 const OPTION_TUTO_LAYER_SCENE = preload("res://scenes/UI/Tuto_layer.tscn")
+const OPTIONS_LAYER_SCENE = preload("res://scenes/UI/OptionsLayer.tscn")
 
 var local_wrestler_ref: Wrestler
 var remote_wrestler_ref: Wrestler
@@ -26,6 +27,8 @@ var remote_wrestler_ref: Wrestler
 @onready var game_over_container: CenterContainer = $GameOverContainer
 @onready var winner_label: Label = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/WinnerLabel
 @onready var slap_sound_player: UISoundComponent = $SlapSoundPlayer
+@onready var help_button: Button = %HelpButton
+@onready var options_button: Button = %OptionsButton
 
 @onready var turn_label: Label = $TurnInfoContainer/VBoxContainer/TurnLabel
 
@@ -38,6 +41,7 @@ var pass_button: Button
 var opponent_card_display: CardUI
 var is_reaction_phase: bool = false
 var tuto_layer_instance: CanvasLayer
+var options_layer_instance: Control
 
 # Drop Zone for Push mechanic
 @onready var end_turn_button = $EndTurnButton
@@ -47,6 +51,7 @@ var drop_zone: DropZone
 @onready var discard_zone_visual: ColorRect = $DiscardZone
 
 const CARD_BACK_TEXTURE = preload("res://assets/Cards/card_back.png")
+const CHALK_TIC_SOUND = preload("res://assets/Sounds/UI/chalk_tic.wav")
 
 var game_manager_ref
 
@@ -69,6 +74,16 @@ func _ready() -> void:
 	var cta_btn = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/TextureButton
 	if cta_btn:
 		cta_btn.pressed.connect(_on_cta_button_pressed)
+	
+	# Connect help button
+	if help_button:
+		help_button.pressed.connect(_on_help_button_pressed)
+		_setup_button_feedback(help_button)
+	
+	# Connect options button
+	if options_button:
+		options_button.pressed.connect(_on_options_button_pressed)
+		_setup_button_feedback(options_button)
 	
 	# Connect end turn button manually
 	end_turn_button.end_turn_pressed.connect(_on_end_turn_button_pressed)
@@ -110,7 +125,43 @@ func _ready() -> void:
 	tuto_layer_instance = OPTION_TUTO_LAYER_SCENE.instantiate()
 	add_child(tuto_layer_instance)
 	
+	# Instantiate Options Layer
+	options_layer_instance = OPTIONS_LAYER_SCENE.instantiate()
+	add_child(options_layer_instance)
+	options_layer_instance.hide()
+	
 	_setup_reaction_ui()
+
+func _on_help_button_pressed() -> void:
+	if tuto_layer_instance and tuto_layer_instance.has_method("open_tutorial"):
+		tuto_layer_instance.open_tutorial()
+
+func _on_options_button_pressed() -> void:
+	if options_layer_instance:
+		options_layer_instance.show()
+
+func _start_help_button_pulse() -> void:
+	var rules_hint = $TopRightContainer/RulesHintPanel
+	if not help_button: return
+	
+	# Ensure pivot is centered
+	help_button.pivot_offset = help_button.size / 2
+	
+	var tween = create_tween()
+	tween.set_loops(4) # 4 seconds total (0.5s * 2 * 4)
+	
+	# Up: Scale 1.2, Red
+	tween.tween_property(help_button, "scale", Vector2(1.2, 1.2), 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.parallel().tween_property(help_button, "modulate", Color(1, 0.2, 0.2), 0.5)
+	
+	# Down: Scale 1.0, White
+	tween.tween_property(help_button, "scale", Vector2.ONE, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.parallel().tween_property(help_button, "modulate", Color.WHITE, 0.5)
+	
+	tween.finished.connect(func():
+		if rules_hint:
+			rules_hint.hide()
+	)
 
 func _setup_reaction_ui() -> void:
 	# 1. Timer
@@ -538,6 +589,10 @@ func _on_versus_screen_requested(local_data: WrestlerData, remote_data: Wrestler
 	if tuto_layer_instance:
 		tuto_layer_instance.hide()
 	
+	# Masquer l'arène 3D (le parent) pour éviter le "flash" visuel avant l'écran Versus
+	if get_parent() is Node3D:
+		get_parent().visible = false
+	
 	current_versus_screen = VERSUS_SCREEN_SCENE.instantiate()
 	add_child(current_versus_screen)
 	current_versus_screen.setup(local_data, remote_data)
@@ -556,6 +611,10 @@ func _on_versus_screen_finished() -> void:
 		current_versus_screen.queue_free()
 		current_versus_screen = null
 	
+	# Réafficher l'arène 3D maintenant que le Versus est terminé
+	if get_parent() is Node3D:
+		get_parent().visible = true
+	
 	if tuto_layer_instance:
 		tuto_layer_instance.show()
 	
@@ -566,6 +625,9 @@ func _on_versus_screen_finished() -> void:
 		if not game_manager_ref.players.is_empty():
 			var current_player_name = game_manager_ref.players[game_manager_ref.active_player_index].name
 			update_turn_info(current_player_name, true)
+	
+	# On lance l'animation du bouton d'aide maintenant que le combat commence vraiment
+	_start_help_button_pulse()
 
 func _setup_button_feedback(btn: Button) -> void:
 	if not btn: return
@@ -581,6 +643,7 @@ func _setup_button_feedback(btn: Button) -> void:
 		var tween = create_tween()
 		tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(btn, "scale", Vector2(0.95, 0.95), 0.1)
+		if slap_sound_player: slap_sound_player.play_varied(CHALK_TIC_SOUND)
 	)
 	
 	# Effet de relâchement avec rebond (Stretch & Bounce)

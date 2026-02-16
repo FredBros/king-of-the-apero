@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://ca1rgml40w5s6"]
+[gd_scene load_steps=16 format=3 uid="uid://ca1rgml40w5s6"]
 
 [ext_resource type="Script" uid="uid://n1s6h3yacxux" path="res://scripts/UI/OptionsLayer.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://b4y8k5l6m7oa" path="res://scenes/UI/Components/ChalkPanel.tscn" id="2_chalk"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://6lq80a1782oj" path="res://assets/UI/Icons/plus-small.png" id="5_plus"]
 [ext_resource type="Texture2D" uid="uid://bf7ate5mnc0gc" path="res://assets/UI/Icons/volume-mute.png" id="6_mute"]
 [ext_resource type="Texture2D" uid="uid://tk7mbvt6s63c" path="res://assets/UI/Icons/music-slash.png" id="7_music_slash"]
+[ext_resource type="Texture2D" uid="uid://olrcohnoiovf" path="res://assets/UI/Icons/cross-small.png" id="8_cross"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fi63k"]
 content_margin_left = 10.0
@@ -19,6 +20,9 @@ shader = ExtResource("3_shader")
 shader_parameter/intensity = 0.5
 shader_parameter/grain_size = 100.0
 shader_parameter/jitter_amount = 0.002
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_square_bg"]
+bg_color = Color(0.0941176, 0.0784314, 0.145098, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_loh2n"]
 content_margin_left = 10.0
@@ -36,14 +40,6 @@ content_margin_left = 10.0
 content_margin_top = 10.0
 content_margin_right = 10.0
 content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_o1gsc"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_btn"]
 
 [node name="OptionsLayer" type="Control" unique_id=803959781]
 layout_mode = 3
@@ -87,14 +83,43 @@ theme_override_constants/margin_bottom = 40
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/ChalkPanel/MarginContainer" unique_id=2085066837]
 layout_mode = 2
 theme_override_constants/separation = 30
-alignment = 1
+alignment = 0
 
-[node name="TitleLabel" type="Label" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1320005526]
+[node name="Header" type="HBoxContainer" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/Header" unique_id=1320005526]
 material = SubResource("ShaderMaterial_chalk")
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 48
 text = "OPTIONS"
 horizontal_alignment = 1
+
+[node name="CloseButton" type="Button" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/Header" unique_id=991234567]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_square_bg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_square_bg")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_square_bg")
+
+[node name="Icon" type="TextureRect" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/Header/CloseButton"]
+material = SubResource("ShaderMaterial_chalk")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("8_cross")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="VolumeSetup" type="VBoxContainer" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=242690340]
 layout_mode = 2
@@ -219,24 +244,3 @@ stretch_mode = 5
 [node name="Spacer" type="Control" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=578002942]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
-
-[node name="BackButtonPanel" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1120320177 instance=ExtResource("2_chalk")]
-custom_minimum_size = Vector2(200, 60)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_styles/panel = SubResource("StyleBoxEmpty_o1gsc")
-
-[node name="BackButton" type="Button" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/BackButtonPanel" unique_id=2052283532]
-unique_name_in_owner = true
-material = SubResource("ShaderMaterial_chalk")
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 24
-theme_override_styles/normal = SubResource("StyleBoxEmpty_btn")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_btn")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_btn")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_btn")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_btn")
-text = "RETOUR"

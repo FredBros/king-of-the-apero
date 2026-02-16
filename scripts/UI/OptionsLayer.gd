@@ -1,6 +1,6 @@
 extends Control
 
-@onready var back_button: Button = %BackButton
+@onready var close_button: Button = %CloseButton
 
 # SFX Controls
 @onready var sfx_container: HBoxContainer = %SFXVolume
@@ -19,11 +19,18 @@ extends Control
 const BUS_SFX_NAME = "SFX"
 const BUS_MUSIC_NAME = "Music"
 const VOLUME_STEP = 10.0
+const UI_SOUND_COMPONENT_SCENE = preload("res://scenes/Components/UISoundComponent.tscn")
+const CHALK_TIC_SOUND = preload("res://assets/Sounds/UI/chalk_tic.wav")
+
+var ui_sound: UISoundComponent
 
 func _ready() -> void:
-	if back_button:
-		back_button.pressed.connect(_on_back_pressed)
-		_setup_button_feedback(back_button)
+	ui_sound = UI_SOUND_COMPONENT_SCENE.instantiate()
+	add_child(ui_sound)
+
+	if close_button:
+		close_button.pressed.connect(_on_close_pressed)
+		_setup_button_feedback(close_button)
 	
 	# Setup SFX
 	_setup_volume_controls(sfx_minus, sfx_plus, sfx_mute, sfx_progress, BUS_SFX_NAME)
@@ -102,7 +109,7 @@ func _update_mute_visual(btn: BaseButton, is_muted: bool) -> void:
 	# On réduit l'opacité du bouton mute s'il est actif
 	btn.modulate.a = 0.5 if is_muted else 1.0
 
-func _on_back_pressed() -> void:
+func _on_close_pressed() -> void:
 	hide()
 
 func _setup_button_feedback(btn: Control) -> void:
@@ -118,6 +125,7 @@ func _setup_button_feedback(btn: Control) -> void:
 			var tween = create_tween()
 			tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 			tween.tween_property(btn, "scale", Vector2(0.95, 0.95), 0.1)
+			if ui_sound: ui_sound.play_varied(CHALK_TIC_SOUND)
 		)
 		
 		# Effet de relâchement avec rebond (Stretch & Bounce)

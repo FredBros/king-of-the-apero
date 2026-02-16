@@ -8,8 +8,16 @@
 [ext_resource type="Shader" uid="uid://fhypsw041brr" path="res://shaders/chalk.gdshader" id="6_shader"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1yh37"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jp1kc"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_chalk_text"]
 shader = ExtResource("6_shader")
@@ -20,16 +28,40 @@ shader_parameter/jitter_amount = 0.002
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_button"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_as3ys"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hwwg2"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kayix"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_l31xl"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wuide"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h77bf"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
 
 [node name="Lobby" type="Control" unique_id=724538796 node_paths=PackedStringArray("host_button", "join_button", "ip_input", "status_label", "paste_button")]
 layout_mode = 3
@@ -38,6 +70,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+rotation = -0.0030143715
 theme = ExtResource("1_qbi84")
 script = ExtResource("1_o1atq")
 host_button = NodePath("ChalkPanel/MarginContainer/VBoxContainer/HostButtonPanel/HostButton")
