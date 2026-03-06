@@ -2,7 +2,7 @@ services:
   cockroachdb:
     image: cockroachdb/cockroach:latest-v23.1
     command: start-single-node --insecure --store=attrs=ssd,path=/var/lib/cockroach/
-    restart: "no"
+    restart: "always"
     volumes:
       - data:/var/lib/cockroach
     expose:
@@ -24,7 +24,7 @@ services:
       - "-ecx"
       - >
         /nakama/nakama migrate up --database.address root@cockroachdb:26257 && exec /nakama/nakama --name nakama1 --database.address root@cockroachdb:26257 --logger.level DEBUG --session.token_expiry_sec 7200 --socket.server_key "${NAKAMA_KEY}"
-    restart: "no"
+    restart: "always"
     links:
       - "cockroachdb:db"
     depends_on:

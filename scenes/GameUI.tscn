@@ -13,20 +13,11 @@
 [ext_resource type="PackedScene" uid="uid://b4y8k5l6m7oa" path="res://scenes/UI/Components/ChalkPanel.tscn" id="9_chalk"]
 [ext_resource type="Shader" uid="uid://fhypsw041brr" path="res://shaders/chalk.gdshader" id="10_shader"]
 [ext_resource type="Texture2D" uid="uid://dlqxr2eiyb5nh" path="res://assets/UI/Icons/book-alt.png" id="11_book"]
-[ext_resource type="Texture2D" path="res://assets/UI/Icons/settings.png" id="12_settings"]
+[ext_resource type="Texture2D" uid="uid://bqdgrwlaoentt" path="res://assets/UI/Icons/settings.png" id="12_settings"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dc875"]
 
-[sub_resource type="Gradient" id="Gradient_dc875"]
-offsets = PackedFloat32Array(0, 0.6626214, 0.7451456)
-colors = PackedColorArray(0.09411765, 0.078431375, 0.14509805, 1, 0.09411765, 0.078431375, 0.14509805, 1, 1, 1, 1, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_shadow"]
-gradient = SubResource("Gradient_dc875")
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vlvos"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_yrajj"]
 content_margin_left = 10.0
 content_margin_top = 10.0
 content_margin_right = 10.0
@@ -38,7 +29,25 @@ shader_parameter/intensity = 0.5
 shader_parameter/grain_size = 100.0
 shader_parameter/jitter_amount = 0.002
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wsaag"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_square_bg"]
+bg_color = Color(0.0941176, 0.0784314, 0.145098, 1)
+
+[sub_resource type="Gradient" id="Gradient_dc875"]
+offsets = PackedFloat32Array(0, 0.6626214, 0.7451456)
+colors = PackedColorArray(0.09411765, 0.078431375, 0.14509805, 1, 0.09411765, 0.078431375, 0.14509805, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_shadow"]
+gradient = SubResource("Gradient_dc875")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7hp7j"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lk18c"]
 content_margin_left = 10.0
 content_margin_top = 10.0
 content_margin_right = 10.0
@@ -46,16 +55,11 @@ content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_button"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_yrajj"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fsu2c"]
 content_margin_left = 10.0
 content_margin_top = 10.0
 content_margin_right = 10.0
 content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_square_bg"]
-bg_color = Color(0.0941176, 0.0784314, 0.145098, 1)
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rules_hint"]
 
 [node name="GameUI" type="CanvasLayer" unique_id=77095954 node_paths=PackedStringArray("top_player_info", "bottom_player_info", "opponent_hand_container")]
 script = ExtResource("1_gameui")
@@ -170,16 +174,16 @@ grow_horizontal = 0
 theme_override_constants/separation = 15
 alignment = 2
 
-[node name="RulesHintPanel" parent="TopRightContainer" instance=ExtResource("9_chalk")]
+[node name="RulesHintPanel" parent="TopRightContainer" unique_id=1257140704 instance=ExtResource("9_chalk")]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_rules_hint")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_yrajj")
 
-[node name="MarginContainer" type="MarginContainer" parent="TopRightContainer/RulesHintPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="TopRightContainer/RulesHintPanel" unique_id=1036573256]
 layout_mode = 2
 theme_override_constants/margin_left = 15
 theme_override_constants/margin_right = 15
 
-[node name="Label" type="Label" parent="TopRightContainer/RulesHintPanel/MarginContainer"]
+[node name="Label" type="Label" parent="TopRightContainer/RulesHintPanel/MarginContainer" unique_id=922503932]
 material = SubResource("ShaderMaterial_chalk_text")
 layout_mode = 2
 text = "Comment jouer ?"
@@ -191,8 +195,8 @@ custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 tooltip_text = "Instructions"
 theme_override_styles/normal = SubResource("StyleBoxFlat_square_bg")
-theme_override_styles/hover = SubResource("StyleBoxFlat_square_bg")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_square_bg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_square_bg")
 
 [node name="Icon" type="TextureRect" parent="TopRightContainer/HelpButton" unique_id=1772096916]
 material = SubResource("ShaderMaterial_chalk_text")
@@ -217,10 +221,10 @@ custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 tooltip_text = "Options"
 theme_override_styles/normal = SubResource("StyleBoxFlat_square_bg")
-theme_override_styles/hover = SubResource("StyleBoxFlat_square_bg")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_square_bg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_square_bg")
 
-[node name="Icon" type="TextureRect" parent="TopRightContainer/OptionsButton"]
+[node name="Icon" type="TextureRect" parent="TopRightContainer/OptionsButton" unique_id=1268633922]
 material = SubResource("ShaderMaterial_chalk_text")
 layout_mode = 1
 anchors_preset = 15
@@ -283,7 +287,7 @@ grow_vertical = 2
 
 [node name="ChalkPanel" parent="GameOverContainer" unique_id=2121975109 instance=ExtResource("9_chalk")]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_vlvos")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_7hp7j")
 
 [node name="MarginContainer" type="MarginContainer" parent="GameOverContainer/ChalkPanel" unique_id=1141623312]
 layout_mode = 2
@@ -306,7 +310,7 @@ horizontal_alignment = 1
 [node name="RestartButtonPanel" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1618913184 instance=ExtResource("9_chalk")]
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_wsaag")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_lk18c")
 
 [node name="RestartButton" type="Button" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/RestartButtonPanel" unique_id=313932704]
 material = SubResource("ShaderMaterial_chalk_text")
@@ -324,7 +328,7 @@ text = "RESTART MATCH"
 [node name="QuitButtonPanel" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=2134581709 instance=ExtResource("9_chalk")]
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_yrajj")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_fsu2c")
 
 [node name="QuitButton" type="Button" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/QuitButtonPanel" unique_id=707802481]
 material = SubResource("ShaderMaterial_chalk_text")

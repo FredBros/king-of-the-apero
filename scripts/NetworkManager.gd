@@ -8,8 +8,8 @@ signal server_disconnected
 signal match_hosted(match_id: String)
 signal game_message_received(data: Dictionary)
 
-const PORT = 8910
-const DEFAULT_SERVER_IP = "127.0.0.1" # Localhost
+const PORT = 443 # Port standard HTTPS/WSS
+const DEFAULT_SERVER_IP = "kotapero.xyz" # Production
 const GAME_SCENE_PATH = "res://scenes/Arena.tscn" # TODO: Verify this is the correct path to your game scene!
 const LOBBY_SCENE_PATH = "res://scenes/Lobby.tscn" # TODO: Verify the path to your Lobby/Main scene
 

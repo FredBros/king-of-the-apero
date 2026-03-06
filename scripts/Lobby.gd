@@ -9,8 +9,8 @@ extends Control
 var start_game_timer: Timer
 
 # Port par défaut (doit correspondre à celui dans NetworkManager)
-const DEFAULT_PORT = 7000
-const DEFAULT_IP = "127.0.0.1"
+const DEFAULT_PORT = 443
+const DEFAULT_IP = "kotapero.xyz"
 
 @onready var share_container: VBoxContainer = %ShareContainer
 @onready var qr_http_request: HTTPRequest = %HTTPRequest
