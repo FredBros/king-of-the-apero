@@ -52,6 +52,15 @@ var drop_zone: DropZone
 
 const CARD_BACK_TEXTURE = preload("res://assets/Cards/card_back.png")
 const CHALK_TIC_SOUND = preload("res://assets/Sounds/UI/chalk_tic.wav")
+const ARROW_TEXTURE = preload("res://assets/UI/Icons/Arrow.png")
+
+# Drag Feedback Colors
+const COLOR_ARROW_INACTIVE = Color(0.6, 0.6, 0.6, 0.8) # Gris transparent
+const COLOR_ARROW_ATTACK = Color("#a22633") # Rouge
+const COLOR_ARROW_MOVE = Color("#262b44") # Noir/Bleu
+
+var drag_arrows_root: Control
+var drag_arrows: Dictionary = {} # {Vector2.UP: Polygon2D, ...}
 
 var game_manager_ref
 
@@ -131,6 +140,7 @@ func _ready() -> void:
 	options_layer_instance.hide()
 	
 	_setup_reaction_ui()
+	_setup_drag_feedback()
 
 func _on_help_button_pressed() -> void:
 	if tuto_layer_instance and tuto_layer_instance.has_method("open_tutorial"):
@@ -186,6 +196,55 @@ func _setup_reaction_ui() -> void:
 	
 	# 3. Opponent Card Display Placeholder
 	# On l'instanciera à la volée ou on garde une ref vide
+
+func _setup_drag_feedback() -> void:
+	# Création d'un conteneur pour les flèches
+	drag_arrows_root = Control.new()
+	drag_arrows_root.name = "DragArrowsOverlay"
+	drag_arrows_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	drag_arrows_root.z_index = 100 # Au dessus des cartes
+	drag_arrows_root.hide()
+	add_child(drag_arrows_root)
+	
+	# Définition des directions (Ortho + Diag)
+	var directions = {
+		# Orthogonal
+		Vector2.UP: - 90,
+		Vector2.RIGHT: 0,
+		Vector2.DOWN: 90,
+		Vector2.LEFT: 180,
+		# Diagonal
+		Vector2(1, -1): - 45, # Haut-Droite
+		Vector2(1, 1): 45, # Bas-Droite
+		Vector2(-1, 1): 135, # Bas-Gauche
+		Vector2(-1, -1): - 135 # Haut-Gauche
+	}
+	
+	# Création des polygones (Triangles)
+	var offset_dist = 50.0 # Distance par rapport au centre de la carte
+	var tex_size = ARROW_TEXTURE.get_size()
+	
+	for dir in directions:
+		var arrow = TextureRect.new()
+		arrow.texture = ARROW_TEXTURE
+		arrow.modulate = COLOR_ARROW_INACTIVE
+		arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+		arrow.size = tex_size
+		arrow.pivot_offset = tex_size / 2.0
+		arrow.scale = Vector2(0.5, 0.5) # Réduction de 50%
+
+		# Distance augmentée de 50% pour les diagonales
+		var current_offset = offset_dist
+		if dir.x != 0 and dir.y != 0:
+			current_offset = offset_dist * 1.5
+
+		# Positionnement et Rotation
+		arrow.position = (dir.normalized() * current_offset) - (tex_size / 2.0)
+		arrow.rotation_degrees = directions[dir]
+		
+		drag_arrows_root.add_child(arrow)
+		drag_arrows[dir] = arrow
 
 func _input(event: InputEvent) -> void:
 	# Si on clique n'importe où ailleurs pendant la phase de réaction -> Pass
@@ -263,7 +322,8 @@ func add_card_to_hand(card_data: CardData) -> void:
 	
 	card.setup(card_data)
 	card.clicked.connect(_on_card_clicked)
-	card.drag_started.connect(_on_card_drag_started)
+	# On bind 'card' pour récupérer l'instance UI lors du drag start
+	card.drag_started.connect(_on_card_drag_started.bind(card))
 	card.drag_ended.connect(_on_card_drag_ended)
 	card.swipe_pending.connect(_on_card_swipe_pending)
 	card.swipe_committed.connect(_on_card_swipe_committed)
@@ -380,6 +440,12 @@ func _on_card_clicked(card_ui: CardUI) -> void:
 	card_selected.emit(card_ui.card_data)
 
 func _on_card_selection_canceled(card_ui: CardUI) -> void:
+	if game_manager_ref:
+		game_manager_ref.set_wrestler_collisions(false)
+	
+	if drag_arrows_root:
+		drag_arrows_root.hide()
+	
 	if selected_card_ui == card_ui:
 		selected_card_ui.set_selected(false)
 		selected_card_ui = null
@@ -497,13 +563,42 @@ func on_wrestler_health_changed(current: int, max_hp: int, wrestler: Wrestler) -
 	elif remote_wrestler_ref and wrestler.name == remote_wrestler_ref.name and top_player_info:
 		top_player_info.update_health(current, max_hp)
 
-func _on_card_drag_started(card_data: CardData) -> void:
+func _on_card_drag_started(card_data: CardData, card_ui: CardUI = null) -> void:
 	if game_manager_ref:
 		game_manager_ref.set_wrestler_collisions(true)
+	
+	# Affichage des flèches autour de la position d'origine
+	if card_ui and drag_arrows_root:
+		# Pas de flèches pour les attaques (cartes rouges), sauf si c'est un Joker
+		if card_data.type == CardData.CardType.ATTACK and card_data.suit != "Joker":
+			return
+		
+		# Les flèches sont positionnées sur la carte elle-même
+		drag_arrows_root.global_position = card_ui.get_global_rect().get_center()
+		
+		# Reset des couleurs et visibilité selon le pattern
+		var is_joker = (card_data.suit == "Joker")
+		var is_diagonal = (card_data.pattern == CardData.MovePattern.DIAGONAL)
+		
+		for dir in drag_arrows:
+			var arrow = drag_arrows[dir]
+			arrow.modulate = COLOR_ARROW_INACTIVE
+			
+			if is_joker:
+				arrow.visible = true
+			else:
+				# On affiche seulement les flèches correspondantes au pattern
+				var is_arrow_diag = (dir.x != 0 and dir.y != 0)
+				arrow.visible = (is_diagonal == is_arrow_diag)
+		
+		drag_arrows_root.show()
 
 func _on_card_drag_ended() -> void:
 	if game_manager_ref:
 		game_manager_ref.set_wrestler_collisions(false)
+	
+	if drag_arrows_root:
+		drag_arrows_root.hide()
 
 func _on_card_swipe_pending(card_ui: CardUI, offset: Vector2) -> void:
 	# Check Discard Zone Hover
@@ -520,6 +615,56 @@ func _on_card_swipe_pending(card_ui: CardUI, offset: Vector2) -> void:
 	
 	# Met à jour la visibilité de l'icône "kick" sur la carte
 	card_ui.set_push_hover_state(is_push_hovering)
+	
+	# Mise à jour des flèches directionnelles
+	if drag_arrows_root and drag_arrows_root.visible:
+		# Faire suivre les flèches à la carte
+		drag_arrows_root.global_position = card_ui.get_global_rect().get_center()
+		
+		var active_color = COLOR_ARROW_ATTACK if card_ui.card_data.type == CardData.CardType.ATTACK else COLOR_ARROW_MOVE
+		var threshold = 20.0 # Seuil de détection
+		
+		# Reset rapide
+		for arrow in drag_arrows.values():
+			if arrow.visible:
+				arrow.modulate = COLOR_ARROW_INACTIVE
+			
+		if offset.length() > threshold:
+			var is_joker = (card_ui.card_data.suit == "Joker")
+			var is_diagonal = (card_ui.card_data.pattern == CardData.MovePattern.DIAGONAL)
+			
+			if is_joker:
+				# Logique Joker (8 directions)
+				var best_dir = Vector2.ZERO
+				var max_dot = -2.0
+				var normalized_offset = offset.normalized()
+				
+				for dir in drag_arrows:
+					var dot = normalized_offset.dot(dir.normalized())
+					if dot > max_dot:
+						max_dot = dot
+						best_dir = dir
+				
+				if best_dir != Vector2.ZERO and drag_arrows.has(best_dir):
+					drag_arrows[best_dir].modulate = active_color
+			elif is_diagonal:
+				# Logique Diagonale
+				var dir_x = 1 if offset.x > 0 else -1
+				var dir_y = 1 if offset.y > 0 else -1
+				var key = Vector2(dir_x, dir_y)
+				if drag_arrows.has(key):
+					drag_arrows[key].modulate = active_color
+			else:
+				# Logique Orthogonale
+				var abs_x = abs(offset.x)
+				var abs_y = abs(offset.y)
+				
+				if abs_x > abs_y:
+					# Horizontal
+					drag_arrows[Vector2.RIGHT if offset.x > 0 else Vector2.LEFT].modulate = active_color
+				else:
+					# Vertical
+					drag_arrows[Vector2.DOWN if offset.y > 0 else Vector2.UP].modulate = active_color
 
 func _on_card_swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vector2) -> void:
 	# Check Discard Zone
@@ -527,6 +672,7 @@ func _on_card_swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vect
 		card_ui.animate_destruction()
 		if game_manager_ref:
 			game_manager_ref.discard_hand_card(card_ui.card_data)
+		if drag_arrows_root: drag_arrows_root.hide()
 		return
 	
 	# Stop shake if dropped elsewhere
@@ -535,6 +681,8 @@ func _on_card_swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vect
 	if game_manager_ref:
 		# Prevent premature destruction by remove_card_from_hand signal
 		card_ui.is_destroying = true
+		
+		if drag_arrows_root: drag_arrows_root.hide()
 		
 		if game_manager_ref.commit_swipe(card_ui.card_data, offset, global_pos):
 			# Positionner sur le SlapAnchor (centre bas de l'écran)
@@ -565,6 +713,7 @@ func _on_card_swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vect
 		else:
 			# Revert flag if action failed
 			card_ui.is_destroying = false
+			if drag_arrows_root: drag_arrows_root.hide()
 
 func _trigger_screen_shake() -> void:
 	var tween = create_tween()
