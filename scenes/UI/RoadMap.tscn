@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://chf35my53chkb"]
+
+[node name="RoadMap" type="VBoxContainer" unique_id=1655735994]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 130.0
+grow_horizontal = 2
+
+[node name="InfoLabel" type="RichTextLabel" parent="." unique_id=1175738148]
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 18
+theme_override_font_sizes/bold_font_size = 20
+bbcode_enabled = true
+text = "[center][b][color=#be4a2f]VERSION PRE-ALPHA[/color][/b]
+[i][color=#686e86]Ceci est un prototype technique (POC).[/color][/i][/center]
+
+[center][b][color=#e4a672]ROADMAP :[/color][/b]
+[color=#63c74d]✔[/color] Gameplay Core
+[color=#e4a672]➜[/color] Multijoueur Online
+[color=#686e86]☐[/color] Modèles 3D & Animations
+[color=#686e86]☐[/color] Personnages & Compétences[/center]"
+fit_content = true
+scroll_active = false

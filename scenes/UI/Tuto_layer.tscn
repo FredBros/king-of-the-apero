@@ -4,6 +4,13 @@
 [ext_resource type="Shader" uid="uid://fhypsw041brr" path="res://shaders/chalk.gdshader" id="2_rdmdd"]
 [ext_resource type="PackedScene" uid="uid://b4y8k5l6m7oa" path="res://scenes/UI/Components/ChalkPanel.tscn" id="4_4kd2s"]
 [ext_resource type="Texture2D" uid="uid://olrcohnoiovf" path="res://assets/UI/Icons/cross-small.png" id="5_n4iax"]
+[ext_resource type="PackedScene" uid="uid://chf35my53chkb" path="res://scenes/UI/RoadMap.tscn" id="5_svnd1"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rdmdd"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_square_bg"]
 bg_color = Color(0.0941176, 0.0784314, 0.145098, 1)
@@ -14,13 +21,7 @@ shader_parameter/intensity = 0.5
 shader_parameter/grain_size = 100.0
 shader_parameter/jitter_amount = 0.002
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_svnd1"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rdmdd"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_k0s0j"]
 content_margin_left = 10.0
 content_margin_top = 10.0
 content_margin_right = 10.0
@@ -51,7 +52,7 @@ color = Color(0, 0, 0, 0.85)
 
 [node name="ChalkPanel" parent="TutorialOverlay" unique_id=1199446011 instance=ExtResource("4_4kd2s")]
 layout_mode = 1
-theme_override_styles/panel = SubResource("StyleBoxEmpty_svnd1")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_rdmdd")
 
 [node name="MarginContainer" type="MarginContainer" parent="TutorialOverlay/ChalkPanel" unique_id=1301052653]
 layout_mode = 2
@@ -124,10 +125,13 @@ text = "[center]
 [/center]"
 fit_content = true
 
+[node name="RoadMap" parent="TutorialOverlay/ChalkPanel/MarginContainer/VBoxContainer/ScrollContainer" unique_id=1655735994 instance=ExtResource("5_svnd1")]
+layout_mode = 2
+
 [node name="RemotePauseOverlay" parent="." unique_id=88552380 instance=ExtResource("4_4kd2s")]
 unique_name_in_owner = true
 visible = false
-theme_override_styles/panel = SubResource("StyleBoxEmpty_rdmdd")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_k0s0j")
 
 [node name="Label" type="Label" parent="RemotePauseOverlay" unique_id=239036418]
 layout_mode = 2
