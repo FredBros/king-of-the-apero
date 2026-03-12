@@ -1,10 +1,32 @@
 # Utilisation de la variable d'environnement DOMAIN_NAME définie dans docker-compose
 {$DOMAIN_NAME} {
-    # Redirige tout le trafic vers le conteneur Nakama sur le port API
-    reverse_proxy nakama:7350
+    @options method OPTIONS
 
-    # Configuration CORS pour permettre les requêtes Web (itch.io, etc.)
-    header Access-Control-Allow-Origin *
-    header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
-    header Access-Control-Allow-Headers "Content-Type, Authorization"
+    handle @options {
+        header Access-Control-Allow-Origin *
+        header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+        header Access-Control-Allow-Headers "Content-Type, Authorization"
+        respond 204
+    }
+
+    # 1. Routes API Nakama et WebSocket
+    # On redirige vers Nakama seulement ce qui est nécessaire (API et Sockets)
+    @nakama {
+        path /v2/*
+        path /ws
+    }
+    handle @nakama {
+        reverse_proxy nakama:7350 {
+            # On désactive la compression gzip entre Caddy et Nakama pour éviter le bug "double-decompression" de Godot Web
+            header_up -Accept-Encoding
+        }
+    }
+
+    # 2. Site Web (Jeu HTML5)
+    # Tout le reste est servi comme fichier statique depuis le dossier monté
+    handle {
+        root * /srv/site
+        file_server
+        try_files {path} /index.html
+    }
 }

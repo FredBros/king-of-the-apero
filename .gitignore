@@ -1,6 +1,13 @@
-# Godot 4+ specific ignores
+# Fichiers générés par Godot à ignorer
 .godot/
-/android/
+export_presets.cfg
+*.translation
 
-.env
+# --- SECRETS ---
+# Ne jamais envoyer ces fichiers sur le dépôt Git !
+
+# Configuration d'environnement du serveur
+server/.env
+
+# Fichier de secrets pour le développement local du client
 secrets.cfg

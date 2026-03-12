@@ -46,13 +46,19 @@ func _load_config() -> void:
 		SCHEME = "https"
 		HOST = "kotapero.xyz"
 		PORT = 443 # Caddy gère le SSL sur le port standard HTTPS
+		SERVER_KEY = "kh66PhYn77ymNBEy"
 		print("🚀 Exported Build detected. Using Production Server: ", HOST)
 	else:
 		print("⚠️ No secrets.cfg found. Using default (Localhost) configuration.")
 
 func login_with_device() -> void:
 	# Use unique device/machine ID as identifier
-	var device_id = OS.get_unique_id()
+	var device_id = ""
+	
+	if OS.has_feature("web"):
+		device_id = "web_guest_" + str(randi())
+	else:
+		device_id = OS.get_unique_id()
 	
 	# DEBUG: If running in editor/desktop, append process ID to simulate distinct devices
 	if OS.is_debug_build() and OS.has_feature("pc"):

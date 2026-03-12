@@ -330,10 +330,10 @@ func set_reaction_candidate(is_candidate: bool) -> void:
 
 func _get_suit_icon(suit: String) -> String:
 	match suit:
-		"Spades": return "♠"
-		"Clubs": return "♣"
-		"Hearts": return "♥"
-		"Diamonds": return "♦"
+		"Spades": return "✚"
+		"Clubs": return "✖"
+		"Hearts": return "✚"
+		"Diamonds": return "✖"
 		"Joker": return "★"
 	return ""
 

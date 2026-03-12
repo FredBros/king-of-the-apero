@@ -21,6 +21,7 @@ const DEFAULT_IP = "kotapero.xyz"
 @onready var discord_button: Button = %DiscordButton
 
 var current_invite_link: String = ""
+# Hébergement direct sur le VPS pour un contrôle total (Instant Play).
 const INVITE_BASE_URL = "https://kotapero.xyz/"
 
 const UI_SOUND_COMPONENT_SCENE = preload("res://scenes/Components/UISoundComponent.tscn")
@@ -157,9 +158,9 @@ func _on_match_hosted(match_id: String) -> void:
 	if paste_button: paste_button.hide()
 	
 	# Generate Invite Link
-	# On ajoute un paramètre factice (&v=1) à la fin pour protéger le point final de l'ID.
-	# Sinon, les messageries (WhatsApp, Discord) risquent de considérer le point comme une ponctuation de fin de phrase et de couper le lien.
+	# Retour à la méthode standard '?' maintenant que nous sommes sur notre propre serveur.
 	var invite_link = INVITE_BASE_URL + "?match_id=" + match_id + "&v=1"
+	
 	current_invite_link = invite_link
 	
 	share_container.show()
@@ -201,7 +202,19 @@ func _check_for_auto_join() -> void:
 	# 1. Web: Check URL parameters
 	if OS.has_feature("web"):
 		# On récupère le paramètre 'match_id' de l'URL via JavaScript
-		var js_code = "new URLSearchParams(window.location.search).get('match_id')"
+		# On cherche d'abord dans les paramètres standards (?), puis dans le hash (#)
+		var js_code = """
+		(function() {
+			var fromQuery = new URLSearchParams(window.location.search).get('match_id');
+			if (fromQuery) return fromQuery;
+			
+			var hash = window.location.hash;
+			if (hash.includes('match_id=')) {
+				return hash.split('match_id=')[1].split('&')[0];
+			}
+			return null;
+		})()
+		"""
 		var result = JavaScriptBridge.eval(js_code)
 		if result:
 			match_id = str(result)
