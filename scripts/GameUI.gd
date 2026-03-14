@@ -150,6 +150,24 @@ func _on_options_button_pressed() -> void:
 	if options_layer_instance:
 		options_layer_instance.show()
 
+func _check_first_time_user() -> void:
+	var config = ConfigFile.new()
+	var err = config.load("user://settings.cfg")
+	
+	# Si le fichier n'existe pas ou la clé est absente, c'est la première fois
+	var seen_tuto = config.get_value("game", "tutorial_seen", false)
+	
+	if not seen_tuto:
+		print("UI: First time user detected. Launching Tutorial.")
+		# On marque comme vu pour la prochaine fois
+		config.set_value("game", "tutorial_seen", true)
+		config.save("user://settings.cfg")
+		
+		# On attend une frame pour être sûr que tout est chargé (TutoLayer, GameManager)
+		await get_tree().process_frame
+		if tuto_layer_instance and tuto_layer_instance.has_method("open_tutorial"):
+			tuto_layer_instance.open_tutorial()
+
 func _start_help_button_pulse() -> void:
 	var rules_hint = $TopRightContainer/RulesHintPanel
 	if not help_button: return
@@ -777,6 +795,9 @@ func _on_versus_screen_finished() -> void:
 	
 	# On lance l'animation du bouton d'aide maintenant que le combat commence vraiment
 	_start_help_button_pulse()
+
+	# Vérification "Première Fois" : On lance le tutoriel APRÈS le Versus Screen
+	_check_first_time_user()
 
 func _setup_button_feedback(btn: Button) -> void:
 	if not btn: return

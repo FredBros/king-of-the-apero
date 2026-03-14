@@ -28,6 +28,8 @@ func _ready() -> void:
 	_setup_button_feedback(options_button)
 	_setup_button_feedback(rules_button)
 	_setup_button_feedback(quit_button)
+	
+	_check_invite_mode()
 
 func _on_play_pressed() -> void:
 	get_tree().change_scene_to_file(LOBBY_SCENE_PATH)
@@ -53,6 +55,32 @@ func _on_rules_pressed() -> void:
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
+
+func _check_invite_mode() -> void:
+	# Si on détecte un lien d'invitation (URL ou arguments), on adapte l'interface
+	if OS.has_feature("web"):
+		var js_code = "window.location.search.includes('match_id') || window.location.hash.includes('match_id')"
+		if JavaScriptBridge.eval(js_code):
+			_enable_invite_mode()
+	else:
+		for arg in OS.get_cmdline_args():
+			if "match_id=" in arg:
+				_enable_invite_mode()
+				return
+
+func _enable_invite_mode() -> void:
+	play_button.text = "REJOINDRE"
+	
+	# On attend une frame pour que la taille du bouton soit bien initialisée
+	await get_tree().process_frame
+	play_button.pivot_offset = play_button.size / 2
+	
+	# Animation de pulsation infinie (Taille + Légère teinte jaune/dorée)
+	var tween = create_tween().set_loops()
+	tween.tween_property(play_button, "scale", Vector2(1.15, 1.15), 0.6).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.parallel().tween_property(play_button, "modulate", Color(1.0, 0.9, 0.5), 0.6)
+	tween.tween_property(play_button, "scale", Vector2.ONE, 0.6).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.parallel().tween_property(play_button, "modulate", Color.WHITE, 0.6)
 
 func _setup_button_feedback(btn: Button) -> void:
 	if not btn: return

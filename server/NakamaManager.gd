@@ -14,6 +14,7 @@ var SERVER_KEY = "defaultkey" # Default key for Nakama Docker image
 var client: NakamaClient
 var session: NakamaSession
 var socket: NakamaSocket
+var socket_connected: bool = false
 
 func _ready() -> void:
 	# Load secrets/config if available
@@ -24,7 +25,7 @@ func _ready() -> void:
 	client = Nakama.create_client(SERVER_KEY, HOST, PORT, SCHEME)
 	
 	# Timeout configuration (optional but recommended)
-	client.timeout = 10
+	client.timeout = 30
 	
 	print("✅ Nakama Client initialized: %s://%s:%d" % [SCHEME, HOST, PORT])
 	
@@ -92,6 +93,7 @@ func _connect_socket() -> void:
 		printerr("❌ Socket Error: ", connected.get_exception().message)
 		return
 		
+	socket_connected = true
 	print("✅ Socket Connected! Ready for Multiplayer.")
 	nakama_ready.emit()
 

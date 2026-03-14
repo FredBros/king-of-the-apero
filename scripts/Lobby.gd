@@ -49,7 +49,7 @@ func _ready() -> void:
 	if join_button: join_button.text = "JOIN MATCH"
 	
 	# Désactiver le bouton tant que Nakama n'est pas prêt
-	if NakamaManager.socket == null:
+	if not NakamaManager.socket_connected:
 		if join_button: join_button.disabled = true
 		if status_label: status_label.text = "Connecting to Online Services..."
 		NakamaManager.nakama_ready.connect(_on_nakama_ready)
@@ -243,7 +243,7 @@ func _check_for_auto_join() -> void:
 		print("🚀 Auto-Join detected for Match ID: ", match_id)
 		if ip_input: ip_input.text = match_id
 		
-		if NakamaManager.socket:
+		if NakamaManager.socket_connected:
 			_on_join_pressed()
 		else:
 			if status_label: status_label.text = "Auto-joining..."
