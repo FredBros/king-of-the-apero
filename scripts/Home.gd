@@ -71,6 +71,11 @@ func _check_invite_mode() -> void:
 func _enable_invite_mode() -> void:
 	play_button.text = "REJOINDRE"
 	
+	# Doubler la taille verticale du panneau parent (80 -> 160) pour le mettre en évidence
+	var parent_panel = play_button.get_parent()
+	if parent_panel is Control:
+		parent_panel.custom_minimum_size.y = 160
+	
 	# On attend une frame pour que la taille du bouton soit bien initialisée
 	await get_tree().process_frame
 	play_button.pivot_offset = play_button.size / 2

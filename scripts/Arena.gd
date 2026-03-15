@@ -150,6 +150,7 @@ func _on_wrestlers_spawned(wrestlers: Array[Wrestler]) -> void:
 				game_manager.send_health_update(w.name, current)
 		)
 		w.action_completed.connect(_check_hand_playability)
+		
 	
 	# Set UI perspectives (local player at bottom)
 	_update_ui_player_perspectives()
@@ -174,6 +175,19 @@ func _update_ui_player_perspectives() -> void:
 func start_fight_sequence() -> void:
 	print("Arena: Starting Fight Sequence (Triggered by VersusScreen)")
 	
+	# Sécurité : On s'assure que l'Arène est visible pour le moteur de rendu
+	self.visible = true
+	
+	# --- PRE-WARMING GPU COMPLET ---
+	# L'arène est rendue mais cachée derrière le rideau noir (LoadingCurtain).
+	if grid_manager and grid_manager.wrestlers.size() > 0:
+		print("🔥 Arena: Final GPU Shader compilation...")
+		# On laisse passer 3 frames pleines pour garantir que WebGL a affiché
+		# l'arène complète et les catcheurs derrière le rideau noir.
+		for i in range(3):
+			await get_tree().process_frame
+		print("✅ Arena: GPU compilation complete.")
+
 	# On lève le rideau pour révéler l'arène
 	if loading_curtain and loading_curtain.visible:
 		var tween = create_tween()

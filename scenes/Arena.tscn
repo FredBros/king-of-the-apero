@@ -10,6 +10,8 @@
 [ext_resource type="Resource" uid="uid://c8qk2n6qtfwif" path="res://resources/BigGuy.tres" id="6_gcrh0"]
 [ext_resource type="Resource" uid="uid://drqnd1ajpdodo" path="res://resources/MrEggPlant.tres" id="7_vyqrf"]
 [ext_resource type="Texture2D" uid="uid://dmwvt7cl86xxv" path="res://assets/UI/Fight.png" id="8_fight"]
+[ext_resource type="PackedScene" uid="uid://cmibln8vt7nxa" path="res://scenes/Components/PreWarmer.tscn" id="11_otdxd"]
+[ext_resource type="PackedScene" uid="uid://ipdd3fwghaxl" path="res://scenes/SmokePuff.tscn" id="12_ph461"]
 
 [sub_resource type="Environment" id="Environment_setup"]
 background_mode = 1
@@ -83,3 +85,6 @@ pivot_offset = Vector2(250, 150)
 texture = ExtResource("8_fight")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="PreWarmer" parent="." unique_id=543096515 instance=ExtResource("11_otdxd")]
+particles_to_warm = Array[PackedScene]([ExtResource("12_ph461")])

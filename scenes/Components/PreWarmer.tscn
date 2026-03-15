@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://cmibln8vt7nxa"]
+
+[ext_resource type="Script" uid="uid://ccvbowd2s8bvs" path="res://scripts/Components/PreWarmer.gd" id="1_p57it"]
+[ext_resource type="PackedScene" uid="uid://b8q4y2x5j3k1" path="res://scenes/BloodParticles.tscn" id="2_t6ay0"]
+[ext_resource type="PackedScene" uid="uid://ipdd3fwghaxl" path="res://scenes/SmokePuff.tscn" id="3_7qrfv"]
+[ext_resource type="AudioStream" uid="uid://bvi0h2y7p0ny5" path="res://assets/Sounds/block/block_default.wav" id="4_v3c6r"]
+[ext_resource type="AudioStream" uid="uid://blofdcephfp47" path="res://assets/Sounds/Hurt/hurt_default.ogg" id="5_7f417"]
+[ext_resource type="AudioStream" uid="uid://bx82a4j41r5bi" path="res://assets/Sounds/KO/Death Rattle/death_rattle_default.wav" id="6_0fd3i"]
+[ext_resource type="AudioStream" uid="uid://81e3p8qaw6ay" path="res://assets/Sounds/KO/Fall Impact/346694__deleted_user_2104797__body-fall_02.wav" id="7_okdr1"]
+[ext_resource type="AudioStream" uid="uid://dytxesa161er8" path="res://assets/Sounds/Punch/Impact/punch_default.mp3" id="8_08hqq"]
+[ext_resource type="AudioStream" uid="uid://c3pn5x35np4tu" path="res://assets/Sounds/Punch/Voice/shoutingpunches_male_default.wav" id="9_r1utd"]
+[ext_resource type="AudioStream" uid="uid://hm6x02cpcarm" path="res://assets/Sounds/Push/pushed_defaults.wav" id="10_cd4y1"]
+[ext_resource type="AudioStream" uid="uid://rhjhqj3hvayj" path="res://assets/Sounds/UI/card_slap.wav" id="11_32p2o"]
+[ext_resource type="AudioStream" uid="uid://cgofgnexkvund" path="res://assets/Sounds/UI/chalk_tic.wav" id="12_7rtkn"]
+
+[node name="PreWarmer" type="Node3D" unique_id=543096515]
+script = ExtResource("1_p57it")
+particles_to_warm = Array[PackedScene]([ExtResource("2_t6ay0"), ExtResource("3_7qrfv")])
+sounds_to_warm = Array[AudioStream]([ExtResource("4_v3c6r"), ExtResource("5_7f417"), ExtResource("6_0fd3i"), ExtResource("7_okdr1"), ExtResource("8_08hqq"), ExtResource("9_r1utd"), ExtResource("10_cd4y1"), ExtResource("11_32p2o"), ExtResource("12_7rtkn")])

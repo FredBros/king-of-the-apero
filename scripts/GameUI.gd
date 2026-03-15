@@ -543,7 +543,11 @@ func show_game_over(winner_name: String) -> void:
 		winner_label.text = "IT'S A DRAW!"
 	else:
 		winner_label.text = winner_name + " WINS!"
-	game_over_container.show()
+	
+	# On attend 2.5 secondes pour laisser le temps d'apprécier la victoire (et l'animation de KO)
+	await get_tree().create_timer(2.5).timeout
+	if is_instance_valid(game_over_container):
+		game_over_container.show()
 
 func disable_restart_button() -> void:
 	var restart_btn = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/RestartButtonPanel/RestartButton
@@ -756,10 +760,6 @@ func _on_versus_screen_requested(local_data: WrestlerData, remote_data: Wrestler
 	if tuto_layer_instance:
 		tuto_layer_instance.hide()
 	
-	# Masquer l'arène 3D (le parent) pour éviter le "flash" visuel avant l'écran Versus
-	if get_parent() is Node3D:
-		get_parent().visible = false
-	
 	current_versus_screen = VERSUS_SCREEN_SCENE.instantiate()
 	add_child(current_versus_screen)
 	current_versus_screen.setup(local_data, remote_data)
@@ -777,10 +777,6 @@ func _on_versus_screen_finished() -> void:
 	if current_versus_screen:
 		current_versus_screen.queue_free()
 		current_versus_screen = null
-	
-	# Réafficher l'arène 3D maintenant que le Versus est terminé
-	if get_parent() is Node3D:
-		get_parent().visible = true
 	
 	if tuto_layer_instance:
 		tuto_layer_instance.show()

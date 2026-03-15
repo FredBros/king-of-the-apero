@@ -1,28 +1,33 @@
 [gd_scene format=3 uid="uid://b8q4y2x5j3k1"]
 
-[ext_resource type="Script" path="res://scripts/OneShotParticles.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://dt344n6u6tvmn" path="res://scripts/OneShotParticles.gd" id="1_script"]
+
+[sub_resource type="Curve" id="Curve_blood"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.0, 0.0, 0, 0]
+point_count = 2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_blood"]
 albedo_color = Color(0.85, 0.1, 0.1, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_blood"]
 material = SubResource("StandardMaterial3D_blood")
-size = Vector3(0.15, 0.15, 0.15)
+size = Vector3(0.1, 0.1, 0.1)
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_blood"]
+[node name="BloodParticles" type="CPUParticles3D" unique_id=991526827]
+emitting = false
+amount = 40
+lifetime = 0.4
+one_shot = true
+explosiveness = 0.95
+fixed_fps = 30
+visibility_aabb = AABB(-4, -4, -4, 8, 8, 8)
+mesh = SubResource("BoxMesh_blood")
 direction = Vector3(0, 1, 0)
 spread = 180.0
-initial_velocity_min = 3.0
-initial_velocity_max = 6.0
-scale_min = 0.5
-scale_max = 1.2
-
-[node name="BloodParticles" type="GPUParticles3D"]
-emitting = false
-amount = 20
-lifetime = 0.6
-one_shot = true
-explosiveness = 1.0
-process_material = SubResource("ParticleProcessMaterial_blood")
-draw_pass_1 = SubResource("BoxMesh_blood")
+gravity = Vector3(0, -12, 0)
+initial_velocity_min = 2.0
+initial_velocity_max = 4.5
+scale_amount_min = 0.5
+scale_amount_max = 1.2
+scale_amount_curve = SubResource("Curve_blood")
 script = ExtResource("1_script")

@@ -9,7 +9,6 @@
 script = ExtResource("1_5walk")
 id = "mr_eggplant"
 display_name = "MrEggPlant"
-max_health = 2
 portrait = ExtResource("2_dc0i0")
 model_scene = ExtResource("1_2txoo")
 sound_name = ExtResource("3_7n5hi")
