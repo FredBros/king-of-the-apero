@@ -2,16 +2,16 @@
 
 [ext_resource type="Script" uid="uid://dt344n6u6tvmn" path="res://scripts/OneShotParticles.gd" id="1_script"]
 
-[sub_resource type="Curve" id="Curve_blood"]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.0, 0.0, 0, 0]
-point_count = 2
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_blood"]
-albedo_color = Color(0.85, 0.1, 0.1, 1)
+albedo_color = Color(0.66465914, 0.683739, 0.6837239, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_blood"]
 material = SubResource("StandardMaterial3D_blood")
 size = Vector3(0.1, 0.1, 0.1)
+
+[sub_resource type="Curve" id="Curve_blood"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.0, 0.0, 0, 0]
+point_count = 2
 
 [node name="BloodParticles" type="CPUParticles3D" unique_id=991526827]
 emitting = false

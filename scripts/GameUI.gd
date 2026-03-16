@@ -69,6 +69,9 @@ func _ready() -> void:
 	visible = true
 	game_over_container.hide()
 	
+	# On cache l'interface de jeu en attendant la fin du Versus Screen
+	_set_gameplay_ui_visible(false)
+	
 	# Connect restart button manually since we added it via code/tscn edit
 	var restart_btn = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/RestartButtonPanel/RestartButton
 	restart_btn.pressed.connect(_on_restart_button_pressed)
@@ -309,6 +312,7 @@ func update_turn_info(player_name: String, skip_anim: bool = false) -> void:
 func _on_game_restarted() -> void:
 	game_over_container.hide()
 	clear_hand()
+	_set_gameplay_ui_visible(false) # Cache l'UI pour le nouveau Versus Screen
 	# The scene is reloaded on restart, so UI state is reset automatically.
 
 func _on_rematch_update(current: int, total: int) -> void:
@@ -773,6 +777,19 @@ func _on_opponent_skipped_versus() -> void:
 	if current_versus_screen and current_versus_screen.has_method("set_opponent_skipped"):
 		current_versus_screen.set_opponent_skipped()
 
+func _set_gameplay_ui_visible(is_visible: bool) -> void:
+	if top_player_info: top_player_info.visible = is_visible
+	if bottom_player_info: bottom_player_info.visible = is_visible
+	if end_turn_button: end_turn_button.visible = is_visible
+	if $PanelContainer: $PanelContainer.visible = is_visible
+	if opponent_hand_container: opponent_hand_container.visible = is_visible
+	if $TopRightContainer: $TopRightContainer.visible = is_visible
+	
+	if is_visible:
+		_update_discard_zone_visibility()
+	elif discard_zone_visual:
+		discard_zone_visual.visible = false
+
 func _on_versus_screen_finished() -> void:
 	if current_versus_screen:
 		current_versus_screen.queue_free()
@@ -780,6 +797,9 @@ func _on_versus_screen_finished() -> void:
 	
 	if tuto_layer_instance:
 		tuto_layer_instance.show()
+	
+	# On affiche l'interface de jeu maintenant que le combat commence
+	_set_gameplay_ui_visible(true)
 	
 	if game_manager_ref:
 		game_manager_ref.start_match_after_versus()

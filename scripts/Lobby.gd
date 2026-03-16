@@ -6,6 +6,7 @@ extends Control
 @export var ip_input: LineEdit
 @export var status_label: Label
 @export var paste_button: Button
+@export var back_button: Button
 var start_game_timer: Timer
 
 # Port par défaut (doit correspondre à celui dans NetworkManager)
@@ -43,6 +44,7 @@ func _ready() -> void:
 	if host_button: host_button.pressed.connect(_on_host_pressed)
 	if join_button: join_button.pressed.connect(_on_join_pressed)
 	if paste_button: paste_button.pressed.connect(_on_paste_pressed)
+	if back_button: back_button.pressed.connect(_on_back_pressed)
 	
 	# UI Setup for Host/Join
 	if host_button: host_button.text = "CREATE MATCH"
@@ -79,10 +81,14 @@ func _ready() -> void:
 	_setup_button_feedback(host_button)
 	_setup_button_feedback(join_button)
 	_setup_button_feedback(paste_button)
+	_setup_button_feedback(back_button)
 	_setup_button_feedback(copy_link_button)
 	_setup_button_feedback(whatsapp_button)
 	_setup_button_feedback(sms_button)
 	_setup_button_feedback(discord_button)
+
+func _on_back_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/Home.tscn")
 
 func _on_host_pressed() -> void:
 	if status_label: status_label.text = "Creating Match..."

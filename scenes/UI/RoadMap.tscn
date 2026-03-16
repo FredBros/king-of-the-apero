@@ -15,9 +15,9 @@ text = "[center][b][color=#be4a2f]PRE-ALPHA VERSION[/color][/b]
 [i][color=#686e86]This is a technical prototype (POC).[/color][/i][/center]
 
 [center][b][color=#e4a672]ROADMAP:[/color][/b]
-[color=#63c74d]✔[/color] Core Gameplay
-[color=#e4a672]➜[/color] Online Multiplayer
-[color=#686e86]☐[/color] 3D Models & Animations
-[color=#686e86]☐[/color] Legends (Santa, Tooth Fairy...)[/center]"
+[color=#63c74d][V][/color] Core Gameplay
+[color=#e4a672]->[/color] Online Multiplayer
+[color=#686e86][ ][/color] 3D Models & Animations
+[color=#686e86][ ][/color] Legends (Santa, Tooth Fairy...)[/center]"
 fit_content = true
 scroll_active = false

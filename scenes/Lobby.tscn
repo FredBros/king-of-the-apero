@@ -63,7 +63,13 @@ content_margin_top = 10.0
 content_margin_right = 10.0
 content_margin_bottom = 10.0
 
-[node name="Lobby" type="Control" unique_id=724538796 node_paths=PackedStringArray("host_button", "join_button", "ip_input", "status_label", "paste_button")]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4hpk5"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+
+[node name="Lobby" type="Control" unique_id=724538796 node_paths=PackedStringArray("host_button", "join_button", "ip_input", "status_label", "paste_button", "back_button")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -78,6 +84,7 @@ join_button = NodePath("ChalkPanel/MarginContainer/VBoxContainer/JoinButtonPanel
 ip_input = NodePath("ChalkPanel/MarginContainer/VBoxContainer/IPInputContainer/IPInputPanel/IPInput")
 status_label = NodePath("ChalkPanel/MarginContainer/VBoxContainer/StatusLabel")
 paste_button = NodePath("ChalkPanel/MarginContainer/VBoxContainer/IPInputContainer/CopyButton")
+back_button = NodePath("ChalkPanel/MarginContainer/VBoxContainer/BackButtonPanel/BackButton")
 
 [node name="ChalkPanel" parent="." unique_id=173110024 instance=ExtResource("2_chalk")]
 layout_mode = 1
@@ -189,6 +196,24 @@ theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
 text = "Join Game"
 
+[node name="BackButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=1892769745 instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_kayix")
+
+[node name="BackButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/BackButtonPanel" unique_id=1868324332]
+material = SubResource("ShaderMaterial_chalk_text")
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+text = "Back"
+
 [node name="StatusLabel" type="Label" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=1768009761]
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
@@ -221,7 +246,7 @@ alignment = 1
 [node name="CopyLinkPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=2036579986 instance=ExtResource("2_chalk")]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_kayix")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_l31xl")
 
 [node name="CopyLinkButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/CopyLinkPanel" unique_id=1378768595]
 unique_name_in_owner = true
@@ -240,7 +265,7 @@ text = "COPY"
 [node name="WhatsAppPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=928515481 instance=ExtResource("2_chalk")]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_l31xl")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wuide")
 
 [node name="WhatsAppButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/WhatsAppPanel" unique_id=1729676220]
 unique_name_in_owner = true
@@ -259,7 +284,7 @@ text = "WHATSAPP"
 [node name="SMSPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=94449455 instance=ExtResource("2_chalk")]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_wuide")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_h77bf")
 
 [node name="SMSButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/SMSPanel" unique_id=209729916]
 unique_name_in_owner = true
@@ -278,7 +303,7 @@ text = "SMS"
 [node name="DiscordPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=1422422002 instance=ExtResource("2_chalk")]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_h77bf")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_4hpk5")
 
 [node name="DiscordButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/DiscordPanel" unique_id=1028716994]
 unique_name_in_owner = true

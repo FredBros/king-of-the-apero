@@ -181,7 +181,7 @@ func _update_visuals() -> void:
 	if not card_data: return
 	
 	if card_data.suit == "Joker":
-		value_label.text = "★"
+		value_label.text = ""
 		# Use a dark color for the Joker's star for better visibility
 		value_label.add_theme_color_override("font_color", Color.from_string("#262b44", Color.WHITE))
 	else:
@@ -330,11 +330,11 @@ func set_reaction_candidate(is_candidate: bool) -> void:
 
 func _get_suit_icon(suit: String) -> String:
 	match suit:
-		"Spades": return "✚"
-		"Clubs": return "✖"
-		"Hearts": return "✚"
-		"Diamonds": return "✖"
-		"Joker": return "★"
+		"Spades": return "+"
+		"Clubs": return "X"
+		"Hearts": return "+"
+		"Diamonds": return "X"
+		"Joker": return ""
 	return ""
 
 func set_discard_hover_state(state: bool) -> void:
