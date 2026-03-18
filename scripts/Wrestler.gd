@@ -48,6 +48,7 @@ var current_attack_is_push: bool = false
 
 var sound_pool
 var _pending_push_callback: Callable
+var _pending_damage_callback: Callable
 
 func _ready() -> void:
 	set_collision_enabled(false)
@@ -180,6 +181,7 @@ func attack(target: Wrestler, will_hit: bool = false, is_push: bool = false) -> 
 		_play_sound_or_default(wrestler_data.sound_punch, DEFAULT_SOUND_PUNCH, -4.0)
 		if current_attack_is_push:
 			combat_target.execute_pending_push()
+		combat_target.execute_pending_damage()
 		# REMOVED: Damage is now handled by GameManager to prevent double-damage bug.
 		# combat_target.take_damage(1, current_attack_is_push)
 		trigger_hurt_on_hit = false
@@ -198,6 +200,7 @@ func on_hit_frame() -> void:
 		_play_sound_or_default(wrestler_data.sound_punch, DEFAULT_SOUND_PUNCH, -4.0)
 		if current_attack_is_push:
 			combat_target.execute_pending_push()
+		combat_target.execute_pending_damage()
 		# REMOVED: Damage is now handled by GameManager.
 		# combat_target.take_damage(1, current_attack_is_push)
 		trigger_hurt_on_hit = false
@@ -209,24 +212,36 @@ func play_hurt_animation(spawn_blood: bool = true) -> void:
 	perform_hurt_sequence()
 
 # Apply damage to the wrestler
-func take_damage(amount: int, skip_anim: bool = false) -> void:
+func take_damage(amount: int, skip_anim: bool = false, immediate_visuals: bool = false) -> void:
 	current_health -= amount
 	health_changed.emit(current_health, max_health)
-	show_floating_text("-" + str(amount) + " HP", Color.RED)
 	print(name, " took ", amount, " damage. HP: ", current_health)
 	
-	if current_health <= 0:
-		_spawn_blood_effect()
-		is_busy = true
-		# Son de "râle de mort" déplacé dans on_ko_impact
-		print("Wrestler died. Attempting to play 'KO' animation.")
-		_play_anim(anim_ko)
-		died.emit(self )
-	else:
-		if not skip_anim:
+	var is_lethal = current_health <= 0
+	
+	# On prépare les effets visuels pour qu'ils soient synchronisés avec l'impact de l'attaquant
+	_pending_damage_callback = func():
+		show_floating_text("-" + str(amount) + " HP", Color.RED)
+		if is_lethal:
 			_spawn_blood_effect()
-			_play_sound_or_default(wrestler_data.sound_hurt, DEFAULT_SOUND_HURT, -2.0)
-			perform_hurt_sequence()
+			is_busy = true
+			print("Wrestler died. Attempting to play 'KO' animation.")
+			_play_anim(anim_ko)
+			died.emit(self )
+		else:
+			if not skip_anim:
+				_spawn_blood_effect()
+				_play_sound_or_default(wrestler_data.sound_hurt, DEFAULT_SOUND_HURT, -2.0)
+				perform_hurt_sequence()
+
+	# Permet de forcer les effets sans attendre (ex: Dégâts environnementaux)
+	if immediate_visuals:
+		execute_pending_damage()
+
+func execute_pending_damage() -> void:
+	if _pending_damage_callback:
+		_pending_damage_callback.call()
+		_pending_damage_callback = Callable()
 
 func perform_hurt_sequence() -> void:
 	is_busy = true

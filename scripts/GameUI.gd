@@ -61,6 +61,9 @@ const COLOR_ARROW_MOVE = Color("#262b44") # Noir/Bleu
 
 var drag_arrows_root: Control
 var drag_arrows: Dictionary = {} # {Vector2.UP: Polygon2D, ...}
+var drag_arrows_ghosts: Dictionary = {} # Les copies pour l'animation
+var _active_drag_dir: Vector2 = Vector2.ZERO
+var _drag_ghost_tween: Tween
 
 var game_manager_ref
 
@@ -242,7 +245,7 @@ func _setup_drag_feedback() -> void:
 	}
 	
 	# Création des polygones (Triangles)
-	var offset_dist = 50.0 # Distance par rapport au centre de la carte
+	var offset_dist = 70.0 # Écartement augmenté pour ne pas être caché par le doigt
 	var tex_size = ARROW_TEXTURE.get_size()
 	
 	for dir in directions:
@@ -266,6 +269,27 @@ func _setup_drag_feedback() -> void:
 		
 		drag_arrows_root.add_child(arrow)
 		drag_arrows[dir] = arrow
+		
+		# Création du fantôme pour l'animation de projection
+		var ghost = TextureRect.new()
+		ghost.texture = ARROW_TEXTURE
+		ghost.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		ghost.size = tex_size
+		ghost.pivot_offset = tex_size / 2.0
+		ghost.scale = Vector2(0.5, 0.5)
+		ghost.position = arrow.position
+		ghost.rotation_degrees = arrow.rotation_degrees
+		ghost.hide()
+		drag_arrows_root.add_child(ghost)
+		drag_arrows_root.move_child(ghost, 0) # Place le fantôme SOUS les flèches normales
+		drag_arrows_ghosts[dir] = ghost
+
+func _reset_drag_ghosts() -> void:
+	if _drag_ghost_tween:
+		_drag_ghost_tween.kill()
+	if _active_drag_dir != Vector2.ZERO and drag_arrows_ghosts.has(_active_drag_dir):
+		drag_arrows_ghosts[_active_drag_dir].hide()
+	_active_drag_dir = Vector2.ZERO
 
 func _input(event: InputEvent) -> void:
 	# Si on clique n'importe où ailleurs pendant la phase de réaction -> Pass
@@ -465,6 +489,8 @@ func _on_card_selection_canceled(card_ui: CardUI) -> void:
 	if game_manager_ref:
 		game_manager_ref.set_wrestler_collisions(false)
 	
+	_reset_drag_ghosts()
+	
 	if drag_arrows_root:
 		drag_arrows_root.hide()
 	
@@ -593,6 +619,8 @@ func _on_card_drag_started(card_data: CardData, card_ui: CardUI = null) -> void:
 	if game_manager_ref:
 		game_manager_ref.set_wrestler_collisions(true)
 	
+	_reset_drag_ghosts()
+	
 	# Affichage des flèches autour de la position d'origine
 	if card_ui and drag_arrows_root:
 		# Pas de flèches pour les attaques (cartes rouges), sauf si c'est un Joker
@@ -623,6 +651,7 @@ func _on_card_drag_ended() -> void:
 	if game_manager_ref:
 		game_manager_ref.set_wrestler_collisions(false)
 	
+	_reset_drag_ghosts()
 	if drag_arrows_root:
 		drag_arrows_root.hide()
 
@@ -649,6 +678,7 @@ func _on_card_swipe_pending(card_ui: CardUI, offset: Vector2) -> void:
 		
 		var active_color = COLOR_ARROW_ATTACK if card_ui.card_data.type == CardData.CardType.ATTACK else COLOR_ARROW_MOVE
 		var threshold = 20.0 # Seuil de détection
+		var new_active_dir = Vector2.ZERO
 		
 		# Reset rapide
 		for arrow in drag_arrows.values():
@@ -666,31 +696,66 @@ func _on_card_swipe_pending(card_ui: CardUI, offset: Vector2) -> void:
 				var normalized_offset = offset.normalized()
 				
 				for dir in drag_arrows:
+					if not drag_arrows[dir].visible: continue
 					var dot = normalized_offset.dot(dir.normalized())
 					if dot > max_dot:
 						max_dot = dot
 						best_dir = dir
 				
-				if best_dir != Vector2.ZERO and drag_arrows.has(best_dir):
-					drag_arrows[best_dir].modulate = active_color
+				new_active_dir = best_dir
 			elif is_diagonal:
 				# Logique Diagonale
 				var dir_x = 1 if offset.x > 0 else -1
 				var dir_y = 1 if offset.y > 0 else -1
 				var key = Vector2(dir_x, dir_y)
-				if drag_arrows.has(key):
-					drag_arrows[key].modulate = active_color
+				if drag_arrows.has(key) and drag_arrows[key].visible:
+					new_active_dir = key
 			else:
 				# Logique Orthogonale
 				var abs_x = abs(offset.x)
 				var abs_y = abs(offset.y)
+				var key = Vector2.ZERO
 				
 				if abs_x > abs_y:
 					# Horizontal
-					drag_arrows[Vector2.RIGHT if offset.x > 0 else Vector2.LEFT].modulate = active_color
+					key = Vector2.RIGHT if offset.x > 0 else Vector2.LEFT
 				else:
 					# Vertical
-					drag_arrows[Vector2.DOWN if offset.y > 0 else Vector2.UP].modulate = active_color
+					key = Vector2.DOWN if offset.y > 0 else Vector2.UP
+				
+				if drag_arrows.has(key) and drag_arrows[key].visible:
+					new_active_dir = key
+
+		# 1. Coloration de la flèche principale
+		if new_active_dir != Vector2.ZERO:
+			drag_arrows[new_active_dir].modulate = active_color
+
+		# 2. Gestion de l'Animation Fantôme (Projection)
+		if new_active_dir != _active_drag_dir:
+			_reset_drag_ghosts()
+			_active_drag_dir = new_active_dir
+			
+			if _active_drag_dir != Vector2.ZERO and drag_arrows_ghosts.has(_active_drag_dir):
+				var ghost = drag_arrows_ghosts[_active_drag_dir]
+				var base_arrow = drag_arrows[_active_drag_dir]
+				ghost.show()
+				ghost.modulate = active_color
+				
+				var start_pos = base_arrow.position
+				# Projection sur environ 3x la taille visible de la flèche
+				var proj_dist = ARROW_TEXTURE.get_size().x * 0.5 * 3.0
+				var end_pos = start_pos + (_active_drag_dir.normalized() * proj_dist)
+				
+				# Création d'une animation en boucle fluide
+				_drag_ghost_tween = create_tween().set_loops()
+				_drag_ghost_tween.set_parallel(true)
+				_drag_ghost_tween.tween_property(ghost, "position", end_pos, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+				_drag_ghost_tween.tween_property(ghost, "modulate:a", 0.0, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+				
+				# Réinitialisation éclair à la fin de la boucle
+				_drag_ghost_tween.chain().tween_property(ghost, "position", start_pos, 0.0)
+				_drag_ghost_tween.parallel().tween_property(ghost, "modulate:a", active_color.a, 0.0)
+				_drag_ghost_tween.chain().tween_interval(0.1) # Courte pause avant la prochaine impulsion
 
 func _on_card_swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vector2) -> void:
 	# Check Discard Zone
@@ -698,6 +763,7 @@ func _on_card_swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vect
 		card_ui.animate_destruction()
 		if game_manager_ref:
 			game_manager_ref.discard_hand_card(card_ui.card_data)
+		_reset_drag_ghosts()
 		if drag_arrows_root: drag_arrows_root.hide()
 		return
 	
@@ -708,6 +774,7 @@ func _on_card_swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vect
 		# Prevent premature destruction by remove_card_from_hand signal
 		card_ui.is_destroying = true
 		
+		_reset_drag_ghosts()
 		if drag_arrows_root: drag_arrows_root.hide()
 		
 		if game_manager_ref.commit_swipe(card_ui.card_data, offset, global_pos):
@@ -739,6 +806,7 @@ func _on_card_swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vect
 		else:
 			# Revert flag if action failed
 			card_ui.is_destroying = false
+			_reset_drag_ghosts()
 			if drag_arrows_root: drag_arrows_root.hide()
 
 func _trigger_screen_shake() -> void:
