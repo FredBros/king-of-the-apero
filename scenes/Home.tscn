@@ -100,7 +100,7 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_btn")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_btn")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_btn")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_btn")
-text = "JOUER"
+text = "BTN_PLAY"
 
 [node name="OptionsButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=1795717091 instance=ExtResource("2_chalk")]
 custom_minimum_size = Vector2(300, 80)
@@ -121,7 +121,7 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_btn")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_btn")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_btn")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_btn")
-text = "OPTIONS"
+text = "BTN_OPTIONS"
 
 [node name="RulesButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=2063581740 instance=ExtResource("2_chalk")]
 custom_minimum_size = Vector2(300, 80)
@@ -142,7 +142,7 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_btn")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_btn")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_btn")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_btn")
-text = "REGLES"
+text = "BTN_RULES"
 
 [node name="QuitButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=1470791055 instance=ExtResource("2_chalk")]
 custom_minimum_size = Vector2(300, 80)
@@ -163,4 +163,4 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_btn")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_btn")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_btn")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_btn")
-text = "QUITTER"
+text = "BTN_QUIT"

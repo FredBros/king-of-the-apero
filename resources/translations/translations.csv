@@ -1,0 +1,71 @@
+id,en,fr
+
+# --- ROADMAP ---,,
+ROADMAP_ALPHA_VERSION,PRE-ALPHA VERSION,VERSION PRÉ-ALPHA
+ROADMAP_WARNING,This is a technical prototype (POC).,Ceci est un prototype technique (POC).
+ROADMAP_TITLE,ROADMAP:,FEUILLE DE ROUTE :
+ROADMAP_CORE,Core Gameplay,Boucle de jeu principale
+ROADMAP_ONLINE,Online Multiplayer,Multijoueur en ligne
+ROADMAP_3D,3D Models & Animations,Modèles et Animations 3D
+ROADMAP_LEGENDS,"Legends (Santa, Tooth Fairy...)","Légendes (Père Noël, Petite Souris...)"
+
+# --- TUTORIAL ---,,
+TUTO_TITLE,RULES,RÈGLES
+TUTO_PAUSE_TEXT,"GAME PAUSED
+
+Opponent is checking the rules...","JEU EN PAUSE
+
+L'adversaire consulte les règles..."
+TUTO_MAIN_TEXT,"[center]
+[font_size=40][color=#be4a2f]WELCOME TO THE BAR![/color][/font_size]
+[color=#e4a672]1.[/color] [shake rate=20 level=10][b]DRAW[/b][/shake]: [color=#be4a2f]52[/color] coasters total. Shared deck. Draw max [color=#be4a2f]2[/color], hand limit [color=#be4a2f]5[/color].
+[color=#e4a672]2.[/color] [shake rate=20 level=10][b]PLAY[/b][/shake]: Play as many as you want.
+[outline_size=4][outline_color=#e4a672][color=#be4a2f]RED[/color][/outline_color][/outline_size] = Attack, [outline_size=4][outline_color=#e4a672][color=#262b44]BLACK[/color][/outline_color][/outline_size] = Move.
+[b]Patterns:[/b] [color=#262b44]✚[/color]/[color=#be4a2f]✚[/color] (Cross) = Straight, [color=#262b44]✖[/color]/[color=#be4a2f]✖[/color] (X) = Diagonal.
+Throw [outline_size=4][outline_color=#e4a672][color=#262b44]BLACK[/color][/outline_color][/outline_size] coasters to move. Burn useless cards. AFK? The crowd throws stuff at you.
+[color=#e4a672]3.[/color] [shake rate=20 level=10][b]BRAWL[/b][/shake]: Throw [outline_size=4][outline_color=#e4a672][color=#be4a2f]RED[/color][/outline_color][/outline_size] coasters to strike. Hit with a [outline_size=4][outline_color=#e4a672][color=#be4a2f]RED[/color][/outline_color][/outline_size] to SHOVE. Ideally out of the ring!
+[color=#e4a672]4.[/color] [shake rate=20 level=10][b]DEFEND[/b][/shake]: Block with same [outline_size=4][outline_color=#e4a672][color=#be4a2f]RED[/color][/outline_color][/outline_size] pattern (higher value).
+
+[font_size=18][i][color=#686e86]""No mercy, it's folklore.""[/color][/i][/font_size]
+[/center]","[center]
+[font_size=40][color=#be4a2f]BIENVENUE AU BAR ![/color][/font_size]
+[color=#e4a672]1.[/color] [shake rate=20 level=10][b]PIOCHE[/b][/shake] : [color=#be4a2f]52[/color] sous-bocks au total. Pioche commune. Max [color=#be4a2f]2[/color]/tour, limite de [color=#be4a2f]5[/color] en main.
+[color=#e4a672]2.[/color] [shake rate=20 level=10][b]JOUER[/b][/shake] : Autant de cartes que voulu.
+[outline_size=4][outline_color=#e4a672][color=#be4a2f]ROUGE[/color][/outline_color][/outline_size] = Attaque, [outline_size=4][outline_color=#e4a672][color=#262b44]NOIR[/color][/outline_color][/outline_size] = Déplacement.
+[b]Motifs :[/b] [color=#262b44]✚[/color]/[color=#be4a2f]✚[/color] (Croix) = Droit, [color=#262b44]✖[/color]/[color=#be4a2f]✖[/color] (X) = Diagonale.
+Jetez les [outline_size=4][outline_color=#e4a672][color=#262b44]NOIRS[/color][/outline_color][/outline_size] pour bouger. Brûlez les cartes inutiles. AFK ? Le public vous caillasse.
+[color=#e4a672]3.[/color] [shake rate=20 level=10][b]BASTON[/b][/shake] : Jetez les [outline_size=4][outline_color=#e4a672][color=#be4a2f]ROUGES[/color][/outline_color][/outline_size] pour frapper. Une touche [outline_size=4][outline_color=#e4a672][color=#be4a2f]ROUGE[/color][/outline_color][/outline_size] POUSSE l'ennemi. Visez hors du ring !
+[color=#e4a672]4.[/color] [shake rate=20 level=10][b]DÉFENSE[/b][/shake] : Bloquez avec le même motif [outline_size=4][outline_color=#e4a672][color=#be4a2f]ROUGE[/color][/outline_color][/outline_size] (valeur supérieure).
+
+[font_size=18][i][color=#686e86]""Pas de pitié, c'est le folklore.""[/color][/i][/font_size]
+[/center]"
+
+# --- BOUTONS MENU PRINCIPAL ---,,
+BTN_PLAY,PLAY,JOUER
+BTN_OPTIONS,OPTIONS,OPTIONS
+BTN_RULES,RULES,RÈGLES
+BTN_QUIT,QUIT,QUITTER
+BTN_BACK,Back,Retour
+
+# --- LOBBY ---,,
+LOBBY_CREATE_MATCH,CREATE MATCH,CRÉER PARTIE
+LOBBY_JOIN_MATCH,JOIN MATCH,REJOINDRE PARTIE
+LOBBY_PLACEHOLDER_MATCH_ID,"Enter Match ID here...","Entrez l'ID de partie..."
+LOBBY_TOOLTIP_PASTE,Paste Match ID,Coller l'ID de partie
+LOBBY_STATUS_CONNECTING,"Connecting to Online Services...","Connexion aux services en ligne..."
+LOBBY_STATUS_CREATING,"Creating Match...","Création de la partie..."
+LOBBY_STATUS_NO_MATCH_ID,"Please enter a Match ID.","Veuillez entrer un ID de partie."
+LOBBY_STATUS_JOINING,"Joining Match...","Connexion à la partie..."
+LOBBY_STATUS_READY,"Online Services Ready.","Services en ligne prêts."
+LOBBY_STATUS_CONNECTED_WAITING,"Connected! Waiting for opponent...","Connecté ! En attente de l'adversaire..."
+LOBBY_STATUS_HOSTED,"Match Created! Share the Code below.","Partie créée ! Partagez le code ci-dessous."
+LOBBY_STATUS_FAILED,"Connection Failed.","Échec de la connexion."
+LOBBY_STATUS_PLAYER_CONNECTED,"Player {user_id} connected.","Joueur {user_id} connecté."
+LOBBY_STATUS_LINK_COPIED,"Link copied to clipboard!","Lien copié dans le presse-papiers !"
+LOBBY_STATUS_LINK_COPIED_DISCORD,"Link copied! Paste it in Discord.","Lien copié ! Collez-le dans Discord."
+LOBBY_STATUS_AUTOJOIN,"Auto-joining...","Connexion automatique..."
+LOBBY_BTN_COPY,COPY,COPIER
+LOBBY_BTN_WHATSAPP,WHATSAPP,WHATSAPP
+LOBBY_BTN_SMS,SMS,SMS
+LOBBY_BTN_DISCORD,DISCORD,DISCORD
+LOBBY_SHARE_MSG,"Join me on King of the Apero! ","Rejoins-moi sur King of the Apero ! "

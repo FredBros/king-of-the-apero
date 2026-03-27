@@ -45,21 +45,24 @@ func _ready() -> void:
 	if join_button: join_button.pressed.connect(_on_join_pressed)
 	if paste_button: paste_button.pressed.connect(_on_paste_pressed)
 	if back_button: back_button.pressed.connect(_on_back_pressed)
-	
+
 	# UI Setup for Host/Join
-	if host_button: host_button.text = "CREATE MATCH"
-	if join_button: join_button.text = "JOIN MATCH"
-	
+	if host_button: host_button.text = tr("LOBBY_CREATE_MATCH")
+	if join_button: join_button.text = tr("LOBBY_JOIN_MATCH")
+	if back_button: back_button.text = tr("BTN_BACK")
+
 	# Désactiver le bouton tant que Nakama n'est pas prêt
 	if not NakamaManager.socket_connected:
 		if join_button: join_button.disabled = true
-		if status_label: status_label.text = "Connecting to Online Services..."
+		if status_label: status_label.text = tr("LOBBY_STATUS_CONNECTING")
 		NakamaManager.nakama_ready.connect(_on_nakama_ready)
-	
+
 	# Placeholder for Match ID
 	if ip_input:
-		ip_input.placeholder_text = "Enter Match ID here..."
-	
+		ip_input.placeholder_text = tr("LOBBY_PLACEHOLDER_MATCH_ID")
+	if paste_button:
+		paste_button.tooltip_text = tr("LOBBY_TOOLTIP_PASTE")
+
 	# Connect to NetworkManager signals
 	# Note: NetworkManager is an Autoload, so we can access it globally
 	NetworkManager.connection_successful.connect(_on_connection_success)
@@ -76,6 +79,11 @@ func _ready() -> void:
 	whatsapp_button.pressed.connect(_on_whatsapp_pressed)
 	sms_button.pressed.connect(_on_sms_pressed)
 	discord_button.pressed.connect(_on_discord_pressed)
+	
+	copy_link_button.text = tr("LOBBY_BTN_COPY")
+	whatsapp_button.text = tr("LOBBY_BTN_WHATSAPP")
+	sms_button.text = tr("LOBBY_BTN_SMS")
+	discord_button.text = tr("LOBBY_BTN_DISCORD")
 
 	# Setup "Juicy" feedback for all buttons
 	_setup_button_feedback(host_button)
@@ -91,21 +99,21 @@ func _on_back_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/Home.tscn")
 
 func _on_host_pressed() -> void:
-	if status_label: status_label.text = "Creating Match..."
+	if status_label: status_label.text = tr("LOBBY_STATUS_CREATING")
 	NetworkManager.host_game()
 	_disable_buttons()
 
 func _on_join_pressed() -> void:
 	if not ip_input: return
-	
+
 	var match_id = _clean_match_id(ip_input.text)
-	
+
 	if match_id.is_empty():
-		if status_label: status_label.text = "Please enter a Match ID."
+		if status_label: status_label.text = tr("LOBBY_STATUS_NO_MATCH_ID")
 		return
-		
-	if status_label: status_label.text = "Joining Match..."
-	
+
+	if status_label: status_label.text = tr("LOBBY_STATUS_JOINING")
+
 	NetworkManager.is_host = false
 	# On rejoint directement l'ID
 	NetworkManager.join_game(match_id)
@@ -133,10 +141,10 @@ func _clean_match_id(text: String) -> String:
 
 func _on_nakama_ready() -> void:
 	if join_button: join_button.disabled = false
-	if status_label: status_label.text = "Online Services Ready."
+	if status_label: status_label.text = tr("LOBBY_STATUS_READY")
 
 func _on_connection_success() -> void:
-	if status_label: status_label.text = "Connected! Waiting for game..."
+	if status_label: status_label.text = tr("LOBBY_STATUS_CONNECTED_WAITING")
 	
 	# Si on est le client qui rejoint, on cache aussi l'interface de connexion
 	if not NetworkManager.is_host:
@@ -153,7 +161,7 @@ func _on_connection_success() -> void:
 
 func _on_match_hosted(match_id: String) -> void:
 	# Le Host reçoit l'ID réel ici. On l'affiche pour qu'il puisse le partager.
-	if status_label: status_label.text = "Match Created! Share the Code below."
+	if status_label: status_label.text = tr("LOBBY_STATUS_HOSTED")
 	if ip_input:
 		ip_input.text = match_id
 		ip_input.editable = false # On verrouille pour montrer que c'est un output
@@ -177,12 +185,12 @@ func _on_match_hosted(match_id: String) -> void:
 		qr_http_request.request(api_url)
 
 func _on_connection_fail() -> void:
-	if status_label: status_label.text = "Connection Failed."
+	if status_label: status_label.text = tr("LOBBY_STATUS_FAILED")
 	_enable_buttons()
 	start_game_timer.stop()
 
 func _on_player_connected(user_id: String) -> void:
-	if status_label: status_label.text = "Player " + user_id + " connected."
+	if status_label: status_label.text = tr("LOBBY_STATUS_PLAYER_CONNECTED").format({"user_id": user_id})
 	_check_start_game()
 
 func _check_start_game() -> void:
@@ -252,7 +260,7 @@ func _check_for_auto_join() -> void:
 		if NakamaManager.socket_connected:
 			_on_join_pressed()
 		else:
-			if status_label: status_label.text = "Auto-joining..."
+			if status_label: status_label.text = tr("LOBBY_STATUS_AUTOJOIN")
 			NakamaManager.nakama_ready.connect(func(): _on_join_pressed(), CONNECT_ONE_SHOT)
 
 func _on_qr_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
@@ -267,23 +275,23 @@ func _on_qr_request_completed(result: int, response_code: int, headers: PackedSt
 func _on_copy_link_pressed() -> void:
 	if current_invite_link:
 		DisplayServer.clipboard_set(current_invite_link)
-		if status_label: status_label.text = "Link copied to clipboard!"
+		if status_label: status_label.text = tr("LOBBY_STATUS_LINK_COPIED")
 
 func _on_whatsapp_pressed() -> void:
 	if current_invite_link:
-		var msg = "Rejoins-moi sur King of the Apero! " + current_invite_link
+		var msg = tr("LOBBY_SHARE_MSG") + current_invite_link
 		OS.shell_open("whatsapp://send?text=" + msg.uri_encode())
 
 func _on_sms_pressed() -> void:
 	if current_invite_link:
-		var msg = "Rejoins-moi sur King of the Apero! " + current_invite_link
+		var msg = tr("LOBBY_SHARE_MSG") + current_invite_link
 		# 'sms:?body=' est le standard le plus compatible (Android/iOS)
 		OS.shell_open("sms:?body=" + msg.uri_encode())
 
 func _on_discord_pressed() -> void:
 	if current_invite_link:
 		DisplayServer.clipboard_set(current_invite_link)
-		if status_label: status_label.text = "Link copied! Paste it in Discord."
+		if status_label: status_label.text = tr("LOBBY_STATUS_LINK_COPIED_DISCORD")
 		# Discord n'a pas de scheme 'share' universel. On ouvre l'app/web sur les DMs.
 		OS.shell_open("https://discord.com/channels/@me")
 

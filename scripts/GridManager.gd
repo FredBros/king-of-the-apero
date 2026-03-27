@@ -526,8 +526,8 @@ func _create_arena_visuals() -> void:
 	border_instance.mesh = border_mesh
 	# Position: Center X/Z. Y is slightly lower so tiles sit on top.
 	# Tiles will be at Y=0 (top surface). Border top should be slightly below or same level.
-	# Let's put border center at Y = -0.26 (since height is 0.5, top is at -0.01) to avoid Z-fighting
-	border_instance.position = Vector3(0, -0.26, 0)
+	# We lower everything by 1 meter.
+	border_instance.position = Vector3(0, -1.26, 0)
 	
 	var border_mat = StandardMaterial3D.new()
 	border_mat.albedo_color = Color(0.3, 0.2, 0.1) # Brown/Wood color
@@ -550,8 +550,8 @@ func _create_arena_visuals() -> void:
 			tile.mesh = mesh
 			
 			# Position: Use grid_to_world logic.
-			# Y position: Center at -0.05 so top surface is at 0.0
-			tile.position = grid_to_world(Vector2i(x, y)) + Vector3(0, -0.05, 0)
+			# Y position: Center at -1.05 so top surface is at -1.0
+			tile.position = grid_to_world(Vector2i(x, y)) + Vector3(0, -1.05, 0)
 			
 			# Checkerboard pattern
 			if (x + y) % 2 == 0:

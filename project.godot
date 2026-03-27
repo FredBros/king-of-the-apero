@@ -51,6 +51,10 @@ folder_colors={
 "res://shaders/": "pink"
 }
 
+[internationalization]
+
+locale/translations=PackedStringArray("res://resources/translations/translations.en.translation", "res://resources/translations/translations.fr.translation")
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=2

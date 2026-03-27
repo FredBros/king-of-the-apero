@@ -4,6 +4,10 @@ extends CanvasLayer
 @onready var tutorial_close_button: Button = %TutorialCloseButton
 @onready var remote_pause_overlay: Control = %RemotePauseOverlay
 
+@onready var title_label: Label = %TutorialOverlay.get_node("ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/Label")
+@onready var rules_label: RichTextLabel = %TutorialOverlay.get_node("ChalkPanel/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer/RulesLabel")
+@onready var pause_label: Label = %RemotePauseOverlay.get_node("Label")
+
 var game_manager: GameManager
 var is_remote_paused: bool = false
 
@@ -13,6 +17,8 @@ const CHALK_TIC_SOUND = preload("res://assets/Sounds/UI/chalk_tic.wav")
 var ui_sound: UISoundComponent
 
 func _ready() -> void:
+	update_text()
+
 	# Find GameManager in the scene tree
 	game_manager = get_tree().root.find_child("GameManager", true, false)
 	
@@ -48,6 +54,16 @@ func _update_pause_state() -> void:
 	
 	var should_pause = local_paused or is_remote_paused
 	get_tree().paused = should_pause
+
+func update_text() -> void:
+	title_label.text = tr("TUTO_TITLE")
+	rules_label.text = tr("TUTO_MAIN_TEXT")
+	pause_label.text = tr("TUTO_PAUSE_TEXT")
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		if is_node_ready():
+			update_text()
 
 # --- Public API for Menu usage ---
 

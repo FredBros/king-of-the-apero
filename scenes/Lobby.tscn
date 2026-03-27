@@ -125,7 +125,6 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
-text = "Host Game"
 
 [node name="IPInputContainer" type="HBoxContainer" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=972354897]
 layout_mode = 2
@@ -137,7 +136,6 @@ custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
-tooltip_text = "Paste Match ID"
 theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
@@ -175,7 +173,6 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_placeholder_color = Color(1, 1, 1, 0.5)
 theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
-placeholder_text = "127.0.0.1"
 alignment = 1
 
 [node name="JoinButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=509396681 instance=ExtResource("2_chalk")]
@@ -194,7 +191,6 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
-text = "Join Game"
 
 [node name="BackButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=1892769745 instance=ExtResource("2_chalk")]
 custom_minimum_size = Vector2(0, 60)
@@ -212,13 +208,11 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
-text = "Back"
 
 [node name="StatusLabel" type="Label" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=1768009761]
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "Ready"
 horizontal_alignment = 1
 autowrap_mode = 2
 
@@ -260,7 +254,6 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
-text = "COPY"
 
 [node name="WhatsAppPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=928515481 instance=ExtResource("2_chalk")]
 custom_minimum_size = Vector2(0, 50)
@@ -279,7 +272,6 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
-text = "WHATSAPP"
 
 [node name="SMSPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=94449455 instance=ExtResource("2_chalk")]
 custom_minimum_size = Vector2(0, 50)
@@ -298,7 +290,6 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
-text = "SMS"
 
 [node name="DiscordPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=1422422002 instance=ExtResource("2_chalk")]
 custom_minimum_size = Vector2(0, 50)
@@ -317,7 +308,6 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
-text = "DISCORD"
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=773785765]
 unique_name_in_owner = true
