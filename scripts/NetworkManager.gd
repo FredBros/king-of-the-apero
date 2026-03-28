@@ -7,6 +7,7 @@ signal connection_failed
 signal server_disconnected
 signal match_hosted(match_id: String)
 signal game_message_received(data: Dictionary)
+signal game_starting
 
 const PORT = 443 # Port standard HTTPS/WSS
 const DEFAULT_SERVER_IP = "kotapero.xyz" # Production
@@ -145,7 +146,8 @@ func _handle_network_message(data: Dictionary) -> void:
 				await connection_successful
 			
 			print("🎮 Received START_GAME command.")
-			get_tree().change_scene_to_file(GAME_SCENE_PATH)
+			game_starting.emit()
+			_transition_to_game()
 		_:
 			game_message_received.emit(data)
 
@@ -154,6 +156,13 @@ func start_game() -> void:
 	var msg = {"type": "START_GAME"}
 	send_message(msg)
 	# Also start locally
+	game_starting.emit()
+	_transition_to_game()
+
+func _transition_to_game() -> void:
+	# On laisse passer 2 frames pour forcer Godot à rafraîchir l'UI (Web/Mobile) avant de figer le thread
+	await get_tree().process_frame
+	await get_tree().process_frame
 	get_tree().change_scene_to_file(GAME_SCENE_PATH)
 
 func return_to_lobby() -> void:

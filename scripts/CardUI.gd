@@ -37,6 +37,7 @@ var _target_scale: Vector2 = Vector2.ONE
 var _target_modulate: Color = Color.WHITE
 var _current_base_scale: Vector2 = Vector2.ONE
 var _discard_shake_intensity: float = 0.0
+var _kick_tween: Tween
 
 func setup(data: CardData) -> void:
 	card_data = data
@@ -107,14 +108,20 @@ func _ready() -> void:
 		value_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	
 	# Setup Push Icon (for attack hover)
+	# On utilise un Node2D pour le sortir du layout automatique du PanelContainer
+	var kick_holder = Node2D.new()
+	add_child(kick_holder)
+	
 	push_icon = TextureRect.new()
 	push_icon.texture = load("res://assets/UI/kick.png")
 	push_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	push_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	push_icon.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	push_icon.size = Vector2(90, 90) # Taille fixe de l'icône
+	push_icon.position = Vector2(15, -90) # Position centrée au-dessus de la carte
+	push_icon.pivot_offset = Vector2(45, 0) # L'axe de rotation est en haut au milieu (le "genou")
 	push_icon.mouse_filter = MOUSE_FILTER_IGNORE
 	push_icon.hide()
-	add_child(push_icon)
+	kick_holder.add_child(push_icon)
 	
 	# On cache les anciens labels inutiles pour le nouveau design
 	if title_label: title_label.hide()
@@ -274,7 +281,11 @@ func _update_visual_state() -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
-			clicked.emit(self ) # Sélectionne la carte (affiche les cases valides)
+			# On ne peut sélectionner (pour voir les cases) qu'une carte jouable.
+			# On peut quand même la "toucher" et la drag-drop pour une autre action (ex: défausse).
+			if is_playable:
+				clicked.emit(self ) # Sélectionne la carte (affiche les cases valides)
+
 			_touch_start_pos = event.global_position
 			_start_pos_local = position
 			_is_touching = true
@@ -349,7 +360,30 @@ func set_push_hover_state(is_hovering: bool) -> void:
 	if is_destroying: return
 	
 	if push_icon:
-		push_icon.visible = is_hovering
+		if is_hovering and not push_icon.visible:
+			push_icon.show()
+			
+			# Démarrer l'animation de coup de pied
+			if _kick_tween and _kick_tween.is_valid():
+				_kick_tween.kill()
+				
+			push_icon.rotation_degrees = 0
+			_kick_tween = create_tween().set_loops()
+			# 1. Armement (genou plié vers l'arrière)
+			_kick_tween.tween_property(push_icon, "rotation_degrees", 40.0, 0.15).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+			# 2. Frappe (extension brusque vers l'avant)
+			_kick_tween.tween_property(push_icon, "rotation_degrees", -25.0, 0.1).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			# 3. Maintien de la pose après l'impact
+			_kick_tween.tween_interval(0.1)
+			# 4. Retour à la position neutre
+			_kick_tween.tween_property(push_icon, "rotation_degrees", 0.0, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+			# 5. Pause avant le prochain coup
+			_kick_tween.tween_interval(0.2)
+			
+		elif not is_hovering and push_icon.visible:
+			push_icon.hide()
+			if _kick_tween and _kick_tween.is_valid():
+				_kick_tween.kill()
 
 func animate_destruction() -> void:
 	is_destroying = true

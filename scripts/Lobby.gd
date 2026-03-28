@@ -69,6 +69,7 @@ func _ready() -> void:
 	NetworkManager.connection_failed.connect(_on_connection_fail)
 	NetworkManager.player_connected.connect(_on_player_connected)
 	NetworkManager.match_hosted.connect(_on_match_hosted)
+	NetworkManager.game_starting.connect(_on_game_starting)
 	
 	# Check for auto-join parameters (URL or Command Line)
 	_check_for_auto_join()
@@ -201,6 +202,12 @@ func _check_start_game() -> void:
 		print("Enough players! Can start game logic here.")
 		start_game_timer.stop()
 		NetworkManager.start_game()
+
+func _on_game_starting() -> void:
+	if back_button: back_button.hide()
+	if share_container: share_container.hide()
+	# On affiche un texte de chargement pendant que Godot fige l'écran pour charger la scène 3D
+	if status_label: status_label.text = tr("LOBBY_STATUS_STARTING")
 
 func _disable_buttons() -> void:
 	if host_button: host_button.disabled = true

@@ -59,6 +59,7 @@ LOBBY_STATUS_JOINING,"Joining Match...","Connexion à la partie..."
 LOBBY_STATUS_READY,"Online Services Ready.","Services en ligne prêts."
 LOBBY_STATUS_CONNECTED_WAITING,"Connected! Waiting for opponent...","Connecté ! En attente de l'adversaire..."
 LOBBY_STATUS_HOSTED,"Match Created! Share the Code below.","Partie créée ! Partagez le code ci-dessous."
+LOBBY_STATUS_STARTING,LOADING MATCH...,CHARGEMENT DU MATCH...
 LOBBY_STATUS_FAILED,"Connection Failed.","Échec de la connexion."
 LOBBY_STATUS_PLAYER_CONNECTED,"Player {user_id} connected.","Joueur {user_id} connecté."
 LOBBY_STATUS_LINK_COPIED,"Link copied to clipboard!","Lien copié dans le presse-papiers !"
