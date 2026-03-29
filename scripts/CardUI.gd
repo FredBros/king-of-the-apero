@@ -38,6 +38,7 @@ var _target_modulate: Color = Color.WHITE
 var _current_base_scale: Vector2 = Vector2.ONE
 var _discard_shake_intensity: float = 0.0
 var _kick_tween: Tween
+var _is_simplified_move: bool = false
 
 func setup(data: CardData) -> void:
 	card_data = data
@@ -152,11 +153,14 @@ func _process(delta: float) -> void:
 	var apply_vibe = not _is_touching
 	
 	var power = 1.0
-	match current_tier:
-		1: power = 1.0
-		2: power = 4.0
-		3: power = 7.0
-		4: power = 10.0
+	if _is_simplified_move:
+		power = 0.0
+	else:
+		match current_tier:
+			1: power = 1.0
+			2: power = 4.0
+			3: power = 7.0
+			4: power = 10.0
 	
 	# Intensité globale
 	var intensity = power * 0.5
@@ -187,12 +191,20 @@ func _update_aura_geometry() -> void:
 func _update_visuals() -> void:
 	if not card_data: return
 	
+	var can_dodge = true
+	if is_inside_tree() and get_tree().current_scene:
+		var gm = get_tree().current_scene.get_node_or_null("GameManager")
+		if gm and "can_dodge" in gm:
+			can_dodge = gm.can_dodge
+			
+	_is_simplified_move = (card_data.type == CardData.CardType.MOVE and card_data.suit != "Joker" and not can_dodge)
+	
 	if card_data.suit == "Joker":
 		value_label.text = ""
 		# Use a dark color for the Joker's star for better visibility
 		value_label.add_theme_color_override("font_color", Color.from_string("#262b44", Color.WHITE))
 	else:
-		value_label.text = str(card_data.value)
+		value_label.text = "" if _is_simplified_move else str(card_data.value)
 		# Set font color based on card type (red/black)
 		if card_data.type == CardData.CardType.ATTACK: # Red cards
 			value_label.add_theme_color_override("font_color", Color.from_string("#a22633", Color.WHITE))
@@ -207,6 +219,9 @@ func _update_visuals() -> void:
 	if card_data.pattern == CardData.MovePattern.DIAGONAL: pattern_str = "diag"
 	
 	var tier = ceil(card_data.value / 3.0) # 1 à 4
+	if _is_simplified_move:
+		tier = 4
+	
 	var filename = "coaster_%s_%s_%d.png" % [color_str, pattern_str, tier]
 	
 	if card_data.suit == "Joker":
@@ -221,35 +236,39 @@ func _update_visuals() -> void:
 		printerr("Texture manquante: ", texture_path)
 
 	# --- 2. Configuration de l'Aura (Shader) ---
-	var halo_color = Color.WHITE
-	var pulse_speed = 1.0
-	var intensity = 1.0
-	
-	match int(tier):
-		1:
-			halo_color = Color("#ffffff") # Blanc
-			pulse_speed = 0.5
-			intensity = 0.5 # Réduit pour plus de transparence
-		2:
-			halo_color = Color("#63c74d") # Vert
-			pulse_speed = 2.0
-			intensity = 1.0 # Réduit
-		3:
-			halo_color = Color("#0099db") # Bleu
-			pulse_speed = 4.0
-			intensity = 1.5 # Réduit
-		4:
-			if card_data.suit == "Joker":
-				halo_color = Color("#68386c") # Violet
-			else:
-				halo_color = Color("#fee761") # Jaune
-			pulse_speed = 8.0
-			intensity = 2.5 # Réduit
-	
-	if aura_rect.material:
-		aura_rect.material.set_shader_parameter("aura_color", halo_color)
-		aura_rect.material.set_shader_parameter("speed", pulse_speed * 0.5) # Ajustement vitesse shader
-		aura_rect.material.set_shader_parameter("intensity", intensity)
+	if _is_simplified_move:
+		aura_rect.hide()
+	else:
+		aura_rect.show()
+		var halo_color = Color.WHITE
+		var pulse_speed = 1.0
+		var intensity = 1.0
+		
+		match int(tier):
+			1:
+				halo_color = Color("#ffffff") # Blanc
+				pulse_speed = 0.5
+				intensity = 0.5 # Réduit pour plus de transparence
+			2:
+				halo_color = Color("#63c74d") # Vert
+				pulse_speed = 2.0
+				intensity = 1.0 # Réduit
+			3:
+				halo_color = Color("#0099db") # Bleu
+				pulse_speed = 4.0
+				intensity = 1.5 # Réduit
+			4:
+				if card_data.suit == "Joker":
+					halo_color = Color("#68386c") # Violet
+				else:
+					halo_color = Color("#fee761") # Jaune
+				pulse_speed = 8.0
+				intensity = 2.5 # Réduit
+		
+		if aura_rect.material:
+			aura_rect.material.set_shader_parameter("aura_color", halo_color)
+			aura_rect.material.set_shader_parameter("speed", pulse_speed * 0.5) # Ajustement vitesse shader
+			aura_rect.material.set_shader_parameter("intensity", intensity)
 
 func set_playable(playable: bool) -> void:
 	is_playable = playable
