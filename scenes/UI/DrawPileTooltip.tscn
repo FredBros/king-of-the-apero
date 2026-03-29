@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://d1h2i3j4k5l6"]
+
+[ext_resource type="PackedScene" uid="uid://b4y8k5l6m7oa" path="res://scenes/UI/Components/ChalkPanel.tscn" id="1_tooltip_panel"]
+[ext_resource type="Script" path="res://scripts/UI/DrawPileTooltip.gd" id="2_tooltip_script"]
+
+[node name="DrawPileTooltip" instance=ExtResource("1_tooltip_panel")]
+script = ExtResource("2_tooltip_script")
+
+[node name="MarginContainer" type="MarginContainer" parent="." index="1"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 10
+
+[node name="Label" type="Label" parent="MarginContainer" index="0"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "XX cartes restantes"
+horizontal_alignment = 1
+vertical_alignment = 1

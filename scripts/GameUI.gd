@@ -22,6 +22,7 @@ var remote_wrestler_ref: Wrestler
 @export var smoke_puff_scene: PackedScene
 @export var slap_sound: AudioStream
 @onready var hand_container: HBoxContainer = $PanelContainer/HandContainer
+@onready var draw_pile: Control = $DrawPile
 @onready var slap_anchor: Control = $SlapAnchor
 @onready var opponent_slap_anchor: Control = $OpponentSlapAnchor
 @onready var game_over_container: CenterContainer = $GameOverContainer
@@ -127,6 +128,8 @@ func _ready() -> void:
 			game_manager.player_hand_counts_updated.connect(_on_player_hand_counts_updated)
 		if not game_manager.card_played_visual.is_connected(_on_card_played_visual):
 			game_manager.card_played_visual.connect(_on_card_played_visual)
+		if not game_manager.deck_count_updated.is_connected(_on_deck_count_updated):
+			game_manager.deck_count_updated.connect(_on_deck_count_updated)
 	else:
 		printerr("GameUI: GameManager not found!")
 	
@@ -147,6 +150,10 @@ func _ready() -> void:
 	
 	_setup_reaction_ui()
 	_setup_drag_feedback()
+
+func _on_deck_count_updated(count: int) -> void:
+	if draw_pile:
+		draw_pile.update_deck_visuals(count)
 
 func _on_help_button_pressed() -> void:
 	if tuto_layer_instance and tuto_layer_instance.has_method("open_tutorial"):
@@ -348,7 +355,7 @@ func _on_rematch_update(current: int, total: int) -> void:
 func _on_card_dropped_on_zone(card_data: CardData, pos: Vector2) -> void:
 	card_dropped_on_world.emit(card_data, pos)
 
-func add_card_to_hand(card_data: CardData) -> void:
+func add_card_to_hand(card_data: CardData, animate: bool = true) -> void:
 	if not card_ui_scene:
 		printerr("GameUI: card_ui_scene is not assigned!")
 		return
@@ -360,6 +367,8 @@ func add_card_to_hand(card_data: CardData) -> void:
 	var wrapper = CenterContainer.new()
 	wrapper.custom_minimum_size = Vector2(120, 120) # Force size for HBoxContainer
 	wrapper.mouse_filter = Control.MOUSE_FILTER_PASS
+	if animate:
+		wrapper.modulate.a = 0.0
 	hand_container.add_child(wrapper)
 	wrapper.add_child(card)
 	
@@ -375,6 +384,46 @@ func add_card_to_hand(card_data: CardData) -> void:
 	card.swipe_committed.connect(_on_card_swipe_committed)
 	card.selection_canceled.connect(_on_card_selection_canceled)
 
+	if animate:
+		_animate_draw_to_player(wrapper)
+
+func _animate_draw_to_player(target_wrapper: Control) -> void:
+	# Attend que le HBoxContainer calcule la position finale
+	await get_tree().process_frame
+	if not is_instance_valid(target_wrapper) or not draw_pile: return
+	
+	# Délai aléatoire pour un effet "Croupier" (Staggered deal) si plusieurs cartes pop
+	var delay = randf_range(0.0, 0.2)
+	if delay > 0:
+		await get_tree().create_timer(delay).timeout
+		if not is_instance_valid(target_wrapper): return
+
+	var flying_card = TextureRect.new()
+	flying_card.texture = CARD_BACK_TEXTURE
+	flying_card.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	flying_card.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	flying_card.size = Vector2(120, 120)
+	flying_card.z_index = 50
+	
+	# Départ depuis la pioche
+	var start_pos = draw_pile.global_position + (draw_pile.size / 2.0) - (flying_card.size / 2.0)
+	flying_card.global_position = start_pos
+	add_child(flying_card)
+	
+	var tween = create_tween()
+	tween.tween_property(flying_card, "global_position", target_wrapper.global_position, 0.4).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(flying_card, "rotation_degrees", randf_range(-180, 180), 0.4)
+	
+	tween.tween_callback(func():
+		flying_card.queue_free()
+		if is_instance_valid(target_wrapper):
+			target_wrapper.modulate.a = 1.0
+			target_wrapper.scale = Vector2(0.5, 0.5)
+			target_wrapper.pivot_offset = target_wrapper.size / 2.0
+			var pop_tween = create_tween()
+			pop_tween.tween_property(target_wrapper, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	)
+
 func remove_card_from_hand(card_data: CardData) -> void:
 	for wrapper in hand_container.get_children():
 		var child = wrapper.get_child(0) if wrapper.get_child_count() > 0 else null
@@ -389,6 +438,36 @@ func remove_card_from_hand(card_data: CardData) -> void:
 					selected_card_ui = null
 				break
 
+func sync_hand(hand: Array) -> void:
+	# 1. Identifier les cartes actuellement affichées dans l'UI
+	var current_cards = []
+	for wrapper in hand_container.get_children():
+		var child = wrapper.get_child(0) if wrapper.get_child_count() > 0 else null
+		if child is CardUI and not child.is_destroying:
+			current_cards.append(child)
+			
+	# On fait une copie de la main attendue pour "cocher" les cartes une à une
+	var unmatched_hand = hand.duplicate()
+	
+	# 2. Supprimer les cartes UI qui ne correspondent plus
+	for child in current_cards:
+		var match_found = false
+		for i in range(unmatched_hand.size()):
+			var c = unmatched_hand[i]
+			if c.title == child.card_data.title and c.suit == child.card_data.suit:
+				match_found = true
+				unmatched_hand.remove_at(i)
+				break
+				
+		if not match_found:
+			child.get_parent().queue_free()
+			if selected_card_ui == child:
+				selected_card_ui = null
+				
+	# 3. Les cartes restantes dans unmatched_hand doivent être affichées (sans animation)
+	for c in unmatched_hand:
+		add_card_to_hand(c, false)
+
 func clear_hand() -> void:
 	for child in hand_container.get_children():
 		child.queue_free()
@@ -397,18 +476,61 @@ func clear_hand() -> void:
 func update_opponent_hand_visuals(count: int) -> void:
 	if not opponent_hand_container: return
 	
-	# Vider la main actuelle
-	for child in opponent_hand_container.get_children():
-		child.queue_free()
+	var current_count = opponent_hand_container.get_child_count()
 	
-	# Remplir avec des dos de cartes
-	for i in range(count):
-		var card_back = TextureRect.new()
-		card_back.texture = CARD_BACK_TEXTURE
-		card_back.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		card_back.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		card_back.custom_minimum_size = Vector2(120, 120) # Même taille de base que CardUI
-		opponent_hand_container.add_child(card_back)
+	if count < current_count:
+		# Retrait de cartes
+		var diff = current_count - count
+		for i in range(diff):
+			var child = opponent_hand_container.get_child(opponent_hand_container.get_child_count() - 1)
+			opponent_hand_container.remove_child(child)
+			child.queue_free()
+	elif count > current_count:
+		# Ajout de cartes avec animation
+		var diff = count - current_count
+		for i in range(diff):
+			var card_back = TextureRect.new()
+			card_back.texture = CARD_BACK_TEXTURE
+			card_back.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			card_back.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			card_back.custom_minimum_size = Vector2(120, 120)
+			card_back.modulate.a = 0.0 # Rendu invisible pour l'animation
+			opponent_hand_container.add_child(card_back)
+			_animate_draw_to_opponent(card_back)
+
+func _animate_draw_to_opponent(target_card: TextureRect) -> void:
+	await get_tree().process_frame
+	if not is_instance_valid(target_card) or not draw_pile: return
+	
+	var delay = randf_range(0.0, 0.2)
+	if delay > 0:
+		await get_tree().create_timer(delay).timeout
+		if not is_instance_valid(target_card): return
+		
+	var flying_card = TextureRect.new()
+	flying_card.texture = CARD_BACK_TEXTURE
+	flying_card.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	flying_card.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	flying_card.size = Vector2(120, 120)
+	flying_card.z_index = 50
+	
+	var start_pos = draw_pile.global_position + (draw_pile.size / 2.0) - (flying_card.size / 2.0)
+	flying_card.global_position = start_pos
+	add_child(flying_card)
+	
+	var tween = create_tween()
+	tween.tween_property(flying_card, "global_position", target_card.global_position, 0.4).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(flying_card, "rotation_degrees", randf_range(-180, 180), 0.4)
+	
+	tween.tween_callback(func():
+		flying_card.queue_free()
+		if is_instance_valid(target_card):
+			target_card.modulate.a = 1.0
+			target_card.pivot_offset = target_card.size / 2.0
+			target_card.scale = Vector2(0.5, 0.5)
+			var pop = create_tween()
+			pop.tween_property(target_card, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	)
 
 func _on_player_hand_counts_updated(counts: Dictionary) -> void:
 	if remote_wrestler_ref and counts.has(remote_wrestler_ref.name):

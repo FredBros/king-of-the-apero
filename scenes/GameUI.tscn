@@ -15,6 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://dlqxr2eiyb5nh" path="res://assets/UI/Icons/book-alt.png" id="11_book"]
 [ext_resource type="Texture2D" uid="uid://bqdgrwlaoentt" path="res://assets/UI/Icons/settings.png" id="12_settings"]
 [ext_resource type="PackedScene" uid="uid://chf35my53chkb" path="res://scenes/UI/RoadMap.tscn" id="13_7hp7j"]
+[ext_resource type="PackedScene" uid="uid://bxnlgllnletcq" path="res://scenes/UI/Draw.tscn" id="14_draw"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dc875"]
 
@@ -114,9 +115,9 @@ alignment = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -200.0
-offset_top = 120.999985
-offset_right = 200.0
+offset_left = -80.0
+offset_top = 120.99999
+offset_right = 320.0
 offset_bottom = 281.0
 grow_horizontal = 2
 scale = Vector2(0.7, 0.7)
@@ -359,10 +360,10 @@ layout_mode = 2
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 20.0
-offset_top = 50.0
-offset_right = 164.0
-offset_bottom = 194.0
+offset_left = 299.00003
+offset_top = 14.0
+offset_right = 443.00003
+offset_bottom = 158.0
 grow_horizontal = 1
 grow_vertical = 1
 scale = Vector2(0.7, 0.7)
@@ -378,6 +379,13 @@ offset_bottom = -61.0
 grow_horizontal = 1
 grow_vertical = 0
 scale = Vector2(0.9, 0.9)
+
+[node name="DrawPile" parent="." unique_id=987123456 instance=ExtResource("14_draw")]
+offset_left = 15.0
+offset_top = 40.0
+offset_right = 195.0
+offset_bottom = 240.0
+mouse_filter = 1
 
 [node name="SlapSoundPlayer" type="AudioStreamPlayer" parent="." unique_id=1234567890]
 bus = &"SFX"

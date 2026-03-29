@@ -70,3 +70,6 @@ LOBBY_BTN_WHATSAPP,WHATSAPP,WHATSAPP
 LOBBY_BTN_SMS,SMS,SMS
 LOBBY_BTN_DISCORD,DISCORD,DISCORD
 LOBBY_SHARE_MSG,"Join me on King of the Apero! ","Rejoins-moi sur King of the Apero ! "
+
+# --- TOOLTIPS ---,,
+TOOLTIP_CARDS_LEFT,"%d cards left","%d cartes restantes"

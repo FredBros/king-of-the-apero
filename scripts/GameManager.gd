@@ -16,6 +16,7 @@ signal versus_screen_requested(local_data: WrestlerData, remote_data: WrestlerDa
 signal opponent_skipped_versus
 signal player_hand_counts_updated(counts: Dictionary)
 signal card_played_visual(player_name: String, card: CardData, is_use: bool)
+signal deck_count_updated(count: int)
 
 @export var hand_size_limit: int = 5
 @export var cards_drawn_per_turn: int = 2
@@ -123,6 +124,7 @@ func initialize_game_state() -> void:
 		for player in players:
 			_draw_up_to_limit(player.name)
 			
+		_sync_deck_count()
 		_start_turn()
 
 func _server_select_and_sync_characters():
@@ -358,6 +360,8 @@ func _draw_turn_cards(player_name: String) -> void:
 		else:
 			_handle_deck_empty_game_over()
 			break
+			
+	_sync_deck_count()
 
 func _notify_card_drawn(player_name: String, card: CardData) -> void:
 	_update_hand_count(player_name, 1)
@@ -447,6 +451,25 @@ func _update_hand_count(player_name: String, delta: int) -> void:
 		player_hand_counts[player_name] = 0
 	player_hand_counts_updated.emit(player_hand_counts)
 
+func _sync_deck_count() -> void:
+	if not deck_manager: return
+	var count = deck_manager.draw_pile.size()
+	deck_count_updated.emit(count)
+	
+	var am_i_host = false
+	if enable_hotseat_mode:
+		am_i_host = true
+	elif not players.is_empty():
+		var p1_name = players[0].name
+		if player_peer_ids.has(p1_name):
+			am_i_host = (NetworkManager.self_user_id == player_peer_ids[p1_name])
+			
+	if am_i_host and not enable_hotseat_mode:
+		NetworkManager.send_message({
+			"type": "SYNC_DECK_COUNT",
+			"count": count
+		})
+
 # --- RPCs & Network Logic ---
 
 func _on_network_message(data: Dictionary) -> void:
@@ -503,6 +526,8 @@ func _on_network_message(data: Dictionary) -> void:
 			game_paused.emit(data["paused"], data["player_name"])
 		"SYNC_SKIP_VERSUS":
 			opponent_skipped_versus.emit()
+		"SYNC_DECK_COUNT":
+			deck_count_updated.emit(data.get("count", 0))
 
 func _handle_sync_turn(player_name: String) -> void:
 	print("Sync Turn: ", player_name)

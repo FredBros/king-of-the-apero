@@ -122,10 +122,15 @@ func _update_hand_display(player_name: String) -> void:
 		is_local = (player_name == game_manager._get_my_player_name())
 	
 	if game_manager.is_in_hotseat_mode() or is_local:
-		game_ui.clear_hand()
 		var hand = game_manager.get_player_hand(player_name)
-		for card in hand:
-			game_ui.add_card_to_hand(card)
+		
+		# On synchronise intelligemment pour ne pas relancer l'anim de pioche des cartes existantes
+		if game_ui.has_method("sync_hand"):
+			game_ui.sync_hand(hand)
+		else:
+			game_ui.clear_hand()
+			for card in hand:
+				game_ui.add_card_to_hand(card)
 
 func _setup_player_camera_view() -> void:
 	if not game_manager: return
