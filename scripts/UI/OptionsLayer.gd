@@ -154,7 +154,7 @@ func _on_tuto_toggled(toggled_on: bool) -> void:
 
 func _update_tuto_button_text(is_enabled: bool) -> void:
 	if tuto_button:
-		tuto_button.text = "ON" if is_enabled else "OFF"
+		tuto_button.text = tr("OPTIONS_ON") if is_enabled else tr("OPTIONS_OFF")
 
 func _setup_button_feedback(btn: Control) -> void:
 	if not btn: return

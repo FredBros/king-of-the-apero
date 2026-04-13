@@ -99,7 +99,7 @@ layout_mode = 2
 [node name="NextButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/NextButtonPanel" unique_id=364614835]
 material = SubResource("ShaderMaterial_text")
 layout_mode = 2
-text = "OK"
+text = "TUTO_OK"
 flat = true
 
 [node name="SkipButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer" instance=ExtResource("2_chalk")]
@@ -109,5 +109,5 @@ layout_mode = 2
 [node name="SkipButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/SkipButtonPanel" unique_id=5774422]
 material = SubResource("ShaderMaterial_text")
 layout_mode = 2
-text = "SKIP TUTO"
+text = "TUTO_SKIP"
 flat = true

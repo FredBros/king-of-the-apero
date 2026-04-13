@@ -127,3 +127,10 @@ Terminé ? Cliquez sur la pièce pour finir votre tour.
 [i]La pièce bascule et l'adversaire prend la main.[/i]
 [color=#e4a672]SANTÉ ![/color]
 [/center]"
+
+keys,fr,en
+TUTO_OK,OK,OK
+TUTO_SKIP,PASSER LE TUTO,SKIP TUTO
+OPTIONS_TUTO,TUTORIEL,TUTORIAL
+OPTIONS_ON,OUI,ON
+OPTIONS_OFF,NON,OFF

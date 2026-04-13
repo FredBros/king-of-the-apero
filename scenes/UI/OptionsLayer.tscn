@@ -254,7 +254,7 @@ alignment = 1
 material = SubResource("ShaderMaterial_chalk")
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "TUTORIEL"
+text = "OPTIONS_TUTO"
 horizontal_alignment = 1
 
 [node name="TutoButton" type="CheckButton" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/TutoSetup/Tuto" unique_id=381677355]
