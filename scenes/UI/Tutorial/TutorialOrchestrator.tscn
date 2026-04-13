@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://b1rbahxu3sgqt"]
+
+[ext_resource type="Script" uid="uid://bfvu7k8u57kng" path="res://scripts/UI/Tutorial/tutorial_orchestrator.gd" id="1_s4q3k"]
+[ext_resource type="Script" uid="uid://dq6ibntjyyec5" path="res://resources/Tutorial/TutorialStep.gd" id="2_ld6f6"]
+[ext_resource type="Resource" uid="uid://d4huv530500u4" path="res://resources/Tutorial/step_01_welcome.tres" id="3_p1edr"]
+[ext_resource type="Resource" uid="uid://dcjqx1he13p5d" path="res://resources/Tutorial/step_02_HP.tres" id="4_jpyqj"]
+[ext_resource type="Resource" uid="uid://b0q4ve4wa4o0g" path="res://resources/Tutorial/step_03_draw.tres" id="5_82w25"]
+[ext_resource type="Resource" uid="uid://nycmqninif31" path="res://resources/Tutorial/step_02_b_opponent_HP.tres" id="5_p1edr"]
+[ext_resource type="Resource" uid="uid://dwah13nvx15t7" path="res://resources/Tutorial/step_04_hand.tres" id="6_4aedg"]
+[ext_resource type="Resource" uid="uid://d1yrjea0db54o" path="res://resources/Tutorial/step_05_opponent_hand_.tres" id="7_812n2"]
+[ext_resource type="Resource" uid="uid://cafdo5f5pu8am" path="res://resources/Tutorial/step_03_b_draw.tres" id="7_jpyqj"]
+[ext_resource type="Resource" uid="uid://d4h0uhl61htl6" path="res://resources/Tutorial/step_06_opponent_card.tres" id="8_7nfx7"]
+[ext_resource type="Resource" uid="uid://db3ik1mkqvq76" path="res://resources/Tutorial/step_07_move_click.tres" id="9_1x15y"]
+[ext_resource type="Resource" uid="uid://cd523jt48kd1v" path="res://resources/Tutorial/step_08_attack.tres" id="10_p50et"]
+[ext_resource type="Resource" uid="uid://jlemojxms7fm" path="res://resources/Tutorial/step_09_move_swipe.tres" id="11_bv35j"]
+[ext_resource type="Resource" uid="uid://cudblae5qew63" path="res://resources/Tutorial/step_10_block.tres" id="12_5nawl"]
+[ext_resource type="Resource" uid="uid://c52ecjj4cp0sx" path="res://resources/Tutorial/step_11_push.tres" id="13_02krl"]
+[ext_resource type="Resource" uid="uid://c6hpis2ib6ina" path="res://resources/Tutorial/step_12_discard.tres" id="14_0mbwn"]
+[ext_resource type="Resource" uid="uid://cpkxs5oxcaigw" path="res://resources/Tutorial/step_13_AFK.tres" id="15_6v5ui"]
+[ext_resource type="Resource" uid="uid://brt64peh2rghw" path="res://resources/Tutorial/step_14_end_turn.tres" id="16_brfih"]
+
+[node name="TutorialOrchestrator" type="Node" unique_id=1394159568]
+script = ExtResource("1_s4q3k")
+steps = Array[ExtResource("2_ld6f6")]([ExtResource("3_p1edr"), ExtResource("4_jpyqj"), ExtResource("5_p1edr"), ExtResource("5_82w25"), ExtResource("7_jpyqj"), ExtResource("6_4aedg"), ExtResource("7_812n2"), ExtResource("8_7nfx7"), ExtResource("10_p50et"), ExtResource("9_1x15y"), ExtResource("11_bv35j"), ExtResource("12_5nawl"), ExtResource("13_02krl"), ExtResource("14_0mbwn"), ExtResource("15_6v5ui"), ExtResource("16_brfih")])

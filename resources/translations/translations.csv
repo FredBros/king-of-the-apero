@@ -26,7 +26,7 @@ Throw [outline_size=4][outline_color=#e4a672][color=#262b44]BLACK[/color][/outli
 [color=#e4a672]3.[/color] [shake rate=20 level=10][b]BRAWL[/b][/shake]: Throw [outline_size=4][outline_color=#e4a672][color=#be4a2f]RED[/color][/outline_color][/outline_size] coasters to strike. Hit with a [outline_size=4][outline_color=#e4a672][color=#be4a2f]RED[/color][/outline_color][/outline_size] to SHOVE. Ideally out of the ring!
 [color=#e4a672]4.[/color] [shake rate=20 level=10][b]DEFEND[/b][/shake]: Block with same [outline_size=4][outline_color=#e4a672][color=#be4a2f]RED[/color][/outline_color][/outline_size] pattern (higher value).
 
-[font_size=18][i][color=#686e86]""No mercy, it's folklore.""[/color][/i][/font_size]
+[font_size=18][i][color=#686e86]“No mercy, it's folklore.”[/color][/i][/font_size]
 [/center]","[center]
 [font_size=40][color=#be4a2f]BIENVENUE AU BAR ![/color][/font_size]
 [color=#e4a672]1.[/color] [shake rate=20 level=10][b]PIOCHE[/b][/shake] : [color=#be4a2f]52[/color] sous-bocks au total. Pioche commune. Max [color=#be4a2f]2[/color]/tour, limite de [color=#be4a2f]5[/color] en main.
@@ -37,7 +37,7 @@ Jetez les [outline_size=4][outline_color=#e4a672][color=#262b44]NOIRS[/color][/o
 [color=#e4a672]3.[/color] [shake rate=20 level=10][b]BASTON[/b][/shake] : Jetez les [outline_size=4][outline_color=#e4a672][color=#be4a2f]ROUGES[/color][/outline_color][/outline_size] pour frapper. Une touche [outline_size=4][outline_color=#e4a672][color=#be4a2f]ROUGE[/color][/outline_color][/outline_size] POUSSE l'ennemi. Visez hors du ring !
 [color=#e4a672]4.[/color] [shake rate=20 level=10][b]DÉFENSE[/b][/shake] : Bloquez avec le même motif [outline_size=4][outline_color=#e4a672][color=#be4a2f]ROUGE[/color][/outline_color][/outline_size] (valeur supérieure).
 
-[font_size=18][i][color=#686e86]""Pas de pitié, c'est le folklore.""[/color][/i][/font_size]
+[font_size=18][i][color=#686e86]“Pas de pitié, c'est le folklore.”[/color][/i][/font_size]
 [/center]"
 
 # --- BOUTONS MENU PRINCIPAL ---,,
@@ -73,3 +73,57 @@ LOBBY_SHARE_MSG,"Join me on King of the Apero! ","Rejoins-moi sur King of the Ap
 
 # --- TOOLTIPS ---,,
 TOOLTIP_CARDS_LEFT,"%d cards left","%d cartes restantes"
+
+
+
+# --- TOOLTIPS TUTORIAL ---,,
+TUTO_WELCOME,"[center]Welcome to Folklore on Tap. Fight with coasters![/center]","[center]Bienvenue dans Folklore on Tap. Battez-vous à coups de sous-bocks ![/center]"
+TUTO_HP,"[center]Health points: reach [color=#be4a2f]0[/color] and you're out.[/center]","[center]Points de santé : à [color=#be4a2f]0[/color], c'est perdu.[/center]"
+TUTO_OPPONENT_HP,"[center]Opponent's health points: reach [color=#be4a2f]0[/color] and you win.[/center],","[center]Points de santé de l'adversaire : à [color=#be4a2f]0[/color], vous avez gagné.[/center]"
+TUTO_DRAW,"[center]Shared deck, 50 coasters.
+[color=#262b44]24 Blacks[/color] to move,
+[color=#be4a2f]24 Reds[/color] to hit.
+[color=#68386c]2 Jokers[/color] do both.
+No cards left = game over.[/center]","[center]Pioche commune, 50 soubocks.
+[color=#262b44]24 Noires[/color] pour bouger.
+[color=#be4a2f]24 Rouges[/color] pour cogner.
+[color=#68386c]2 Jokers[/color] font les deux.
+Fin de pioche = fin de partie.[/center]"
+TUTO_DRAW_B, "[center]Draw up to 2 cards.
+You may hold up to 5 cards in your hand.[/center]","[center]Piochez 2 cartes maximum.
+5 cartes en main maximum[/center]"
+TUTO_HAND,"[center]Your cards. 5 maximum.
+[color=#262b44]Blacks[/color] to move,
+[color=#be4a2f]Reds[/color] to hit.
+[color=#68386c]Jokers[/color] do both.
+Play as many cards as you want.[/center]","[center]Vos cartes. 5 maximum.
+[color=#262b44]Noires[/color] pour bouger.
+[color=#be4a2f]Rouges[/color] pour cogner.
+[color=#68386c]Jokers[/color] font les deux.
+Jouez autant de cartes que vous voulez.[/center]"
+TUTO_OPPONENT_HAND,"[center]Opponent's cards.[/center]","[center]Cartes de l'adversaire.[/center]"
+TUTO_OPPONENT_CARD,"[center]Card played by the opponent.[/center]","[center]Carte jouée par l'adversaire.[/center]"
+TUTO_MOVE_CLICK,"[center]Click a [color=#262b44]Black[/color] card to see your possible moves.
+Click a highlighted tile to move.
+[i]Watch the arrows on the coasters![/i][/center]","[center]Cliquez sur une carte [color=#262b44]Noire[/color] pour voir vos déplacements.
+Cliquez sur une case brillante pour bouger.
+[i]Surveillez les flèches des sous-bocks ![/i][/center]"
+TUTO_MOVE_SWIPE,"[center]You can also slide the [color=#262b44]Black[/color] card in the desired direction of movement.[/center]","[center]Vous pouvez également glisser la carte [color=#262b44]Noire[/color] dans le sens de déplacement souhaité[/center]"
+TUTO_ATTACK,"[center]Throw a [color=#be4a2f]Red[/color] card to attack
+[i]Watch the arrows on the coasters![/i][/center]","[center]Jettez la carte [color=#be4a2f]Rouge[/color] pour attaquer.
+[i]Surveillez les flèches des sous-bocks ![/i][/center]"
+TUTO_PUSH,"[center]Move the card onto your opponent to push them.
+Kick them out of the ring for more damage![/center]","[center]Déplacez la carte sur l'adversaire pour le pousser.
+Ejectez le du ring pour plus de dégats ![/center]"
+TUTO_BLOCK,"[center]Click on a card with the same suit and a higher rank to block your opponent's attack[/center]","[center]Cliquez sur une carte de même motif et plus forte pour bloquer l'attaque adverse.[/center]"
+TUTO_DISCARD,"[center]Discard your useless cards here to free your hand.[/center]","[center]Jetez vos cartes inutiles ici pour libérer votre main.[/center]"
+TUTO_AFK,"[center]If you don't play, the crowd gets enraged and throws blunt objects at you (-1 health point).[/center]","[center]Si vous ne jouez pas, le public enrage et vous jette des trucs contendants (-1 point de santé)[/center]"
+TUTO_END_TURN,"[center]
+Done? Click the coin to end your turn.
+[i]The coin flips and your opponent takes over.[/i]
+[color=#e4a672]CHEERS![/color]
+[/center]","[center]
+Terminé ? Cliquez sur la pièce pour finir votre tour.
+[i]La pièce bascule et l'adversaire prend la main.[/i]
+[color=#e4a672]SANTÉ ![/color]
+[/center]"

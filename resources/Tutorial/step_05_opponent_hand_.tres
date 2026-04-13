@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="TutorialStep" format=3 uid="uid://d1yrjea0db54o"]
+
+[ext_resource type="Script" uid="uid://dq6ibntjyyec5" path="res://resources/Tutorial/TutorialStep.gd" id="1_oae5p"]
+
+[resource]
+script = ExtResource("1_oae5p")
+step_id = "step_05_opponent_hand_"
+text_key = "TUTO_OPPONENT_HAND"
+target_ui_names = Array[String](["OpponentHandContainer"])
+trigger_conditions = {
+"is_player_turn": true
+}
+metadata/_custom_type_script = "uid://dq6ibntjyyec5"

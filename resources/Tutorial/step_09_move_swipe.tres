@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="TutorialStep" format=3 uid="uid://jlemojxms7fm"]
+
+[ext_resource type="Script" uid="uid://dq6ibntjyyec5" path="res://resources/Tutorial/TutorialStep.gd" id="1_gnx0v"]
+[ext_resource type="VideoStream" uid="uid://h5pmedbjlrfl" path="res://assets/Tutorial/movement_swipe.ogv" id="2_42pc1"]
+
+[resource]
+script = ExtResource("1_gnx0v")
+step_id = "step_09_move_swipe"
+text_key = "TUTO_MOVE_SWIPE"
+wait_for_action_after = true
+video_stream = ExtResource("2_42pc1")
+trigger_conditions = {
+"has_move_card": true,
+"is_player_turn": true
+}
+metadata/_custom_type_script = "uid://dq6ibntjyyec5"

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="TutorialStep" format=3 uid="uid://c6hpis2ib6ina"]
+
+[ext_resource type="Script" uid="uid://dq6ibntjyyec5" path="res://resources/Tutorial/TutorialStep.gd" id="1_ts24d"]
+[ext_resource type="VideoStream" uid="uid://di7phuxdilcvy" path="res://assets/Tutorial/discard.ogv" id="2_6nibh"]
+
+[resource]
+script = ExtResource("1_ts24d")
+step_id = "step_12_discard"
+text_key = "TUTO_DISCARD"
+video_stream = ExtResource("2_6nibh")
+trigger_conditions = {
+"is_player_turn": true
+}
+metadata/_custom_type_script = "uid://dq6ibntjyyec5"

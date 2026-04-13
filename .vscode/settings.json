@@ -6,24 +6,24 @@
         ".godot/": true,
         "export_presets.cfg": true
     },
-// Indentation propre pour GDScript
-"[gdscript]": {
-    "editor.tabSize": 4,
-    "editor.insertSpaces": true,
-    "editor.detectIndentation": false
-},
-// Rendu plus lisible
-"editor.rulers": [
-    100
-],
-"editor.minimap.enabled": false,
-// Recherche plus propre
-"search.exclude": {
-    ".godot/": true,
-    "**/*.gd.uid": true
-},
-// Performance
-"files.watcherExclude": {
-    "**/.godot/**": true
-}
+    // Indentation propre pour GDScript
+    "[gdscript]": {
+        "editor.tabSize": 4,
+        "editor.insertSpaces": false,
+        "editor.detectIndentation": false
+    },
+    // Rendu plus lisible
+    "editor.rulers": [
+        100
+    ],
+    "editor.minimap.enabled": false,
+    // Recherche plus propre
+    "search.exclude": {
+        ".godot/": true,
+        "**/*.gd.uid": true
+    },
+    // Performance
+    "files.watcherExclude": {
+        "**/.godot/**": true
+    }
 }

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="TutorialStep" format=3 uid="uid://dcjqx1he13p5d"]
+
+[ext_resource type="Script" uid="uid://dq6ibntjyyec5" path="res://resources/Tutorial/TutorialStep.gd" id="1_coera"]
+
+[resource]
+script = ExtResource("1_coera")
+step_id = "step_02_HP"
+text_key = "TUTO_HP"
+target_ui_names = Array[String](["BottomPlayerInfo"])
+trigger_conditions = {
+"is_player_turn": true
+}
+metadata/_custom_type_script = "uid://dq6ibntjyyec5"

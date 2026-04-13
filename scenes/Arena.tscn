@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://cmibln8vt7nxa" path="res://scenes/Components/PreWarmer.tscn" id="11_otdxd"]
 [ext_resource type="PackedScene" uid="uid://ipdd3fwghaxl" path="res://scenes/SmokePuff.tscn" id="12_ph461"]
 [ext_resource type="PackedScene" uid="uid://do6oyugmhletn" path="res://scenes/Ring/ring.tscn" id="13_ring"]
+[ext_resource type="PackedScene" uid="uid://b1rbahxu3sgqt" path="res://scenes/UI/Tutorial/TutorialOrchestrator.tscn" id="14_rrk8b"]
 
 [sub_resource type="Environment" id="Environment_setup"]
 background_mode = 1
@@ -32,7 +33,6 @@ script = ExtResource("1_arena")
 [node name="GameManager" type="Node" parent="." unique_id=1155179461]
 script = ExtResource("2_gamemanager")
 character_pool = Array[ExtResource("3_vyqrf")]([ExtResource("6_gcrh0"), ExtResource("7_vyqrf")])
-enable_hotseat_mode = true
 
 [node name="DeckManager" type="Node" parent="." unique_id=310878470]
 script = ExtResource("3_deckmanager")
@@ -93,3 +93,5 @@ stretch_mode = 5
 
 [node name="PreWarmer" parent="." unique_id=543096515 instance=ExtResource("11_otdxd")]
 particles_to_warm = Array[PackedScene]([ExtResource("12_ph461")])
+
+[node name="TutorialOrchestrator" parent="." unique_id=1394159568 instance=ExtResource("14_rrk8b")]

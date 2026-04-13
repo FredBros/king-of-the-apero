@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="TutorialStep" format=3 uid="uid://cudblae5qew63"]
+
+[ext_resource type="Script" uid="uid://dq6ibntjyyec5" path="res://resources/Tutorial/TutorialStep.gd" id="1_0ktub"]
+
+[resource]
+script = ExtResource("1_0ktub")
+step_id = "step_10_block"
+text_key = "TUTO_BLOCK"
+target_ui_names = Array[String](["OpponentSlapAnchor", "HandContainer"])
+pauses_game = true
+trigger_conditions = {
+"can_block": true,
+"is_player_turn": false
+}
+metadata/_custom_type_script = "uid://dq6ibntjyyec5"

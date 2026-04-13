@@ -10,7 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://olrcohnoiovf" path="res://assets/UI/Icons/cross-small.png" id="8_cross"]
 [ext_resource type="PackedScene" uid="uid://chf35my53chkb" path="res://scenes/UI/RoadMap.tscn" id="9_jpu5e"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_o1gsc"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jpu5e"]
 content_margin_left = 10.0
 content_margin_top = 10.0
 content_margin_right = 10.0
@@ -25,7 +25,7 @@ shader_parameter/jitter_amount = 0.002
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_square_bg"]
 bg_color = Color(0.0941176, 0.0784314, 0.145098, 1)
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_687fw"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_o1gsc"]
 content_margin_left = 10.0
 content_margin_top = 10.0
 content_margin_right = 10.0
@@ -36,7 +36,7 @@ content_margin_bottom = 10.0
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_progress_fill"]
 bg_color = Color(1, 1, 1, 1)
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3jnfj"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_687fw"]
 content_margin_left = 10.0
 content_margin_top = 10.0
 content_margin_right = 10.0
@@ -72,7 +72,7 @@ grow_vertical = 2
 [node name="ChalkPanel" parent="CenterContainer" unique_id=1799731413 instance=ExtResource("2_chalk")]
 custom_minimum_size = Vector2(400, 500)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_o1gsc")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_jpu5e")
 
 [node name="MarginContainer" type="MarginContainer" parent="CenterContainer/ChalkPanel" unique_id=1743963682]
 layout_mode = 2
@@ -154,7 +154,7 @@ stretch_mode = 5
 [node name="ProgressBarPanel" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/VolumeSetup/SFX/SFXVolume" unique_id=627712224 instance=ExtResource("2_chalk")]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxEmpty_687fw")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_o1gsc")
 
 [node name="ProgressBar" type="ProgressBar" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/VolumeSetup/SFX/SFXVolume/ProgressBarPanel" unique_id=816364270]
 material = SubResource("ShaderMaterial_chalk")
@@ -214,7 +214,7 @@ stretch_mode = 5
 [node name="ProgressBarPanel" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/MusicSetup/Music/MusicVolume" unique_id=904418360 instance=ExtResource("2_chalk")]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxEmpty_3jnfj")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_687fw")
 
 [node name="ProgressBar" type="ProgressBar" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/MusicSetup/Music/MusicVolume/ProgressBarPanel" unique_id=70443487]
 material = SubResource("ShaderMaterial_chalk")
@@ -240,6 +240,28 @@ layout_mode = 2
 texture_normal = ExtResource("7_music_slash")
 ignore_texture_size = true
 stretch_mode = 5
+
+[node name="TutoSetup" type="VBoxContainer" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1138572936]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Tuto" type="HBoxContainer" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/TutoSetup" unique_id=1425705490]
+layout_mode = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="Label" type="Label" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/TutoSetup/Tuto" unique_id=1760858747]
+material = SubResource("ShaderMaterial_chalk")
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "TUTORIEL"
+horizontal_alignment = 1
+
+[node name="TutoButton" type="CheckButton" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/TutoSetup/Tuto" unique_id=381677355]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_chalk")
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
 
 [node name="Spacer" type="Control" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=578002942]
 custom_minimum_size = Vector2(0, 20)

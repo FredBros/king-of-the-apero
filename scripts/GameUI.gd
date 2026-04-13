@@ -6,6 +6,8 @@ signal card_dropped_on_world(card_data: CardData, screen_position: Vector2)
 signal end_turn_pressed
 signal reaction_selected(card_data: CardData)
 signal reaction_skipped
+signal opponent_slap_finished
+signal opponent_slap_impacted
 
 @export var top_player_info: PlayerInfo
 @export var bottom_player_info: PlayerInfo
@@ -39,10 +41,10 @@ var selected_card_ui: CardUI
 var current_versus_screen: Control
 var reaction_timer: Timer
 var pass_button: Button
-var opponent_card_display: CardUI
 var is_reaction_phase: bool = false
 var tuto_layer_instance: CanvasLayer
 var options_layer_instance: Control
+var network_pause_overlay: Control = null
 
 # Drop Zone for Push mechanic
 @onready var end_turn_button = $EndTurnButton
@@ -130,6 +132,8 @@ func _ready() -> void:
 			game_manager.card_played_visual.connect(_on_card_played_visual)
 		if not game_manager.deck_count_updated.is_connected(_on_deck_count_updated):
 			game_manager.deck_count_updated.connect(_on_deck_count_updated)
+		if not game_manager.game_paused.is_connected(_on_game_paused):
+			game_manager.game_paused.connect(_on_game_paused)
 	else:
 		printerr("GameUI: GameManager not found!")
 	
@@ -157,29 +161,13 @@ func _on_deck_count_updated(count: int) -> void:
 
 func _on_help_button_pressed() -> void:
 	if tuto_layer_instance and tuto_layer_instance.has_method("open_tutorial"):
+		if game_manager_ref and game_manager_ref.has_method("request_pause"):
+			game_manager_ref.request_pause(true)
 		tuto_layer_instance.open_tutorial()
 
 func _on_options_button_pressed() -> void:
 	if options_layer_instance:
 		options_layer_instance.show()
-
-func _check_first_time_user() -> void:
-	var config = ConfigFile.new()
-	var err = config.load("user://settings.cfg")
-	
-	# Si le fichier n'existe pas ou la clé est absente, c'est la première fois
-	var seen_tuto = config.get_value("game", "tutorial_seen", false)
-	
-	if not seen_tuto:
-		print("UI: First time user detected. Launching Tutorial.")
-		# On marque comme vu pour la prochaine fois
-		config.set_value("game", "tutorial_seen", true)
-		config.save("user://settings.cfg")
-		
-		# On attend une frame pour être sûr que tout est chargé (TutoLayer, GameManager)
-		await get_tree().process_frame
-		if tuto_layer_instance and tuto_layer_instance.has_method("open_tutorial"):
-			tuto_layer_instance.open_tutorial()
 
 func _start_help_button_pulse() -> void:
 	var rules_hint = $TopRightContainer/RulesHintPanel
@@ -224,9 +212,6 @@ func _setup_reaction_ui() -> void:
 	pass_button.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
 	pass_button.position.y -= 150 # Remonter un peu au dessus de la main
 	add_child(pass_button)
-	
-	# 3. Opponent Card Display Placeholder
-	# On l'instanciera à la volée ou on garde une ref vide
 
 func _setup_drag_feedback() -> void:
 	# Création d'un conteneur pour les flèches
@@ -330,6 +315,49 @@ func _on_quit_button_pressed() -> void:
 
 func _on_cta_button_pressed() -> void:
 	OS.shell_open("https://trankil.itch.io/folklore-on-tap")
+
+func _on_game_paused(is_paused: bool, _initiator_name: String) -> void:
+	if not is_paused:
+		if network_pause_overlay:
+			network_pause_overlay.hide()
+		return
+		
+	if game_manager_ref:
+		var my_name = game_manager_ref._get_my_player_name()
+		if game_manager_ref.players_in_pause.has(my_name):
+			# Je suis en pause localement (mon propre tuto est ouvert). On ne montre pas l'overlay réseau.
+			if network_pause_overlay: network_pause_overlay.hide()
+			return
+			
+	# Je NE SUIS PAS en pause, mais l'adversaire oui. J'affiche l'écran d'attente.
+	if not network_pause_overlay:
+		network_pause_overlay = ColorRect.new()
+		network_pause_overlay.color = Color(0, 0, 0, 0.7)
+		network_pause_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		network_pause_overlay.z_index = 200 # Au-dessus des cartes
+		
+		# Container pour forcer le centrage parfait
+		var center_container = CenterContainer.new()
+		center_container.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		network_pause_overlay.add_child(center_container)
+		
+		var panel = PanelContainer.new()
+		center_container.add_child(panel)
+		
+		var margin = MarginContainer.new()
+		margin.add_theme_constant_override("margin_left", 40)
+		margin.add_theme_constant_override("margin_right", 40)
+		margin.add_theme_constant_override("margin_top", 30)
+		margin.add_theme_constant_override("margin_bottom", 30)
+		panel.add_child(margin)
+		
+		var label = Label.new()
+		label.text = tr("TUTO_PAUSE_TEXT")
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		margin.add_child(label)
+		add_child(network_pause_overlay)
+	network_pause_overlay.show()
 
 func update_turn_info(player_name: String, skip_anim: bool = false) -> void:
 	var is_my_turn = false
@@ -580,6 +608,13 @@ func _animate_opponent_slap(card_data: CardData) -> void:
 			slap_sound_player.play_varied(slap_sound)
 		
 		_trigger_screen_shake()
+		
+		# On signale l'impact pour figer l'image JUSTE APRÈS avoir lancé le son et le tremblement
+		opponent_slap_impacted.emit()
+		
+		# On laisse la poussière s'étendre pendant une demi-seconde avant de déclencher l'infobulle
+		await get_tree().create_timer(0.5).timeout
+		opponent_slap_finished.emit()
 	)
 	
 	card.animate_slap(target_pos)
@@ -625,16 +660,9 @@ func _on_card_selection_canceled(card_ui: CardUI) -> void:
 func start_reaction_request(attack_card: CardData, valid_cards: Array[CardData]) -> void:
 	is_reaction_phase = true
 	
-	# 1. Afficher la carte adverse
-	if opponent_card_display: opponent_card_display.queue_free()
-	opponent_card_display = card_ui_scene.instantiate()
-	add_child(opponent_card_display)
-	opponent_card_display.setup(attack_card)
-	# Positionner en haut au centre
-	opponent_card_display.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-	opponent_card_display.position.y += 20
-	opponent_card_display.scale = Vector2(1.2, 1.2)
-	
+	# 1. Animer la carte adverse pour bien voir l'attaque arriver
+	_animate_opponent_slap(attack_card)
+
 	# 2. Mettre en valeur la main
 	for wrapper in hand_container.get_children():
 		var child = wrapper.get_child(0) if wrapper.get_child_count() > 0 else null
@@ -667,9 +695,6 @@ func _end_reaction_phase() -> void:
 	is_reaction_phase = false
 	pass_button.hide()
 	reaction_timer.stop()
-	if opponent_card_display:
-		opponent_card_display.queue_free()
-		opponent_card_display = null
 	
 	# Reset hand visuals
 	for wrapper in hand_container.get_children():
@@ -1001,9 +1026,6 @@ func _on_versus_screen_finished() -> void:
 	
 	# On lance l'animation du bouton d'aide maintenant que le combat commence vraiment
 	_start_help_button_pulse()
-
-	# Vérification "Première Fois" : On lance le tutoriel APRÈS le Versus Screen
-	_check_first_time_user()
 
 func _setup_button_feedback(btn: Button) -> void:
 	if not btn: return

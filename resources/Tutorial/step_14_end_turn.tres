@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="TutorialStep" format=3 uid="uid://brt64peh2rghw"]
+
+[ext_resource type="Script" uid="uid://dq6ibntjyyec5" path="res://resources/Tutorial/TutorialStep.gd" id="1_81ygp"]
+[ext_resource type="VideoStream" uid="uid://cv2kbb5v82key" path="res://assets/Tutorial/end_turn.ogv" id="2_4rouk"]
+
+[resource]
+script = ExtResource("1_81ygp")
+step_id = "step_14_end_turn"
+text_key = "TUTO_END_TURN"
+video_stream = ExtResource("2_4rouk")
+trigger_conditions = {
+"is_player_turn": true
+}
+metadata/_custom_type_script = "uid://dq6ibntjyyec5"

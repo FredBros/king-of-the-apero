@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="TutorialStep" format=3 uid="uid://cd523jt48kd1v"]
+
+[ext_resource type="Script" uid="uid://dq6ibntjyyec5" path="res://resources/Tutorial/TutorialStep.gd" id="1_kj01s"]
+[ext_resource type="VideoStream" uid="uid://db0f82oendn0t" path="res://assets/Tutorial/attack_swipe.ogv" id="2_jqndd"]
+
+[resource]
+script = ExtResource("1_kj01s")
+step_id = "step_08_attack"
+text_key = "TUTO_ATTACK"
+wait_for_action_after = true
+video_stream = ExtResource("2_jqndd")
+trigger_conditions = {
+"can_attack": true,
+"is_player_turn": true
+}
+metadata/_custom_type_script = "uid://dq6ibntjyyec5"

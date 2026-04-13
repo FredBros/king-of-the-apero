@@ -388,5 +388,6 @@ offset_bottom = 240.0
 mouse_filter = 1
 
 [node name="SlapSoundPlayer" type="AudioStreamPlayer" parent="." unique_id=1234567890]
+process_mode = 3
 bus = &"SFX"
 script = ExtResource("8_u7j5g")

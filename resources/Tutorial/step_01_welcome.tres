@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TutorialStep" format=3 uid="uid://d4huv530500u4"]
+
+[ext_resource type="Script" uid="uid://dq6ibntjyyec5" path="res://resources/Tutorial/TutorialStep.gd" id="1_mlswf"]
+
+[resource]
+script = ExtResource("1_mlswf")
+step_id = "step_01_welcome"
+text_key = "TUTO_WELCOME"
+pauses_game = true
+metadata/_custom_type_script = "uid://dq6ibntjyyec5"

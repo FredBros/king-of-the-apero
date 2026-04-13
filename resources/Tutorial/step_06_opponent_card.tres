@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="TutorialStep" format=3 uid="uid://d4h0uhl61htl6"]
+
+[ext_resource type="Script" uid="uid://dq6ibntjyyec5" path="res://resources/Tutorial/TutorialStep.gd" id="1_qhpdx"]
+
+[resource]
+script = ExtResource("1_qhpdx")
+step_id = "step_06_opponent_card"
+text_key = "TUTO_OPPONENT_CARD"
+target_ui_names = Array[String](["OpponentSlapAnchor"])
+pauses_game = true
+trigger_conditions = {
+"opponent_has_played": true
+}
+metadata/_custom_type_script = "uid://dq6ibntjyyec5"

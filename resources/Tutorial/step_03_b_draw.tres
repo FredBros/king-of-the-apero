@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="TutorialStep" format=3 uid="uid://cafdo5f5pu8am"]
+
+[ext_resource type="Script" uid="uid://dq6ibntjyyec5" path="res://resources/Tutorial/TutorialStep.gd" id="1_4iy0f"]
+
+[resource]
+script = ExtResource("1_4iy0f")
+step_id = "step_03_b_draw"
+text_key = "TUTO_DRAW_B"
+trigger_conditions = {
+"is_first_turn ": false,
+"is_player_turn": true,
+"just_drawn_card": true
+}
+metadata/_custom_type_script = "uid://dq6ibntjyyec5"

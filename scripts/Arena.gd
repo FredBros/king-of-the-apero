@@ -6,6 +6,7 @@ extends Node3D
 @onready var camera_pivot: Node3D = $CameraPivot
 @onready var deck_manager: DeckManager = $DeckManager
 
+@onready var tutorial_orchestrator = $TutorialOrchestrator
 @onready var loading_curtain = $LoadingCurtain
 @onready var fight_image = $FightLayer/FightImage
 const FIGHT_SOUND = preload("res://assets/Sounds/Voices/fight.wav")
@@ -86,6 +87,10 @@ func _ready() -> void:
 		
 		_setup_player_camera_view()
 
+	# Initialisation du Tutorial Orchestrator
+	if tutorial_orchestrator and game_manager and game_ui:
+		tutorial_orchestrator.setup(game_manager, game_ui)
+
 	# Adjust camera for Portrait Mode (Zoom In)
 	var camera = get_viewport().get_camera_3d()
 	if camera and camera.projection == Camera3D.PROJECTION_PERSPECTIVE:
@@ -154,7 +159,11 @@ func _on_wrestlers_spawned(wrestlers: Array[Wrestler]) -> void:
 			if not game_manager.is_network_syncing:
 				game_manager.send_health_update(w.name, current)
 		)
-		w.action_completed.connect(_check_hand_playability)
+		w.action_completed.connect(func():
+			_check_hand_playability()
+			if tutorial_orchestrator:
+				tutorial_orchestrator.evaluate_tutorials()
+		)
 		
 	
 	# Set UI perspectives (local player at bottom)
@@ -223,3 +232,12 @@ func _play_fight_sequence() -> void:
 		
 		# Disparition
 		tween.tween_property(fight_image, "scale", Vector2.ZERO, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+		
+		# Indique au chef d'orchestre que l'intro est finie
+		tween.tween_callback(func():
+			if tutorial_orchestrator and tutorial_orchestrator.has_method("mark_intro_finished"):
+				tutorial_orchestrator.mark_intro_finished()
+			if game_manager and game_manager.has_method("mark_intro_finished"):
+				game_manager.mark_intro_finished()
+		)
+		

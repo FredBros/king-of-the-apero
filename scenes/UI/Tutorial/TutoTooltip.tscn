@@ -1,0 +1,113 @@
+[gd_scene format=3 uid="uid://1ncxi1ufiguq"]
+
+[ext_resource type="Script" uid="uid://chjs3peat145n" path="res://scripts/UI/Tutorial/TutoTooltip.gd" id="1_pcmkl"]
+[ext_resource type="PackedScene" uid="uid://b4y8k5l6m7oa" path="res://scenes/UI/Components/ChalkPanel.tscn" id="2_chalk"]
+[ext_resource type="Shader" uid="uid://fhypsw041brr" path="res://shaders/chalk.gdshader" id="3_shader"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_67ihb"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_text"]
+shader = ExtResource("3_shader")
+shader_parameter/intensity = 0.5
+shader_parameter/grain_size = 100.0
+shader_parameter/jitter_amount = 0.002
+
+[node name="TutoTooltip" type="Control" unique_id=567502519]
+process_mode = 3
+layout_mode = 3
+z_index = 250
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_pcmkl")
+
+[node name="Dimmer" type="ColorRect" parent="." unique_id=1853477622]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="ChalkPanel" parent="." unique_id=685742376 instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(400, 250)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -100.0
+offset_right = 200.0
+offset_bottom = 100.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_67ihb")
+
+[node name="MarginContainer" type="MarginContainer" parent="ChalkPanel" unique_id=1952569789]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ChalkPanel/MarginContainer" unique_id=54394029]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="MediaContainer" type="VBoxContainer" parent="ChalkPanel/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ImagesContainer" type="HBoxContainer" parent="ChalkPanel/MarginContainer/VBoxContainer/MediaContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="VideoPlayer" type="VideoStreamPlayer" parent="ChalkPanel/MarginContainer/VBoxContainer/MediaContainer"]
+custom_minimum_size = Vector2(350, 300)
+layout_mode = 2
+expand = true
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=870924556]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "Cliquez sur une carte [color=#262b44]Noire[/color] pour voir vos déplacements.
+Cliquez sur une case brillante pour bouger.
+[i]Surveillez les flèches des sous-bocks ![/i]"
+fit_content = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=343862547]
+layout_mode = 2
+size_flags_vertical = 10
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="NextButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer" instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+
+[node name="NextButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/NextButtonPanel" unique_id=364614835]
+material = SubResource("ShaderMaterial_text")
+layout_mode = 2
+text = "OK"
+flat = true
+
+[node name="SkipButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer" instance=ExtResource("2_chalk")]
+custom_minimum_size = Vector2(150, 50)
+layout_mode = 2
+
+[node name="SkipButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/SkipButtonPanel" unique_id=5774422]
+material = SubResource("ShaderMaterial_text")
+layout_mode = 2
+text = "SKIP TUTO"
+flat = true

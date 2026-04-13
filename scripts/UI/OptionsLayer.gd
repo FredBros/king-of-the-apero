@@ -16,6 +16,8 @@ extends Control
 @onready var music_mute: TextureButton = music_container.get_node("MuteButton")
 @onready var music_progress: ProgressBar = music_container.get_node("ProgressBarPanel/ProgressBar")
 
+@onready var tuto_button: CheckButton = %TutoButton
+
 const BUS_SFX_NAME = "SFX"
 const BUS_MUSIC_NAME = "Music"
 const VOLUME_STEP = 10.0
@@ -37,6 +39,18 @@ func _ready() -> void:
 	
 	# Setup Music (Même si pas encore de musique, la mécanique sera prête)
 	_setup_volume_controls(music_minus, music_plus, music_mute, music_progress, BUS_MUSIC_NAME)
+	
+	# Setup Tuto Toggle
+	var config = ConfigFile.new()
+	if config.load("user://settings.cfg") == OK:
+		tuto_button.button_pressed = config.get_value("game", "tutorial_enabled", true)
+	else:
+		tuto_button.button_pressed = true
+		
+	_update_tuto_button_text(tuto_button.button_pressed)
+	tuto_button.toggled.connect(_on_tuto_toggled)
+	
+	visibility_changed.connect(_on_visibility_changed)
 
 func _setup_volume_controls(minus: BaseButton, plus: BaseButton, mute: BaseButton, progress: ProgressBar, bus_name: String) -> void:
 	# Initialisation de la valeur visuelle depuis l'AudioServer
@@ -109,8 +123,38 @@ func _update_mute_visual(btn: BaseButton, is_muted: bool) -> void:
 	# On réduit l'opacité du bouton mute s'il est actif
 	btn.modulate.a = 0.5 if is_muted else 1.0
 
+func _on_visibility_changed() -> void:
+	if visible and tuto_button:
+		var config = ConfigFile.new()
+		if config.load("user://settings.cfg") == OK:
+			var is_enabled = config.get_value("game", "tutorial_enabled", true)
+			tuto_button.set_pressed_no_signal(is_enabled)
+			_update_tuto_button_text(is_enabled)
+
 func _on_close_pressed() -> void:
 	hide()
+	
+	# Relancer l'évaluation du tuto à la fermeture (au cas où on vient de le réactiver)
+	var orchestrator = get_tree().root.find_child("TutorialOrchestrator", true, false)
+	if orchestrator and orchestrator.has_method("evaluate_tutorials"):
+		orchestrator.evaluate_tutorials()
+
+func _on_tuto_toggled(toggled_on: bool) -> void:
+	if ui_sound: ui_sound.play_varied(CHALK_TIC_SOUND)
+	_update_tuto_button_text(toggled_on)
+	
+	var config = ConfigFile.new()
+	config.load("user://settings.cfg")
+	config.set_value("game", "tutorial_enabled", toggled_on)
+	config.save("user://settings.cfg")
+	
+	var orchestrator = get_tree().root.find_child("TutorialOrchestrator", true, false)
+	if orchestrator and orchestrator.has_method("set_tutorial_enabled"):
+		orchestrator.set_tutorial_enabled(toggled_on, true)
+
+func _update_tuto_button_text(is_enabled: bool) -> void:
+	if tuto_button:
+		tuto_button.text = "ON" if is_enabled else "OFF"
 
 func _setup_button_feedback(btn: Control) -> void:
 	if not btn: return

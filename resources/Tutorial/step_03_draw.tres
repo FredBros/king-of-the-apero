@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="TutorialStep" format=3 uid="uid://b0q4ve4wa4o0g"]
+
+[ext_resource type="Script" uid="uid://dq6ibntjyyec5" path="res://resources/Tutorial/TutorialStep.gd" id="1_6uvjh"]
+
+[resource]
+script = ExtResource("1_6uvjh")
+step_id = "step_03_draw"
+text_key = "TUTO_DRAW"
+target_ui_names = Array[String](["DrawPile"])
+trigger_conditions = {
+"is_player_turn": true
+}
+metadata/_custom_type_script = "uid://dq6ibntjyyec5"

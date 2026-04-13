@@ -48,6 +48,8 @@ var pending_defense_context: Dictionary = {}
 var is_waiting_for_reaction: bool = false
 var has_acted_this_turn: bool = false
 var rematch_votes: Dictionary = {}
+var players_in_pause: Array[String] = []
+var is_intro_finished: bool = false
 
 func _ready() -> void:
 	# Listen for network messages
@@ -239,6 +241,7 @@ func use_card(card: CardData) -> bool:
 			
 			# FIX: Mettre à jour l'UI locale immédiatement (Optimistic UI)
 			card_discarded.emit(card)
+			card_played_visual.emit(my_name, card, true)
 			
 			# Idéalement, on attendrait la confirmation, mais pour ce POC c'est ok.
 			return true
@@ -269,6 +272,7 @@ func discard_hand_card(card: CardData) -> void:
 			
 			# FIX: Mettre à jour l'UI locale immédiatement (Optimistic UI)
 			card_discarded.emit(card)
+			card_played_visual.emit(my_name, card, false)
 			return
 
 		# Logique Serveur (ou Local)
@@ -523,7 +527,7 @@ func _on_network_message(data: Dictionary) -> void:
 			is_game_active = false
 			game_over.emit(data["winner"])
 		"SYNC_PAUSE":
-			game_paused.emit(data["paused"], data["player_name"])
+			_handle_sync_pause(data["player_name"], data["paused"])
 		"SYNC_SKIP_VERSUS":
 			opponent_skipped_versus.emit()
 		"SYNC_DECK_COUNT":
@@ -649,15 +653,36 @@ func _handle_sync_card_played(card_dict: Dictionary, player_name: String, is_use
 	card_discarded.emit(card)
 	card_played_visual.emit(player_name, card, is_use)
 
-func send_pause_state(paused: bool) -> void:
-	if enable_hotseat_mode: return
-	
+func request_pause(wants_pause: bool) -> void:
 	var my_name = _get_my_player_name()
-	NetworkManager.send_message({
-		"type": "SYNC_PAUSE",
-		"paused": paused,
-		"player_name": my_name
-	})
+	_handle_sync_pause(my_name, wants_pause)
+	
+	if not enable_hotseat_mode:
+		NetworkManager.send_message({
+			"type": "SYNC_PAUSE",
+			"paused": wants_pause,
+			"player_name": my_name
+		})
+
+func _handle_sync_pause(player_name: String, paused: bool) -> void:
+	if paused and not players_in_pause.has(player_name):
+		players_in_pause.append(player_name)
+	elif not paused and players_in_pause.has(player_name):
+		players_in_pause.erase(player_name)
+		
+	_apply_pause_state()
+
+func _apply_pause_state() -> void:
+	if not is_intro_finished:
+		return
+		
+	var should_pause = players_in_pause.size() > 0
+	get_tree().paused = should_pause
+	game_paused.emit(should_pause, "")
+
+func mark_intro_finished() -> void:
+	is_intro_finished = true
+	_apply_pause_state()
 
 # --- Generic Grid/Health Sync ---
 
@@ -892,6 +917,7 @@ func _consume_reaction_card(card: CardData) -> void:
 	_update_hand_count(my_name, -1)
 	deck_manager.discard_card(card)
 	card_discarded.emit(card)
+	card_played_visual.emit(my_name, card, true) # Débloque aussi le tuto après une réaction
 	
 	if not enable_hotseat_mode:
 		NetworkManager.send_message({
