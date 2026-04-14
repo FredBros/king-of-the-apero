@@ -12,7 +12,6 @@
 [ext_resource type="Script" uid="uid://csrhhsqxb6b3q" path="res://scripts/Components/UISoundComponent.gd" id="8_u7j5g"]
 [ext_resource type="PackedScene" uid="uid://b4y8k5l6m7oa" path="res://scenes/UI/Components/ChalkPanel.tscn" id="9_chalk"]
 [ext_resource type="Shader" uid="uid://fhypsw041brr" path="res://shaders/chalk.gdshader" id="10_shader"]
-[ext_resource type="Texture2D" uid="uid://dlqxr2eiyb5nh" path="res://assets/UI/Icons/book-alt.png" id="11_book"]
 [ext_resource type="Texture2D" uid="uid://bqdgrwlaoentt" path="res://assets/UI/Icons/settings.png" id="12_settings"]
 [ext_resource type="PackedScene" uid="uid://chf35my53chkb" path="res://scenes/UI/RoadMap.tscn" id="13_7hp7j"]
 [ext_resource type="PackedScene" uid="uid://bxnlgllnletcq" path="res://scenes/UI/Draw.tscn" id="14_draw"]
@@ -175,47 +174,6 @@ offset_bottom = 60.0
 grow_horizontal = 0
 theme_override_constants/separation = 15
 alignment = 2
-
-[node name="RulesHintPanel" parent="TopRightContainer" unique_id=1257140704 instance=ExtResource("9_chalk")]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_lk18c")
-
-[node name="MarginContainer" type="MarginContainer" parent="TopRightContainer/RulesHintPanel" unique_id=1036573256]
-layout_mode = 2
-theme_override_constants/margin_left = 15
-theme_override_constants/margin_right = 15
-
-[node name="Label" type="Label" parent="TopRightContainer/RulesHintPanel/MarginContainer" unique_id=922503932]
-material = SubResource("ShaderMaterial_chalk_text")
-layout_mode = 2
-text = "Comment jouer ?"
-vertical_alignment = 1
-
-[node name="HelpButton" type="Button" parent="TopRightContainer" unique_id=2002956326]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(40, 40)
-layout_mode = 2
-tooltip_text = "Instructions"
-theme_override_styles/normal = SubResource("StyleBoxFlat_square_bg")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_square_bg")
-theme_override_styles/hover = SubResource("StyleBoxFlat_square_bg")
-
-[node name="Icon" type="TextureRect" parent="TopRightContainer/HelpButton" unique_id=1772096916]
-material = SubResource("ShaderMaterial_chalk_text")
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 5.0
-offset_top = 5.0
-offset_right = -5.0
-offset_bottom = -5.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("11_book")
-expand_mode = 1
-stretch_mode = 5
 
 [node name="OptionsButton" type="Button" parent="TopRightContainer" unique_id=998877661]
 unique_name_in_owner = true

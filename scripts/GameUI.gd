@@ -30,7 +30,6 @@ var remote_wrestler_ref: Wrestler
 @onready var game_over_container: CenterContainer = $GameOverContainer
 @onready var winner_label: Label = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/WinnerLabel
 @onready var slap_sound_player: UISoundComponent = $SlapSoundPlayer
-@onready var help_button: Button = %HelpButton
 @onready var options_button: Button = %OptionsButton
 
 @onready var turn_label: Label = $TurnInfoContainer/VBoxContainer/TurnLabel
@@ -93,11 +92,6 @@ func _ready() -> void:
 	if cta_btn:
 		cta_btn.pressed.connect(_on_cta_button_pressed)
 	
-	# Connect help button
-	if help_button:
-		help_button.pressed.connect(_on_help_button_pressed)
-		_setup_button_feedback(help_button)
-	
 	# Connect options button
 	if options_button:
 		options_button.pressed.connect(_on_options_button_pressed)
@@ -159,38 +153,9 @@ func _on_deck_count_updated(count: int) -> void:
 	if draw_pile:
 		draw_pile.update_deck_visuals(count)
 
-func _on_help_button_pressed() -> void:
-	if tuto_layer_instance and tuto_layer_instance.has_method("open_tutorial"):
-		if game_manager_ref and game_manager_ref.has_method("request_pause"):
-			game_manager_ref.request_pause(true)
-		tuto_layer_instance.open_tutorial()
-
 func _on_options_button_pressed() -> void:
 	if options_layer_instance:
 		options_layer_instance.show()
-
-func _start_help_button_pulse() -> void:
-	var rules_hint = $TopRightContainer/RulesHintPanel
-	if not help_button: return
-	
-	# Ensure pivot is centered
-	help_button.pivot_offset = help_button.size / 2
-	
-	var tween = create_tween()
-	tween.set_loops(4) # 4 seconds total (0.5s * 2 * 4)
-	
-	# Up: Scale 1.2, Red
-	tween.tween_property(help_button, "scale", Vector2(1.2, 1.2), 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tween.parallel().tween_property(help_button, "modulate", Color(1, 0.2, 0.2), 0.5)
-	
-	# Down: Scale 1.0, White
-	tween.tween_property(help_button, "scale", Vector2.ONE, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tween.parallel().tween_property(help_button, "modulate", Color.WHITE, 0.5)
-	
-	tween.finished.connect(func():
-		if rules_hint:
-			rules_hint.hide()
-	)
 
 func _setup_reaction_ui() -> void:
 	# 1. Timer
@@ -1023,9 +988,6 @@ func _on_versus_screen_finished() -> void:
 		if not game_manager_ref.players.is_empty():
 			var current_player_name = game_manager_ref.players[game_manager_ref.active_player_index].name
 			update_turn_info(current_player_name, true)
-	
-	# On lance l'animation du bouton d'aide maintenant que le combat commence vraiment
-	_start_help_button_pulse()
 
 func _setup_button_feedback(btn: Button) -> void:
 	if not btn: return
