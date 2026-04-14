@@ -21,6 +21,9 @@ const DEFAULT_IP = "kotapero.xyz"
 @onready var sms_button: Button = %SMSButton
 @onready var discord_button: Button = %DiscordButton
 
+@onready var loading_overlay: Control = %LoadingOverlay
+@onready var loading_label: Label = %LoadingLabel
+
 var current_invite_link: String = ""
 # Hébergement direct sur le VPS pour un contrôle total (Instant Play).
 const INVITE_BASE_URL = "https://kotapero.xyz/"
@@ -204,10 +207,15 @@ func _check_start_game() -> void:
 		NetworkManager.start_game()
 
 func _on_game_starting() -> void:
-	if back_button: back_button.hide()
-	if share_container: share_container.hide()
-	# On affiche un texte de chargement pendant que Godot fige l'écran pour charger la scène 3D
-	if status_label: status_label.text = tr("LOBBY_STATUS_STARTING")
+	# Affiche un écran de chargement plein écran pour masquer le remaniement de l'interface
+	# et fournir un retour clair à l'utilisateur pendant que la scène de jeu se charge.
+	if loading_overlay and loading_label:
+		loading_label.text = tr("LOBBY_STATUS_STARTING")
+		loading_overlay.show()
+	else: # Fallback au cas où l'overlay ne serait pas configuré
+		if back_button: back_button.hide()
+		if share_container: share_container.hide()
+		if status_label: status_label.text = tr("LOBBY_STATUS_STARTING")
 
 func _disable_buttons() -> void:
 	if host_button: host_button.disabled = true
