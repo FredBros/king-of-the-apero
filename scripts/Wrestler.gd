@@ -214,13 +214,14 @@ func play_hurt_animation(spawn_blood: bool = true) -> void:
 # Apply damage to the wrestler
 func take_damage(amount: int, skip_anim: bool = false, immediate_visuals: bool = false) -> void:
 	current_health -= amount
-	health_changed.emit(current_health, max_health)
 	print(name, " took ", amount, " damage. HP: ", current_health)
 	
 	var is_lethal = current_health <= 0
+	var target_health = current_health # On capture la valeur cible pour la synchronisation
 	
 	# On prépare les effets visuels pour qu'ils soient synchronisés avec l'impact de l'attaquant
 	_pending_damage_callback = func():
+		health_changed.emit(target_health, max_health)
 		show_floating_text("-" + str(amount) + " HP", Color.RED)
 		if is_lethal:
 			_spawn_blood_effect()
@@ -290,6 +291,9 @@ func push_to(new_pos: Vector2i) -> void:
 			print(name, " EJECTED!")
 			is_ejected = true
 			ejected.emit()
+			
+			# Force l'exécution des dégâts visuels pour l'UI (synchronisation avec l'éjection)
+			execute_pending_damage()
 			
 			# Visuals: Keep on ground level for now
 			

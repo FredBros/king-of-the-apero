@@ -16,7 +16,8 @@ extends Control
 @onready var music_mute: TextureButton = music_container.get_node("MuteButton")
 @onready var music_progress: ProgressBar = music_container.get_node("ProgressBarPanel/ProgressBar")
 
-@onready var tuto_button: CheckButton = %TutoButton
+@onready var tuto_button: CheckBox = %TutoButton
+@onready var tuto_state_label: Label = %TutoStateLabel
 
 const BUS_SFX_NAME = "SFX"
 const BUS_MUSIC_NAME = "Music"
@@ -153,8 +154,10 @@ func _on_tuto_toggled(toggled_on: bool) -> void:
 		orchestrator.set_tutorial_enabled(toggled_on, true)
 
 func _update_tuto_button_text(is_enabled: bool) -> void:
+	if tuto_state_label:
+		tuto_state_label.text = tr("OPTIONS_ON") if is_enabled else tr("OPTIONS_OFF")
 	if tuto_button:
-		tuto_button.text = tr("OPTIONS_ON") if is_enabled else tr("OPTIONS_OFF")
+		tuto_button.text = "" # S'assure que le bouton CheckButton n'affiche plus de texte natif
 
 func _setup_button_feedback(btn: Control) -> void:
 	if not btn: return

@@ -1,10 +1,13 @@
-[gd_scene format=3 uid="uid://chf35my53chkb"]
+[gd_scene load_steps=2 format=3 uid="uid://chf35my53chkb"]
+
+[ext_resource type="Script" path="res://scripts/UI/RoadMap.gd" id="1_script"]
 
 [node name="RoadMap" type="VBoxContainer" unique_id=1655735994]
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 130.0
 grow_horizontal = 2
+script = ExtResource("1_script")
 
 [node name="InfoLabel" type="RichTextLabel" parent="." unique_id=1175738148]
 layout_mode = 2

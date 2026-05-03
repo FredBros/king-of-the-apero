@@ -31,6 +31,7 @@ var remote_wrestler_ref: Wrestler
 @onready var winner_label: Label = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/WinnerLabel
 @onready var slap_sound_player: UISoundComponent = $SlapSoundPlayer
 @onready var options_button: Button = %OptionsButton
+@onready var get_app_button: Control = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/GetAppButton
 
 @onready var turn_label: Label = $TurnInfoContainer/VBoxContainer/TurnLabel
 
@@ -87,15 +88,17 @@ func _ready() -> void:
 	quit_btn.pressed.connect(_on_quit_button_pressed)
 	_setup_button_feedback(quit_btn)
 	
-	# Connect CTA button manually
-	var cta_btn = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/TextureButton
-	if cta_btn:
-		cta_btn.pressed.connect(_on_cta_button_pressed)
-	
 	# Connect options button
 	if options_button:
 		options_button.pressed.connect(_on_options_button_pressed)
 		_setup_button_feedback(options_button)
+		
+	# Affiche le bouton "Get App" uniquement sur la version Web
+	if get_app_button:
+		if OS.has_feature("web"):
+			get_app_button.show()
+		else:
+			get_app_button.hide()
 	
 	# Connect end turn button manually
 	end_turn_button.end_turn_pressed.connect(_on_end_turn_button_pressed)
@@ -277,9 +280,6 @@ func _on_restart_button_pressed() -> void:
 func _on_quit_button_pressed() -> void:
 	# Return to lobby properly closing connection
 	NetworkManager.return_to_lobby()
-
-func _on_cta_button_pressed() -> void:
-	OS.shell_open("https://trankil.itch.io/folklore-on-tap")
 
 func _on_game_paused(is_paused: bool, _initiator_name: String) -> void:
 	if not is_paused:

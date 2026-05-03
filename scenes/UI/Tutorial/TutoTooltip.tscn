@@ -80,6 +80,10 @@ expand = true
 [node name="RichTextLabel" type="RichTextLabel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=870924556]
 custom_minimum_size = Vector2(350, 0)
 layout_mode = 2
+theme_override_font_sizes/normal_font_size = 32
+theme_override_font_sizes/bold_font_size = 32
+theme_override_font_sizes/italics_font_size = 32
+theme_override_font_sizes/bold_italics_font_size = 32
 bbcode_enabled = true
 text = "Cliquez sur une carte [color=#262b44]Noire[/color] pour voir vos déplacements.
 Cliquez sur une case brillante pour bouger.
@@ -92,6 +96,13 @@ size_flags_vertical = 10
 theme_override_constants/separation = 20
 alignment = 1
 
+[node name="SkipButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=5774422]
+material = SubResource("ShaderMaterial_text")
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "TUTO_SKIP"
+flat = true
+
 [node name="NextButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer" instance=ExtResource("2_chalk")]
 custom_minimum_size = Vector2(150, 50)
 layout_mode = 2
@@ -99,15 +110,6 @@ layout_mode = 2
 [node name="NextButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/NextButtonPanel" unique_id=364614835]
 material = SubResource("ShaderMaterial_text")
 layout_mode = 2
+theme_override_font_sizes/font_size = 32
 text = "TUTO_OK"
-flat = true
-
-[node name="SkipButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer" instance=ExtResource("2_chalk")]
-custom_minimum_size = Vector2(150, 50)
-layout_mode = 2
-
-[node name="SkipButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/SkipButtonPanel" unique_id=5774422]
-material = SubResource("ShaderMaterial_text")
-layout_mode = 2
-text = "TUTO_SKIP"
 flat = true

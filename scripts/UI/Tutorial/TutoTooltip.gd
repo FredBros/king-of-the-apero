@@ -10,8 +10,7 @@ signal tutorial_skipped()
 @onready var video_player = $ChalkPanel/MarginContainer/VBoxContainer/MediaContainer/VideoPlayer
 @onready var next_button_panel = $ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/NextButtonPanel
 @onready var next_button = $ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/NextButtonPanel/NextButton
-@onready var skip_button_panel = $ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/SkipButtonPanel
-@onready var skip_button = $ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/SkipButtonPanel/SkipButton
+@onready var skip_button = $ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/SkipButton
 
 var current_step_id: String = ""
 var pauses_game: bool = false

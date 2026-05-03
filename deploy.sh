@@ -74,10 +74,12 @@ rm -rf "$BUILD_DIR_ANDROID"
 mkdir -p "$BUILD_DIR_ANDROID"
 # Utilisation de --export-debug pour contourner l'absence de Keystore de Release
 "$GODOT_EXECUTABLE" --headless --export-debug "$EXPORT_PRESET_ANDROID" "$BUILD_DIR_ANDROID/FolkloreOnTap.apk"
+"$GODOT_EXECUTABLE" --headless --export-release "$EXPORT_PRESET_ANDROID" "$BUILD_DIR_ANDROID/FolkloreOnTap.aab"
 
 echo "🚀 Envoi vers itch.io avec Butler..."
 "$BUTLER_EXECUTABLE" push "$BUILD_DIR_WIN" "$ITCH_USER/$ITCH_GAME:windows"
-"$BUTLER_EXECUTABLE" push "$BUILD_DIR_ANDROID" "$ITCH_USER/$ITCH_GAME:android"
+"$BUTLER_EXECUTABLE" push "$BUILD_DIR_ANDROID/FolkloreOnTap.apk" "$ITCH_USER/$ITCH_GAME:android"
+"$BUTLER_EXECUTABLE" push "$BUILD_DIR_ANDROID/FolkloreOnTap.aab" "$ITCH_USER/$ITCH_GAME:android"
 echo "✅ Envoi Itch.io terminé."
 
 echo "🎉 Déploiement terminé ! Le projet est en ligne."

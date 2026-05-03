@@ -15,6 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://bqdgrwlaoentt" path="res://assets/UI/Icons/settings.png" id="12_settings"]
 [ext_resource type="PackedScene" uid="uid://chf35my53chkb" path="res://scenes/UI/RoadMap.tscn" id="13_7hp7j"]
 [ext_resource type="PackedScene" uid="uid://bxnlgllnletcq" path="res://scenes/UI/Draw.tscn" id="14_draw"]
+[ext_resource type="PackedScene" uid="uid://btdgo06qatlch" path="res://scenes/UI/Components/GetAppButton.tscn" id="15_get_app_button"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dc875"]
 
@@ -115,9 +116,9 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -80.0
-offset_top = 120.99999
+offset_top = 160.0
 offset_right = 320.0
-offset_bottom = 281.0
+offset_bottom = 321.0
 grow_horizontal = 2
 scale = Vector2(0.7, 0.7)
 pivot_offset = Vector2(200, 0)
@@ -303,13 +304,9 @@ theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
 text = "QUIT TO MENU"
 
-[node name="TextureButton" type="TextureButton" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1308959961]
+[node name="GetAppButton" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1759722624 instance=ExtResource("15_get_app_button")]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
-mouse_default_cursor_shape = 2
-texture_normal = ExtResource("4_56cg4")
-ignore_texture_size = true
-stretch_mode = 5
 
 [node name="RoadMap" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1655735994 instance=ExtResource("13_7hp7j")]
 layout_mode = 2
@@ -324,7 +321,7 @@ offset_right = 443.00003
 offset_bottom = 158.0
 grow_horizontal = 1
 grow_vertical = 1
-scale = Vector2(0.7, 0.7)
+scale = Vector2(1, 1)
 
 [node name="BottomPlayerInfo" parent="." unique_id=576959499 instance=ExtResource("3_4s3j0")]
 anchors_preset = 2
@@ -336,7 +333,7 @@ offset_right = 160.0
 offset_bottom = -61.0
 grow_horizontal = 1
 grow_vertical = 0
-scale = Vector2(0.9, 0.9)
+scale = Vector2(1, 1)
 
 [node name="DrawPile" parent="." unique_id=987123456 instance=ExtResource("14_draw")]
 offset_left = 15.0

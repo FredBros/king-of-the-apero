@@ -98,3 +98,22 @@ func _play_damage_feedback() -> void:
 		var offset = Vector2(randf_range(-5, 5), randf_range(-5, 5))
 		shake_tween.tween_property(self , "position", position + offset, 0.05)
 	shake_tween.tween_property(self , "position", position, 0.05)
+
+	# 3. Pulse Portrait
+	if portrait_rect:
+		var container = portrait_rect.get_parent()
+		if container is Control:
+			container.pivot_offset = container.size / 2.0
+			var portrait_tween = create_tween()
+			portrait_tween.tween_property(container, "scale", Vector2(1.25, 1.25), 0.1).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			portrait_tween.tween_property(container, "scale", Vector2.ONE, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+
+	# 4. Pulse Label (scale supérieur + flash rouge)
+	if health_label:
+		health_label.pivot_offset = health_label.size / 2.0
+		var label_tween = create_tween()
+		label_tween.tween_property(health_label, "scale", Vector2(1.7, 1.7), 0.1).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		label_tween.tween_property(health_label, "scale", Vector2.ONE, 0.4).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+		
+		health_label.modulate = Color(2.0, 0.5, 0.5) # Coloration rougeâtre vif
+		label_tween.parallel().tween_property(health_label, "modulate", Color.WHITE, 0.3).set_delay(0.1)

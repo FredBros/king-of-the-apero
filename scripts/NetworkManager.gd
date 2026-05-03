@@ -10,7 +10,7 @@ signal game_message_received(data: Dictionary)
 signal game_starting
 
 const PORT = 443 # Port standard HTTPS/WSS
-const DEFAULT_SERVER_IP = "kotapero.xyz" # Production
+const DEFAULT_SERVER_IP = "play.folkloreontap.com" # Production
 const GAME_SCENE_PATH = "res://scenes/Arena.tscn" # TODO: Verify this is the correct path to your game scene!
 const LOBBY_SCENE_PATH = "res://scenes/Lobby.tscn" # TODO: Verify the path to your Lobby/Main scene
 

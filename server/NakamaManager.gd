@@ -45,7 +45,7 @@ func _load_config() -> void:
 		# Configuration de Production (Export)
 		# S'active pour TOUT export (Debug ou Release) tant qu'on n'est pas dans l'éditeur
 		SCHEME = "https"
-		HOST = "kotapero.xyz"
+		HOST = "play.folkloreontap.com"
 		PORT = 443 # Caddy gère le SSL sur le port standard HTTPS
 		SERVER_KEY = "kh66PhYn77ymNBEy"
 		print("🚀 Exported Build detected. Using Production Server: ", HOST)

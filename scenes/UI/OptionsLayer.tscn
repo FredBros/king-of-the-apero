@@ -132,8 +132,8 @@ alignment = 1
 [node name="Label" type="Label" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/VolumeSetup/SFX" unique_id=2071847827]
 material = SubResource("ShaderMaterial_chalk")
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "SON"
+theme_override_font_sizes/font_size = 32
+text = "OPTIONS_SFX"
 horizontal_alignment = 1
 
 [node name="SFXVolume" type="HBoxContainer" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/VolumeSetup/SFX" unique_id=660137699]
@@ -192,8 +192,8 @@ alignment = 1
 [node name="Label" type="Label" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/MusicSetup/Music" unique_id=1248990964]
 material = SubResource("ShaderMaterial_chalk")
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "MUSIQUE"
+theme_override_font_sizes/font_size = 32
+text = "OPTIONS_MUSIC"
 horizontal_alignment = 1
 
 [node name="MusicVolume" type="HBoxContainer" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/MusicSetup/Music" unique_id=594152625]
@@ -253,11 +253,22 @@ alignment = 1
 [node name="Label" type="Label" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/TutoSetup/Tuto" unique_id=1760858747]
 material = SubResource("ShaderMaterial_chalk")
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 32
 text = "OPTIONS_TUTO"
 horizontal_alignment = 1
 
-[node name="TutoButton" type="CheckButton" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/TutoSetup/Tuto" unique_id=381677355]
+[node name="TutoButton" type="CheckBox" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/TutoSetup/Tuto" unique_id=381677355]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_chalk")
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxEmpty_progress_bg")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_progress_bg")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_progress_bg")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_progress_bg")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_progress_bg")
+
+[node name="TutoStateLabel" type="Label" parent="CenterContainer/ChalkPanel/MarginContainer/VBoxContainer/TutoSetup/Tuto" unique_id=1239874560]
 unique_name_in_owner = true
 material = SubResource("ShaderMaterial_chalk")
 layout_mode = 2

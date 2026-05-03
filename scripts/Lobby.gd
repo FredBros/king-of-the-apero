@@ -8,10 +8,12 @@ extends Control
 @export var paste_button: Button
 @export var back_button: Button
 var start_game_timer: Timer
+var loading_text_timer: Timer
+var loading_dots_count: int = 0
 
 # Port par défaut (doit correspondre à celui dans NetworkManager)
 const DEFAULT_PORT = 443
-const DEFAULT_IP = "kotapero.xyz"
+const DEFAULT_IP = "play.folkloreontap.com"
 
 @onready var share_container: VBoxContainer = %ShareContainer
 @onready var qr_http_request: HTTPRequest = %HTTPRequest
@@ -21,12 +23,14 @@ const DEFAULT_IP = "kotapero.xyz"
 @onready var sms_button: Button = %SMSButton
 @onready var discord_button: Button = %DiscordButton
 
+@onready var chalk_panel: Control = $ChalkPanel
 @onready var loading_overlay: Control = %LoadingOverlay
 @onready var loading_label: Label = %LoadingLabel
+@onready var get_app_button: Control = %GetAppButton
 
 var current_invite_link: String = ""
 # Hébergement direct sur le VPS pour un contrôle total (Instant Play).
-const INVITE_BASE_URL = "https://kotapero.xyz/"
+const INVITE_BASE_URL = "https://play.folkloreontap.com/"
 
 const UI_SOUND_COMPONENT_SCENE = preload("res://scenes/Components/UISoundComponent.tscn")
 const CHALK_TIC_SOUND = preload("res://assets/Sounds/UI/chalk_tic.wav")
@@ -43,6 +47,11 @@ func _ready() -> void:
 	start_game_timer.wait_time = 1.0
 	start_game_timer.timeout.connect(_check_start_game)
 	add_child(start_game_timer)
+
+	loading_text_timer = Timer.new()
+	loading_text_timer.wait_time = 0.5
+	loading_text_timer.timeout.connect(_update_loading_text)
+	add_child(loading_text_timer)
 
 	if host_button: host_button.pressed.connect(_on_host_pressed)
 	if join_button: join_button.pressed.connect(_on_join_pressed)
@@ -98,6 +107,13 @@ func _ready() -> void:
 	_setup_button_feedback(whatsapp_button)
 	_setup_button_feedback(sms_button)
 	_setup_button_feedback(discord_button)
+
+	# Affiche le bouton "Get App" uniquement sur la version Web
+	if get_app_button:
+		if OS.has_feature("web"):
+			get_app_button.show()
+		else:
+			get_app_button.hide()
 
 func _on_back_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/Home.tscn")
@@ -210,8 +226,11 @@ func _on_game_starting() -> void:
 	# Affiche un écran de chargement plein écran pour masquer le remaniement de l'interface
 	# et fournir un retour clair à l'utilisateur pendant que la scène de jeu se charge.
 	if loading_overlay and loading_label:
+		loading_dots_count = 0
 		loading_label.text = tr("LOBBY_STATUS_STARTING")
 		loading_overlay.show()
+		if chalk_panel: chalk_panel.hide()
+		loading_text_timer.start()
 	else: # Fallback au cas où l'overlay ne serait pas configuré
 		if back_button: back_button.hide()
 		if share_container: share_container.hide()
@@ -309,6 +328,15 @@ func _on_discord_pressed() -> void:
 		if status_label: status_label.text = tr("LOBBY_STATUS_LINK_COPIED_DISCORD")
 		# Discord n'a pas de scheme 'share' universel. On ouvre l'app/web sur les DMs.
 		OS.shell_open("https://discord.com/channels/@me")
+
+func _update_loading_text() -> void:
+	if not loading_label or not loading_label.is_visible_in_tree():
+		loading_text_timer.stop()
+		return
+
+	loading_dots_count = (loading_dots_count + 1) % 4 # Cycle 0, 1, 2, 3
+	var dots = ".".repeat(loading_dots_count)
+	loading_label.text = tr("LOBBY_STATUS_STARTING") + dots
 
 func _setup_button_feedback(btn: Button) -> void:
 	if not btn: return

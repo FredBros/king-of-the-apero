@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://btdgo06qatlch"]
+
+[ext_resource type="Script" path="res://scripts/UI/Components/get_app_button.gd" id="1_8mg7n"]
+[ext_resource type="Texture2D" uid="uid://kwp8lu25bm1n" path="res://assets/UI/Btn/CTA.png" id="2_cta_texture"]
+
+[node name="GetAppButton" type="Control" unique_id=1759722624]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+script = ExtResource("1_8mg7n")
+
+[node name="TextureButton" type="TextureButton" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("2_cta_texture")
+ignore_texture_size = true
+stretch_mode = 5
