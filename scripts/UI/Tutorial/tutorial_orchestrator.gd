@@ -127,7 +127,7 @@ func _are_conditions_met(conditions: Dictionary, step_id: String = "") -> bool:
 	return true
 
 func _on_turn_started(_player_name: String) -> void:
-	if is_instance_valid(game_manager) and _player_name == game_manager._get_my_player_name():
+	if is_instance_valid(game_manager) and _player_name == game_manager.get_my_name():
 		_local_player_turn_count += 1
 		
 	# On débloque l'attente à chaque changement de tour (pour ne pas bloquer les tutos du tour adverse)
@@ -144,7 +144,7 @@ func _on_turn_started(_player_name: String) -> void:
 		tree.create_timer(0.6).timeout.connect(evaluate_tutorials)
 
 func _on_card_played(player_name: String, _card: Resource, _is_use: bool) -> void:
-	if player_name != game_manager._get_my_player_name():
+	if player_name != game_manager.get_my_name():
 		_opponent_just_played = true
 		if _is_use:
 			_opponent_is_slapping = true
@@ -179,7 +179,7 @@ func _check_single_condition(key: String) -> bool:
 				var active_wrestler = game_manager.get_active_wrestler()
 				if active_wrestler:
 					# Compare précisément le perso actif avec notre "vrai" nom local
-					return active_wrestler.name == game_manager._get_my_player_name()
+					return active_wrestler.name == game_manager.get_my_name()
 			return false
 			
 		"has_move_card":
@@ -197,7 +197,7 @@ func _check_single_condition(key: String) -> bool:
 			# En mode réseau, seul l'attaquant attend la réaction. Le défenseur a juste un contexte.
 			if not game_manager.pending_defense_context.is_empty():
 				var ctx = game_manager.pending_defense_context
-				var my_name = game_manager._get_my_player_name()
+				var my_name = game_manager.get_my_name()
 				var defender_id = ctx.get("target_id")
 				
 				var defender_name = ""
@@ -243,8 +243,8 @@ func _has_card_matching(only_playable: bool, color_target: String) -> bool:
 		if game_manager.has_method("get_playable_cards_in_hand"):
 			cards_to_check = game_manager.get_playable_cards_in_hand()
 	else:
-		if game_manager.has_method("_get_my_player_name") and game_manager.has_method("get_player_hand"):
-			var my_name = game_manager._get_my_player_name()
+		if game_manager.has_method("get_player_hand"):
+			var my_name = game_manager.get_my_name()
 			cards_to_check = game_manager.get_player_hand(my_name)
 			
 	# On vérifie la couleur des cartes

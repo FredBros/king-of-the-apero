@@ -115,8 +115,6 @@ func _ready() -> void:
 			game_manager.card_drawn.connect(add_card_to_hand)
 		if not game_manager.card_discarded.is_connected(remove_card_from_hand):
 			game_manager.card_discarded.connect(remove_card_from_hand)
-		if not game_manager.game_restarted.is_connected(_on_game_restarted):
-			game_manager.game_restarted.connect(_on_game_restarted)
 		if not game_manager.rematch_update.is_connected(_on_rematch_update):
 			game_manager.rematch_update.connect(_on_rematch_update)
 		if not game_manager.versus_screen_requested.is_connected(_on_versus_screen_requested):
@@ -288,7 +286,7 @@ func _on_game_paused(is_paused: bool, _initiator_name: String) -> void:
 		return
 		
 	if game_manager_ref:
-		var my_name = game_manager_ref._get_my_player_name()
+		var my_name = game_manager_ref.get_my_name()
 		if game_manager_ref.players_in_pause.has(my_name):
 			# Je suis en pause localement (mon propre tuto est ouvert). On ne montre pas l'overlay réseau.
 			if network_pause_overlay: network_pause_overlay.hide()
@@ -332,12 +330,6 @@ func update_turn_info(player_name: String, skip_anim: bool = false) -> void:
 	turn_label.text = "YOUR TURN" if is_my_turn else "OPPONENT'S TURN"
 	end_turn_button.set_player_turn(is_my_turn, skip_anim)
 	_update_discard_zone_visibility()
-
-func _on_game_restarted() -> void:
-	game_over_container.hide()
-	clear_hand()
-	_set_gameplay_ui_visible(false) # Cache l'UI pour le nouveau Versus Screen
-	# The scene is reloaded on restart, so UI state is reset automatically.
 
 func _on_rematch_update(current: int, total: int) -> void:
 	# Si l'adversaire a voté avant nous, on peut afficher un message
@@ -533,7 +525,7 @@ func _on_card_played_visual(player_name: String, card_data: CardData, is_use: bo
 	# On ignore nos propres actions (déjà animées par le drag & drop)
 	# On ignore aussi en Hotseat car les deux joueurs partagent la main du bas
 	if not game_manager_ref or game_manager_ref.enable_hotseat_mode: return
-	if player_name == game_manager_ref._get_my_player_name(): return
+	if player_name == game_manager_ref.get_my_name(): return
 	
 	if is_use:
 		_animate_opponent_slap(card_data)

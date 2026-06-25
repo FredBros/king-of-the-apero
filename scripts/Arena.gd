@@ -122,10 +122,8 @@ func _check_hand_playability() -> void:
 func _update_hand_display(player_name: String) -> void:
 	# In hotseat mode, we refresh the hand to show the specific player's cards.
 	# In network mode, we usually rely on signals, but sometimes a full refresh is needed (e.g. restart).
-	var is_local = false
-	if game_manager.has_method("_get_my_player_name"):
-		is_local = (player_name == game_manager.get_my_name())
-	
+	var is_local = (player_name == game_manager.get_my_name())
+
 	if game_manager.is_in_hotseat_mode() or is_local:
 		var hand = game_manager.get_player_hand(player_name)
 		

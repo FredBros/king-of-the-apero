@@ -8,7 +8,6 @@ signal card_discarded(card: CardData)
 signal turn_ended
 signal reaction_phase_started(attack_card: CardData, valid_cards: Array[CardData])
 signal grid_action_received(data: Dictionary)
-signal game_restarted
 signal rematch_update(current_votes: int, total_required: int)
 signal refresh_hand_requested(player_name: String)
 signal game_over(winner_name: String)
@@ -148,10 +147,6 @@ func is_in_hotseat_mode() -> bool:
 	return enable_hotseat_mode
 
 func get_my_name() -> String:
-	return network_sync.get_my_name()
-
-# Compatibilité Arena.gd qui appelle encore _get_my_player_name()
-func _get_my_player_name() -> String:
 	return network_sync.get_my_name()
 
 func is_local_player_active() -> bool:
