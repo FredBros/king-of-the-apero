@@ -1,4 +1,4 @@
-# Roadmap - King of the Apero
+# Roadmap - Folklore On Tap
 
 ## ✅ Phase 1: Mechanical Prototype (POC) - COMPLETED
 Focus: Core gameplay loop, multiplayer synchronization, and basic rules.

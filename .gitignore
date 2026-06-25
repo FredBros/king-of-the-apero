@@ -11,3 +11,6 @@ server/.env
 
 # Fichier de secrets pour le développement local du client
 secrets.cfg
+
+# Console logs pour debugage
+logs.txt

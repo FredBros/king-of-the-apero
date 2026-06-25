@@ -1,4 +1,4 @@
-# Product Requirements Document (PRD) - King of the Apero
+# Product Requirements Document (PRD) - Folklore On Tap
 
 ## Vision
 Adaptation numérique du jeu de plateau "Les Rois du Ring". Un jeu de stratégie au tour par tour en 1v1, rapide ("jeu apéro").

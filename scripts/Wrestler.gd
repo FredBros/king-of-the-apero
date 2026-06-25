@@ -357,6 +357,8 @@ func look_at_target(target_pos: Vector3) -> void:
 func _perform_look_at(target_pos: Vector3) -> void:
 	var look_pos = target_pos
 	look_pos.y = global_position.y
+	if look_pos.is_equal_approx(global_position):
+		return
 	look_at(look_pos, Vector3.UP)
 	rotate_y(PI) # Rotate 180 degrees because the model faces +Z (Backwards)
 

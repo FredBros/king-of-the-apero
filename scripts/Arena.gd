@@ -124,7 +124,7 @@ func _update_hand_display(player_name: String) -> void:
 	# In network mode, we usually rely on signals, but sometimes a full refresh is needed (e.g. restart).
 	var is_local = false
 	if game_manager.has_method("_get_my_player_name"):
-		is_local = (player_name == game_manager._get_my_player_name())
+		is_local = (player_name == game_manager.get_my_name())
 	
 	if game_manager.is_in_hotseat_mode() or is_local:
 		var hand = game_manager.get_player_hand(player_name)
@@ -140,7 +140,7 @@ func _update_hand_display(player_name: String) -> void:
 func _setup_player_camera_view() -> void:
 	if not game_manager: return
 	
-	var my_name = game_manager._get_my_player_name()
+	var my_name = game_manager.get_my_name()
 	
 	# Player 1 spawns at Top (Negative Z), so needs rotation to be at Bottom
 	if my_name == "Player 1":
@@ -172,7 +172,7 @@ func _on_wrestlers_spawned(wrestlers: Array[Wrestler]) -> void:
 func _update_ui_player_perspectives() -> void:
 	if not game_manager or not game_ui: return
 	
-	var my_name = game_manager._get_my_player_name()
+	var my_name = game_manager.get_my_name()
 	var local_wrestler = null
 	var remote_wrestler = null
 	
