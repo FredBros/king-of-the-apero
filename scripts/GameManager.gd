@@ -16,6 +16,7 @@ signal versus_screen_requested(local_data: WrestlerData, remote_data: WrestlerDa
 signal opponent_skipped_versus
 signal player_hand_counts_updated(counts: Dictionary)
 signal card_played_visual(player_name: String, card: CardData, is_use: bool)
+signal combo_changed(position: int)
 signal deck_count_updated(count: int)
 
 @export var character_pool: Array[WrestlerData]
@@ -93,6 +94,9 @@ func _wire_subsystems() -> void:
 	turn_manager.turn_started.connect(turn_started.emit)
 	turn_manager.turn_ended.connect(turn_ended.emit)
 	turn_manager.afk_penalty_triggered.connect(_on_afk_penalty)
+	turn_manager.combo_changed.connect(combo_changed.emit)
+
+	hand_manager.card_played_visual.connect(_on_card_played_for_combo)
 
 	combat_sequencer.reaction_phase_started.connect(reaction_phase_started.emit)
 	combat_sequencer.defender_hand_refresh_needed.connect(refresh_hand_requested.emit)
@@ -347,11 +351,19 @@ func _on_network_message(data: Dictionary) -> void:
 # HANDLERS D'ÉTAT GLOBAL (restent dans GameManager)
 # ============================================================
 
+func _on_card_played_for_combo(player_name: String, card: CardData, is_use: bool) -> void:
+	if not is_use: return
+	if player_name != turn_manager.get_active_player_name(): return
+	# En réseau, le signal arrive sur les 2 appareils via SYNC_CARD_PLAYED.
+	# On ne compte le combo que si c'est notre carte (joueur local).
+	if not network_sync.is_hotseat and player_name != network_sync.get_my_name(): return
+	turn_manager.register_card_played(card)
+
 func _on_afk_penalty(player_name: String) -> void:
 	send_floating_text(player_name, "AFK PENALTY!", Color(1.0, 0.5, 0.0))
 	for p in players:
 		if p.name == player_name:
-			p.take_damage(1)
+			p.take_damage(1, false, true)
 			break
 
 func _on_deck_empty() -> void:

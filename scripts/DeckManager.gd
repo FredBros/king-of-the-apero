@@ -36,7 +36,7 @@ func _create_standard_deck() -> void:
 	for suit in suits:
 		for rank in range(1, 13):
 			var card = CardData.new()
-			card.value = rank
+			card.tier = ceili(rank / 3.0)
 			card.suit = suit
 			
 			match suit:
@@ -46,8 +46,7 @@ func _create_standard_deck() -> void:
 				"Diamonds": card.symbol = "+" # Orthogonal (ASCII)
 			
 			# Set Rank Label
-			if rank == 1: card.rank_label = "A"
-			else: card.rank_label = str(rank)
+			card.rank_label = "T" + str(ceili(rank / 3.0))
 			
 			card.title = card.symbol + " " + card.rank_label
 			
@@ -72,15 +71,15 @@ func _create_standard_deck() -> void:
 		var card = CardData.new()
 		card.type = CardData.CardType.MOVE
 		card.pattern = CardData.MovePattern.OMNI
-		card.value = 1
+		card.tier = 1
 		card.title = "JOKER"
 		card.suit = "Joker"
 		card.symbol = "*"
 		draw_pile.append(card)
 
-func _create_card(type: CardData.CardType, value: int, title: String) -> CardData:
+func _create_card(type: CardData.CardType, tier: int, title: String) -> CardData:
 	var card = CardData.new()
 	card.type = type
-	card.value = value
+	card.tier = tier
 	card.title = title
 	return card

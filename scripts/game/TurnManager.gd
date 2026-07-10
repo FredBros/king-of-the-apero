@@ -7,6 +7,7 @@ extends Node
 signal turn_started(player_name: String)
 signal turn_ended
 signal afk_penalty_triggered(player_name: String)
+signal combo_changed(position: int)
 
 var _net: NetworkSync
 var _hand: HandManager
@@ -15,6 +16,8 @@ var _players: Array[Wrestler] = []
 var active_player_index: int = 0
 var has_acted_this_turn: bool = false
 var is_game_active: bool = false
+var combo_position: int = 0
+var _last_combo_tier: int = 0
 
 func setup(net: NetworkSync, hand: HandManager) -> void:
 	_net = net
@@ -70,8 +73,20 @@ func on_net_request_end_turn(sender_id: String) -> void:
 
 # --- Privé ---
 
+func register_card_played(card: CardData) -> void:
+	var effective_tier = 4 if card.suit == "Joker" else card.tier
+	if effective_tier > _last_combo_tier:
+		combo_position += 1
+	else:
+		combo_position = 1
+	_last_combo_tier = effective_tier
+	combo_changed.emit(combo_position)
+
 func _start_turn() -> void:
 	has_acted_this_turn = false
+	combo_position = 0
+	_last_combo_tier = 0
+	combo_changed.emit(0)
 	var current = _players[active_player_index]
 	print("TurnManager: Début du tour — ", current.name)
 	_handle_sync_turn(current.name)

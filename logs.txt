@@ -6,76 +6,59 @@ OpenGL API 3.3.0 Core Profile Context 25.10.30.02.250923 - Compatibility - Using
 
 🔒 Configuration loaded from secrets.cfg
 ✅ Nakama Client initialized: https://play.folkloreontap.com:443
-=== Nakama : DEBUG === Sending request [ID: 1, Method: POST, Uri: https://play.folkloreontap.com:443/v2/account/authenticate/device?create=true&, Headers: { "Authorization": "Basic a2g2NlBoWW43N3ltTkJFeTo=" }, Body: {"id":"{a80902de-aa4a-11ef-bb71-806e6f6e6963}_1364"}, Timeout: 3, Retries: 3, Backoff base: 10 ms]
+=== Nakama : DEBUG === Sending request [ID: 1, Method: POST, Uri: https://play.folkloreontap.com:443/v2/account/authenticate/device?create=true&, Headers: { "Authorization": "Basic a2g2NlBoWW43N3ltTkJFeTo=" }, Body: {"id":"{a80902de-aa4a-11ef-bb71-806e6f6e6963}_12084"}, Timeout: 3, Retries: 3, Backoff base: 10 ms]
 🔒 Configuration loaded from secrets.cfg
 ✅ Nakama Client initialized: https://play.folkloreontap.com:443
-=== Nakama : DEBUG === Sending request [ID: 1, Method: POST, Uri: https://play.folkloreontap.com:443/v2/account/authenticate/device?create=true&, Headers: { "Authorization": "Basic a2g2NlBoWW43N3ltTkJFeTo=" }, Body: {"id":"{a80902de-aa4a-11ef-bb71-806e6f6e6963}_20744"}, Timeout: 3, Retries: 3, Backoff base: 10 ms]
+=== Nakama : DEBUG === Sending request [ID: 1, Method: POST, Uri: https://play.folkloreontap.com:443/v2/account/authenticate/device?create=true&, Headers: { "Authorization": "Basic a2g2NlBoWW43N3ltTkJFeTo=" }, Body: {"id":"{a80902de-aa4a-11ef-bb71-806e6f6e6963}_2500"}, Timeout: 3, Retries: 3, Backoff base: 10 ms]
 === Nakama : DEBUG === Freeing request 1
-✅ Authenticated! Session Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiI2ODM1YjdmYi1mOThlLTQ2Y2ItYWY4MS1iYzUxZTk0OWFjNDEiLCJ1aWQiOiI0YzAzZDA5My00ZWI5LTRjMTYtYWJlOS05NTRjZmQxNWE3NjUiLCJ1c24iOiJKQlh6YWtDd1ZsIiwiZXhwIjoxNzgyMzY4NTA2fQ.xZNUuNGR6uBV_oFZlpUoeQnjH3VlWU1g1_6MnVVpFtc
-👤 User ID: 4c03d093-4eb9-4c16-abe9-954cfd15a765
-=== Nakama : DEBUG === Connecting to host: wss://play.folkloreontap.com/ws?lang=en&status=false&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiI2ODM1YjdmYi1mOThlLTQ2Y2ItYWY4MS1iYzUxZTk0OWFjNDEiLCJ1aWQiOiI0YzAzZDA5My00ZWI5LTRjMTYtYWJlOS05NTRjZmQxNWE3NjUiLCJ1c24iOiJKQlh6YWtDd1ZsIiwiZXhwIjoxNzgyMzY4NTA2fQ.xZNUuNGR6uBV_oFZlpUoeQnjH3VlWU1g1_6MnVVpFtc
+✅ Authenticated! Session Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiI1MzE4MjA2MS1iMjBiLTRkZmQtODM0Ni0zODUxNWExNTE0OTMiLCJ1aWQiOiIyN2JhYThkNy0zNDE2LTQzN2UtOTVkZS05MTg2MmZlMTgyOWQiLCJ1c24iOiJTRHpGb2VKTG5lIiwiZXhwIjoxNzgyNzE0MDQ3fQ.3JBGdPb1Iw73rnp0NCmL6qbkd4rSI5SuON-IsMkdT90
+👤 User ID: 27baa8d7-3416-437e-95de-91862fe1829d
+=== Nakama : DEBUG === Connecting to host: wss://play.folkloreontap.com/ws?lang=en&status=false&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiI1MzE4MjA2MS1iMjBiLTRkZmQtODM0Ni0zODUxNWExNTE0OTMiLCJ1aWQiOiIyN2JhYThkNy0zNDE2LTQzN2UtOTVkZS05MTg2MmZlMTgyOWQiLCJ1c24iOiJTRHpGb2VKTG5lIiwiZXhwIjoxNzgyNzE0MDQ3fQ.3JBGdPb1Iw73rnp0NCmL6qbkd4rSI5SuON-IsMkdT90
 === Nakama : DEBUG === Freeing request 1
-✅ Authenticated! Session Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiIyY2M0NzA0YS0xY2EwLTRlMTktYThjZS04ZDdjNTMyNGMwNzciLCJ1aWQiOiJiYTdmNGRmZS02M2QzLTQ1ZDItODhkOC00ZTE4Y2E1N2I0NmYiLCJ1c24iOiJubG1HVW94bUdzIiwiZXhwIjoxNzgyMzY4NTA2fQ.t-HfVlXWMJ1mc0PNXGRBcxth9t2uwNNWcpreqqYYERE
-👤 User ID: ba7f4dfe-63d3-45d2-88d8-4e18ca57b46f
-=== Nakama : DEBUG === Connecting to host: wss://play.folkloreontap.com/ws?lang=en&status=false&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiIyY2M0NzA0YS0xY2EwLTRlMTktYThjZS04ZDdjNTMyNGMwNzciLCJ1aWQiOiJiYTdmNGRmZS02M2QzLTQ1ZDItODhkOC00ZTE4Y2E1N2I0NmYiLCJ1c24iOiJubG1HVW94bUdzIiwiZXhwIjoxNzgyMzY4NTA2fQ.t-HfVlXWMJ1mc0PNXGRBcxth9t2uwNNWcpreqqYYERE
+✅ Authenticated! Session Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiIyN2M1NzYwYy1hNGM2LTQyMjItYmI5ZS1jZDNiOTI4ZTlmM2MiLCJ1aWQiOiI0NDE3NWEwMC0xNTY4LTRlNTItYjgxMC0xYWMwMTM4MDU4OGIiLCJ1c24iOiJKUWNoR21qQkd0IiwiZXhwIjoxNzgyNzE0MDQ3fQ.1iP4oHAgRZWDyw7MmYsxLUAJexSpPPSAWq5NF8IaFN0
+👤 User ID: 44175a00-1568-4e52-b810-1ac01380588b
+=== Nakama : DEBUG === Connecting to host: wss://play.folkloreontap.com/ws?lang=en&status=false&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiIyN2M1NzYwYy1hNGM2LTQyMjItYmI5ZS1jZDNiOTI4ZTlmM2MiLCJ1aWQiOiI0NDE3NWEwMC0xNTY4LTRlNTItYjgxMC0xYWMwMTM4MDU4OGIiLCJ1c24iOiJKUWNoR21qQkd0IiwiZXhwIjoxNzgyNzE0MDQ3fQ.1iP4oHAgRZWDyw7MmYsxLUAJexSpPPSAWq5NF8IaFN0
 === Nakama : INFO === Connected!
 ✅ Socket Connected! Ready for Multiplayer.
 === Nakama : INFO === Connected!
 ✅ Socket Connected! Ready for Multiplayer.
 ⚡ Creating a new match...
 === Nakama : DEBUG === Sending async request: MatchCreate<name=<null>>
-=== Nakama : DEBUG === Resuming request: 1: { "cid": "1", "match": { "match_id": "2a0a42b8-a311-46d0-9cf1-434e6e8a6c29.", "size": 1.0, "self": { "user_id": "4c03d093-4eb9-4c16-abe9-954cfd15a765", "session_id": "60c4227c-704d-11f1-80ff-7106fdcb5b46", "username": "JBXzakCwVl" } } }
-✅ Match Created! ID: 2a0a42b8-a311-46d0-9cf1-434e6e8a6c29.
-📢 Match ID to share: 2a0a42b8-a311-46d0-9cf1-434e6e8a6c29.
-⏳ Joining match manually: 2a0a42b8-a311-46d0-9cf1-434e6e8a6c29.
+=== Nakama : DEBUG === Resuming request: 1: { "cid": "1", "match": { "match_id": "24094daa-fb90-4f2c-90fe-2e2fa6f48e7a.", "size": 1.0, "self": { "user_id": "44175a00-1568-4e52-b810-1ac01380588b", "session_id": "e7996b97-7371-11f1-80ff-7106fdcb5b46", "username": "JQchGmjBGt" } } }
+✅ Match Created! ID: 24094daa-fb90-4f2c-90fe-2e2fa6f48e7a.
+📢 Match ID to share: 24094daa-fb90-4f2c-90fe-2e2fa6f48e7a.
+⏳ Joining match manually: 24094daa-fb90-4f2c-90fe-2e2fa6f48e7a.
 ⚓ Joining match manually to fetch presences...
-=== Nakama : DEBUG === Sending async request: MatchJoin<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., token=<null>, metadata=<null>>
-DEBUG: Socket received presence event for match: 2a0a42b8-a311-46d0-9cf1-434e6e8a6c29.
+=== Nakama : DEBUG === Sending async request: MatchJoin<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., token=<null>, metadata=<null>>
+DEBUG: Socket received presence event for match: 24094daa-fb90-4f2c-90fe-2e2fa6f48e7a.
 DEBUG: Joins: 1 Leaves: 0
-=== Nakama : DEBUG === Resuming request: 2: { "cid": "2", "match": { "match_id": "2a0a42b8-a311-46d0-9cf1-434e6e8a6c29.", "size": 1.0, "presences": [{ "user_id": "4c03d093-4eb9-4c16-abe9-954cfd15a765", "session_id": "60c4227c-704d-11f1-80ff-7106fdcb5b46", "username": "JBXzakCwVl" }], "self": { "user_id": "4c03d093-4eb9-4c16-abe9-954cfd15a765", "session_id": "60c4227c-704d-11f1-80ff-7106fdcb5b46", "username": "JBXzakCwVl" } } }
+=== Nakama : DEBUG === Resuming request: 2: { "cid": "2", "match": { "match_id": "24094daa-fb90-4f2c-90fe-2e2fa6f48e7a.", "size": 1.0, "presences": [{ "user_id": "44175a00-1568-4e52-b810-1ac01380588b", "session_id": "e7996b97-7371-11f1-80ff-7106fdcb5b46", "username": "JQchGmjBGt" }], "self": { "user_id": "44175a00-1568-4e52-b810-1ac01380588b", "session_id": "e7996b97-7371-11f1-80ff-7106fdcb5b46", "username": "JQchGmjBGt" } } }
 ✅ Manual Join Success. Presences count: 1
-✅ Match Joined! ID: 2a0a42b8-a311-46d0-9cf1-434e6e8a6c29.
-👤 Self ID: 4c03d093-4eb9-4c16-abe9-954cfd15a765
+✅ Match Joined! ID: 24094daa-fb90-4f2c-90fe-2e2fa6f48e7a.
+👤 Self ID: 44175a00-1568-4e52-b810-1ac01380588b
 DEBUG: Checking start game. Peers count: 0
 DEBUG: Checking start game. Peers count: 0
 DEBUG: Checking start game. Peers count: 0
 DEBUG: Checking start game. Peers count: 0
-DEBUG: Checking start game. Peers count: 0
-DEBUG: Checking start game. Peers count: 0
-DEBUG: Checking start game. Peers count: 0
-⏳ Joining match manually: 2a0a42b8-a311-46d0-9cf1-434e6e8a6c29.
+⏳ Joining match manually: 24094daa-fb90-4f2c-90fe-2e2fa6f48e7a.
 ⚓ Joining match manually to fetch presences...
-=== Nakama : DEBUG === Sending async request: MatchJoin<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., token=<null>, metadata=<null>>
-DEBUG: Socket received presence event for match: 2a0a42b8-a311-46d0-9cf1-434e6e8a6c29.
+=== Nakama : DEBUG === Sending async request: MatchJoin<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., token=<null>, metadata=<null>>
+=== Nakama : DEBUG === Resuming request: 1: { "cid": "1", "match": { "match_id": "24094daa-fb90-4f2c-90fe-2e2fa6f48e7a.", "size": 1.0, "presences": [{ "user_id": "44175a00-1568-4e52-b810-1ac01380588b", "session_id": "e7996b97-7371-11f1-80ff-7106fdcb5b46", "username": "JQchGmjBGt" }], "self": { "user_id": "27baa8d7-3416-437e-95de-91862fe1829d", "session_id": "e7971a01-7371-11f1-80ff-7106fdcb5b46", "username": "SDzFoeJLne" } } }
+✅ Manual Join Success. Presences count: 1
+✅ Match Joined! ID: 24094daa-fb90-4f2c-90fe-2e2fa6f48e7a.
+👤 Self ID: 27baa8d7-3416-437e-95de-91862fe1829d
+DEBUG: Checking start game. Peers count: 1
+DEBUG: Checking start game. Peers count: 1
+DEBUG: Socket received presence event for match: 24094daa-fb90-4f2c-90fe-2e2fa6f48e7a.
 DEBUG: Joins: 1 Leaves: 0
-👋 Player Joined: nlmGUoxmGs
+DEBUG: Socket received presence event for match: 24094daa-fb90-4f2c-90fe-2e2fa6f48e7a.
+DEBUG: Joins: 1 Leaves: 0
+👋 Player Joined: SDzFoeJLne
 DEBUG: Checking start game. Peers count: 1
 Enough players! Can start game logic here.
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJ0eXBlIjoiU1RBUlRfR0FNRSJ9>
-=== Nakama : DEBUG === Resuming request: 1: { "cid": "1", "match": { "match_id": "2a0a42b8-a311-46d0-9cf1-434e6e8a6c29.", "size": 1.0, "presences": [{ "user_id": "4c03d093-4eb9-4c16-abe9-954cfd15a765", "session_id": "60c4227c-704d-11f1-80ff-7106fdcb5b46", "username": "JBXzakCwVl" }], "self": { "user_id": "ba7f4dfe-63d3-45d2-88d8-4e18ca57b46f", "session_id": "60c45109-704d-11f1-80ff-7106fdcb5b46", "username": "nlmGUoxmGs" } } }
-✅ Manual Join Success. Presences count: 1
-✅ Match Joined! ID: 2a0a42b8-a311-46d0-9cf1-434e6e8a6c29.
-👤 Self ID: ba7f4dfe-63d3-45d2-88d8-4e18ca57b46f
-DEBUG: Checking start game. Peers count: 1
-DEBUG: Checking start game. Peers count: 1
-DEBUG: Socket received presence event for match: 2a0a42b8-a311-46d0-9cf1-434e6e8a6c29.
-DEBUG: Joins: 1 Leaves: 0
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJ0eXBlIjoiU1RBUlRfR0FNRSJ9>
 🎮 Received START_GAME command.
 Grid initialized. Cell (0,0) is at World Pos: (-2.4, 0.0, -2.4)
-Grid initialized. Cell (0,0) is at World Pos: (-2.4, 0.0, -2.4)
-🔥 PreWarmer: Starting background warm-up...
-🔥 PreWarmer: Warming up 1 particles...
-   -> Spawning particle: res://scenes/SmokePuff.tscn
-🔥 PreWarmer: Warming up 9 sounds...
-   -> Playing sound silently: res://assets/Sounds/block/block_default.wav
-   -> Playing sound silently: res://assets/Sounds/Hurt/hurt_default.ogg
-   -> Playing sound silently: res://assets/Sounds/KO/Death Rattle/death_rattle_default.wav
-   -> Playing sound silently: res://assets/Sounds/KO/Fall Impact/346694__deleted_user_2104797__body-fall_02.wav
-   -> Playing sound silently: res://assets/Sounds/Punch/Impact/punch_default.mp3
-   -> Playing sound silently: res://assets/Sounds/Punch/Voice/shoutingpunches_male_default.wav
-   -> Playing sound silently: res://assets/Sounds/Push/pushed_defaults.wav
-   -> Playing sound silently: res://assets/Sounds/UI/card_slap.wav
-   -> Playing sound silently: res://assets/Sounds/UI/chalk_tic.wav
 🔥 PreWarmer: Starting background warm-up...
 🔥 PreWarmer: Warming up 1 particles...
    -> Spawning particle: res://scenes/SmokePuff.tscn
@@ -90,119 +73,203 @@ Grid initialized. Cell (0,0) is at World Pos: (-2.4, 0.0, -2.4)
    -> Playing sound silently: res://assets/Sounds/UI/card_slap.wav
    -> Playing sound silently: res://assets/Sounds/UI/chalk_tic.wav
 I am Player 1. Rotating camera.
+Grid initialized. Cell (0,0) is at World Pos: (-2.4, 0.0, -2.4)
+🔥 PreWarmer: Starting background warm-up...
+🔥 PreWarmer: Warming up 1 particles...
+   -> Spawning particle: res://scenes/SmokePuff.tscn
+🔥 PreWarmer: Warming up 9 sounds...
+   -> Playing sound silently: res://assets/Sounds/block/block_default.wav
+   -> Playing sound silently: res://assets/Sounds/Hurt/hurt_default.ogg
+   -> Playing sound silently: res://assets/Sounds/KO/Death Rattle/death_rattle_default.wav
+   -> Playing sound silently: res://assets/Sounds/KO/Fall Impact/346694__deleted_user_2104797__body-fall_02.wav
+   -> Playing sound silently: res://assets/Sounds/Punch/Impact/punch_default.mp3
+   -> Playing sound silently: res://assets/Sounds/Punch/Voice/shoutingpunches_male_default.wav
+   -> Playing sound silently: res://assets/Sounds/Push/pushed_defaults.wav
+   -> Playing sound silently: res://assets/Sounds/UI/card_slap.wav
+   -> Playing sound silently: res://assets/Sounds/UI/chalk_tic.wav
 ✅ PreWarmer: Warm-up complete. Self-destructing.
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJwMV9wYXRoIjoicmVzOi8vcmVzb3VyY2VzL0JpZ0d1eS50cmVzIiwicDJfcGF0aCI6InJlczovL3Jlc291cmNlcy9NckVnZ1BsYW50LnRyZXMiLCJ0eXBlIjoiU1lOQ19DSEFSQUNURVJTIn0=>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwMV9wYXRoIjoicmVzOi8vcmVzb3VyY2VzL0JpZ0d1eS50cmVzIiwicDJfcGF0aCI6InJlczovL3Jlc291cmNlcy9NckVnZ1BsYW50LnRyZXMiLCJ0eXBlIjoiU1lOQ19DSEFSQUNURVJTIn0=>
 Personnages sélectionnés: P1=Big Guy P2=MrEggPlant
 PlayerInfo: setup called for Big Guy
 PlayerInfo: HealthGauge max_value set to 10
 PlayerInfo: setup called for MrEggPlant
 PlayerInfo: HealthGauge max_value set to 10
-✅ PreWarmer: Warm-up complete. Self-destructing.
 Personnages sélectionnés: P1=Big Guy P2=MrEggPlant
 PlayerInfo: setup called for MrEggPlant
 PlayerInfo: HealthGauge max_value set to 10
 PlayerInfo: setup called for Big Guy
 PlayerInfo: HealthGauge max_value set to 10
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJ0eXBlIjoiU1lOQ19TS0lQX1ZFUlNVUyJ9>
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJ0eXBlIjoiU1lOQ19TS0lQX1ZFUlNVUyJ9>
+✅ PreWarmer: Warm-up complete. Self-destructing.
 Arena: Starting Fight Sequence (Triggered by VersusScreen)
 🔥 Arena: Final GPU Shader compilation...
 ✅ Arena: GPU compilation complete.
 Arena: Playing Fight Sequence Animation
 Deck shuffled. Count: 50
-DEBUG UI: Adding card X 6 to hand.
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfRFJBVyJ9>
-DEBUG UI: Adding card + 8 to hand.
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfRFJBVyJ9>
-DEBUG UI: Adding card + 9 to hand.
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfRFJBVyJ9>
-DEBUG UI: Adding card + 10 to hand.
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfRFJBVyJ9>
-DEBUG UI: Adding card + 8 to hand.
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfRFJBVyJ9>
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJIZWFydHMiLCJ0aXRsZSI6IlggMiIsInR5cGUiOjEsInZhbHVlIjoyfSwidGFyZ2V0X2lkIjoiYmE3ZjRkZmUtNjNkMy00NWQyLTg4ZDgtNGUxOGNhNTdiNDZmIiwidHlwZSI6IlJFQ0VJVkVfQ0FSRCJ9>
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aXRsZSI6IlggOCIsInR5cGUiOjAsInZhbHVlIjo4fSwidGFyZ2V0X2lkIjoiYmE3ZjRkZmUtNjNkMy00NWQyLTg4ZDgtNGUxOGNhNTdiNDZmIiwidHlwZSI6IlJFQ0VJVkVfQ0FSRCJ9>
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJIZWFydHMiLCJ0aXRsZSI6IlggMyIsInR5cGUiOjEsInZhbHVlIjozfSwidGFyZ2V0X2lkIjoiYmE3ZjRkZmUtNjNkMy00NWQyLTg4ZDgtNGUxOGNhNTdiNDZmIiwidHlwZSI6IlJFQ0VJVkVfQ0FSRCJ9>
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aXRsZSI6IlggNCIsInR5cGUiOjAsInZhbHVlIjo0fSwidGFyZ2V0X2lkIjoiYmE3ZjRkZmUtNjNkMy00NWQyLTg4ZDgtNGUxOGNhNTdiNDZmIiwidHlwZSI6IlJFQ0VJVkVfQ0FSRCJ9>
-DEBUG UI: Adding card X 2 to hand.
-DEBUG UI: Adding card X 8 to hand.
-DEBUG UI: Adding card X 3 to hand.
-DEBUG UI: Adding card X 4 to hand.
-DEBUG UI: Adding card + 6 to hand.
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJEaWFtb25kcyIsInRpdGxlIjoiKyA2IiwidHlwZSI6MSwidmFsdWUiOjZ9LCJ0YXJnZXRfaWQiOiJiYTdmNGRmZS02M2QzLTQ1ZDItODhkOC00ZTE4Y2E1N2I0NmYiLCJ0eXBlIjoiUkVDRUlWRV9DQVJEIn0=>
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjb3VudCI6NDAsInR5cGUiOiJTWU5DX0RFQ0tfQ09VTlQifQ==>
+DEBUG UI: Adding card + T2 to hand.
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfRFJBVyJ9>
+DEBUG UI: Adding card X T1 to hand.
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfRFJBVyJ9>
+DEBUG UI: Adding card + T4 to hand.
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfRFJBVyJ9>
+DEBUG UI: Adding card + T3 to hand.
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfRFJBVyJ9>
+DEBUG UI: Adding card + T4 to hand.
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfRFJBVyJ9>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJIZWFydHMiLCJ0aWVyIjo0LCJ0aXRsZSI6IlggVDQiLCJ0eXBlIjoxfSwidGFyZ2V0X2lkIjoiNDQxNzVhMDAtMTU2OC00ZTUyLWI4MTAtMWFjMDEzODA1ODhiIiwidHlwZSI6IlJFQ0VJVkVfQ0FSRCJ9>
+DEBUG UI: Adding card X T4 to hand.
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJDbHVicyIsInRpZXIiOjMsInRpdGxlIjoiKyBUMyIsInR5cGUiOjB9LCJ0YXJnZXRfaWQiOiI0NDE3NWEwMC0xNTY4LTRlNTItYjgxMC0xYWMwMTM4MDU4OGIiLCJ0eXBlIjoiUkVDRUlWRV9DQVJEIn0=>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aWVyIjozLCJ0aXRsZSI6IlggVDMiLCJ0eXBlIjowfSwidGFyZ2V0X2lkIjoiNDQxNzVhMDAtMTU2OC00ZTUyLWI4MTAtMWFjMDEzODA1ODhiIiwidHlwZSI6IlJFQ0VJVkVfQ0FSRCJ9>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjIsInN1aXQiOiJKb2tlciIsInRpZXIiOjEsInRpdGxlIjoiSk9LRVIiLCJ0eXBlIjowfSwidGFyZ2V0X2lkIjoiNDQxNzVhMDAtMTU2OC00ZTUyLWI4MTAtMWFjMDEzODA1ODhiIiwidHlwZSI6IlJFQ0VJVkVfQ0FSRCJ9>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJDbHVicyIsInRpZXIiOjIsInRpdGxlIjoiKyBUMiIsInR5cGUiOjB9LCJ0YXJnZXRfaWQiOiI0NDE3NWEwMC0xNTY4LTRlNTItYjgxMC0xYWMwMTM4MDU4OGIiLCJ0eXBlIjoiUkVDRUlWRV9DQVJEIn0=>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjb3VudCI6NDAsInR5cGUiOiJTWU5DX0RFQ0tfQ09VTlQifQ==>
 TurnManager: Début du tour — Player 1
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfVFVSTiJ9>
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjb3VudCI6NDAsInR5cGUiOiJTWU5DX0RFQ0tfQ09VTlQifQ==>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfVFVSTiJ9>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjb3VudCI6NDAsInR5cGUiOiJTWU5DX0RFQ0tfQ09VTlQifQ==>
 Arena: Starting Fight Sequence (Triggered by VersusScreen)
 🔥 Arena: Final GPU Shader compilation...
 Arena: Checking hand playability...
+DEBUG UI: Adding card + T3 to hand.
+DEBUG UI: Adding card X T3 to hand.
+DEBUG UI: Adding card JOKER to hand.
+DEBUG UI: Adding card + T2 to hand.
 ✅ Arena: GPU compilation complete.
 Arena: Playing Fight Sequence Animation
 Arena: Checking hand playability...
-GridManager received card: + 9
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJhY3Rpb25fZGF0YSI6eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJDbHVicyIsInRpdGxlIjoiKyA5IiwidHlwZSI6MCwidmFsdWUiOjl9LCJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwieCI6MCwieSI6MX0sInR5cGUiOiJTWU5DX0dSSURfQUNUSU9OIn0=>
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJDbHVicyIsInRpdGxlIjoiKyA5IiwidHlwZSI6MCwidmFsdWUiOjl9LCJpc191c2UiOnRydWUsInBsYXllcl9uYW1lIjoiUGxheWVyIDEiLCJ0eXBlIjoiU1lOQ19DQVJEX1BMQVlFRCJ9>
-DEBUG: Grid action received: { "card": { "pattern": 0.0, "suit": "Clubs", "title": "+ 9", "type": 0.0, "value": 9.0 }, "player_name": "Player 1", "x": 0.0, "y": 1.0 }
-GridManager received card: + 8
+GridManager received card: X T1
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhY3Rpb25fZGF0YSI6eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aWVyIjoxLCJ0aXRsZSI6IlggVDEiLCJ0eXBlIjowfSwicGxheWVyX25hbWUiOiJQbGF5ZXIgMSIsIngiOjEsInkiOjF9LCJ0eXBlIjoiU1lOQ19HUklEX0FDVElPTiJ9>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aWVyIjoxLCJ0aXRsZSI6IlggVDEiLCJ0eXBlIjowfSwiaXNfdXNlIjp0cnVlLCJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfQ0FSRF9QTEFZRUQifQ==>
+DEBUG: Grid action received: { "card": { "pattern": 1.0, "suit": "Spades", "tier": 1.0, "title": "X T1", "type": 0.0 }, "player_name": "Player 1", "x": 1.0, "y": 1.0 }
 Player 1 move action completed.
 Arena: Checking hand playability...
 Player 1 move action completed.
 Arena: Checking hand playability...
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJhY3Rpb25fZGF0YSI6eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJDbHVicyIsInRpdGxlIjoiKyA4IiwidHlwZSI6MCwidmFsdWUiOjh9LCJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwieCI6MSwieSI6MX0sInR5cGUiOiJTWU5DX0dSSURfQUNUSU9OIn0=>
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJDbHVicyIsInRpdGxlIjoiKyA4IiwidHlwZSI6MCwidmFsdWUiOjh9LCJpc191c2UiOnRydWUsInBsYXllcl9uYW1lIjoiUGxheWVyIDEiLCJ0eXBlIjoiU1lOQ19DQVJEX1BMQVlFRCJ9>
-DEBUG: Grid action received: { "card": { "pattern": 0.0, "suit": "Clubs", "title": "+ 8", "type": 0.0, "value": 8.0 }, "player_name": "Player 1", "x": 1.0, "y": 1.0 }
 TurnManager: Début du tour — Player 2
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAyIiwidHlwZSI6IlNZTkNfVFVSTiJ9>
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjb3VudCI6NDAsInR5cGUiOiJTWU5DX0RFQ0tfQ09VTlQifQ==>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAyIiwidHlwZSI6IlNZTkNfVFVSTiJ9>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjb3VudCI6NDAsInR5cGUiOiJTWU5DX0RFQ0tfQ09VTlQifQ==>
+Arena: Checking hand playability...
+Arena: Checking hand playability...
+GridManager received card: + T3
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhY3Rpb25fZGF0YSI6eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJDbHVicyIsInRpZXIiOjMsInRpdGxlIjoiKyBUMyIsInR5cGUiOjB9LCJwbGF5ZXJfbmFtZSI6IlBsYXllciAyIiwieCI6NCwieSI6M30sInR5cGUiOiJTWU5DX0dSSURfQUNUSU9OIn0=>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJDbHVicyIsInRpZXIiOjMsInRpdGxlIjoiKyBUMyIsInR5cGUiOjB9LCJ0eXBlIjoiUkVRVUVTVF9QTEFZX0NBUkQifQ==>
+DEBUG: Grid action received: { "card": { "pattern": 0.0, "suit": "Clubs", "tier": 3.0, "title": "+ T3", "type": 0.0 }, "player_name": "Player 2", "x": 4.0, "y": 3.0 }
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJDbHVicyIsInRpZXIiOjMsInRpdGxlIjoiKyBUMyIsInR5cGUiOjB9LCJpc191c2UiOnRydWUsInBsYXllcl9uYW1lIjoiUGxheWVyIDIiLCJ0eXBlIjoiU1lOQ19DQVJEX1BMQVlFRCJ9>
+Player 2 move action completed.
+Arena: Checking hand playability...
+Player 2 move action completed.
+Arena: Checking hand playability...
+GridManager received card: X T3
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhY3Rpb25fZGF0YSI6eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aWVyIjozLCJ0aXRsZSI6IlggVDMiLCJ0eXBlIjowfSwicGxheWVyX25hbWUiOiJQbGF5ZXIgMiIsIngiOjMsInkiOjJ9LCJ0eXBlIjoiU1lOQ19HUklEX0FDVElPTiJ9>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aWVyIjozLCJ0aXRsZSI6IlggVDMiLCJ0eXBlIjowfSwidHlwZSI6IlJFUVVFU1RfUExBWV9DQVJEIn0=>
+DEBUG: Grid action received: { "card": { "pattern": 1.0, "suit": "Spades", "tier": 3.0, "title": "X T3", "type": 0.0 }, "player_name": "Player 2", "x": 3.0, "y": 2.0 }
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aWVyIjozLCJ0aXRsZSI6IlggVDMiLCJ0eXBlIjowfSwiaXNfdXNlIjp0cnVlLCJwbGF5ZXJfbmFtZSI6IlBsYXllciAyIiwidHlwZSI6IlNZTkNfQ0FSRF9QTEFZRUQifQ==>
+Player 2 move action completed.
+Arena: Checking hand playability...
+Player 2 move action completed.
+Arena: Checking hand playability...
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJ0eXBlIjoiUkVRVUVTVF9FTkRfVFVSTiJ9>
+Arena: Checking hand playability...
+TurnManager: Début du tour — Player 1
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfVFVSTiJ9>
+DEBUG UI: Adding card + T1 to hand.
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfRFJBVyJ9>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjb3VudCI6MzksInR5cGUiOiJTWU5DX0RFQ0tfQ09VTlQifQ==>
+Arena: Checking hand playability...
+GridManager received card: + T1
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhY3Rpb25fZGF0YSI6eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJDbHVicyIsInRpZXIiOjEsInRpdGxlIjoiKyBUMSIsInR5cGUiOjB9LCJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwieCI6MSwieSI6Mn0sInR5cGUiOiJTWU5DX0dSSURfQUNUSU9OIn0=>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJDbHVicyIsInRpZXIiOjEsInRpdGxlIjoiKyBUMSIsInR5cGUiOjB9LCJpc191c2UiOnRydWUsInBsYXllcl9uYW1lIjoiUGxheWVyIDEiLCJ0eXBlIjoiU1lOQ19DQVJEX1BMQVlFRCJ9>
+DEBUG: Grid action received: { "card": { "pattern": 0.0, "suit": "Clubs", "tier": 1.0, "title": "+ T1", "type": 0.0 }, "player_name": "Player 1", "x": 1.0, "y": 2.0 }
+Player 1 move action completed.
 Arena: Checking hand playability...
 Player 1 move action completed.
 Arena: Checking hand playability...
+TurnManager: Début du tour — Player 2
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAyIiwidHlwZSI6IlNZTkNfVFVSTiJ9>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJIZWFydHMiLCJ0aWVyIjoxLCJ0aXRsZSI6IlggVDEiLCJ0eXBlIjoxfSwidGFyZ2V0X2lkIjoiNDQxNzVhMDAtMTU2OC00ZTUyLWI4MTAtMWFjMDEzODA1ODhiIiwidHlwZSI6IlJFQ0VJVkVfQ0FSRCJ9>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJIZWFydHMiLCJ0aWVyIjoxLCJ0aXRsZSI6IlggVDEiLCJ0eXBlIjoxfSwidGFyZ2V0X2lkIjoiNDQxNzVhMDAtMTU2OC00ZTUyLWI4MTAtMWFjMDEzODA1ODhiIiwidHlwZSI6IlJFQ0VJVkVfQ0FSRCJ9>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjb3VudCI6MzcsInR5cGUiOiJTWU5DX0RFQ0tfQ09VTlQifQ==>
+Arena: Checking hand playability...
+DEBUG UI: Adding card X T1 to hand.
+DEBUG UI: Adding card X T1 to hand.
+Arena: Checking hand playability...
+GridManager received card: + T2
+GridManager received card: JOKER
+GridManager received card: JOKER
+GridManager received card: + T2
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhY3Rpb25fZGF0YSI6eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJDbHVicyIsInRpZXIiOjIsInRpdGxlIjoiKyBUMiIsInR5cGUiOjB9LCJwbGF5ZXJfbmFtZSI6IlBsYXllciAyIiwieCI6NCwieSI6Mn0sInR5cGUiOiJTWU5DX0dSSURfQUNUSU9OIn0=>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJDbHVicyIsInRpZXIiOjIsInRpdGxlIjoiKyBUMiIsInR5cGUiOjB9LCJ0eXBlIjoiUkVRVUVTVF9QTEFZX0NBUkQifQ==>
+DEBUG: Grid action received: { "card": { "pattern": 0.0, "suit": "Clubs", "tier": 2.0, "title": "+ T2", "type": 0.0 }, "player_name": "Player 2", "x": 4.0, "y": 2.0 }
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJDbHVicyIsInRpZXIiOjIsInRpdGxlIjoiKyBUMiIsInR5cGUiOjB9LCJpc191c2UiOnRydWUsInBsYXllcl9uYW1lIjoiUGxheWVyIDIiLCJ0eXBlIjoiU1lOQ19DQVJEX1BMQVlFRCJ9>
+Player 2 move action completed.
+Arena: Checking hand playability...
+Player 2 move action completed.
+Arena: Checking hand playability...
+GridManager received card: JOKER
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhY3Rpb25fZGF0YSI6eyJjYXJkIjp7InBhdHRlcm4iOjIsInN1aXQiOiJKb2tlciIsInRpZXIiOjEsInRpdGxlIjoiSk9LRVIiLCJ0eXBlIjowfSwicGxheWVyX25hbWUiOiJQbGF5ZXIgMiIsIngiOjMsInkiOjF9LCJ0eXBlIjoiU1lOQ19HUklEX0FDVElPTiJ9>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjIsInN1aXQiOiJKb2tlciIsInRpZXIiOjEsInRpdGxlIjoiSk9LRVIiLCJ0eXBlIjowfSwidHlwZSI6IlJFUVVFU1RfUExBWV9DQVJEIn0=>
+DEBUG: Grid action received: { "card": { "pattern": 2.0, "suit": "Joker", "tier": 1.0, "title": "JOKER", "type": 0.0 }, "player_name": "Player 2", "x": 3.0, "y": 1.0 }
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjIsInN1aXQiOiJKb2tlciIsInRpZXIiOjEsInRpdGxlIjoiSk9LRVIiLCJ0eXBlIjowfSwiaXNfdXNlIjp0cnVlLCJwbGF5ZXJfbmFtZSI6IlBsYXllciAyIiwidHlwZSI6IlNZTkNfQ0FSRF9QTEFZRUQifQ==>
+Player 2 move action completed.
+Arena: Checking hand playability...
+Player 2 move action completed.
+Arena: Checking hand playability...
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJ0eXBlIjoiUkVRVUVTVF9FTkRfVFVSTiJ9>
+TurnManager: Début du tour — Player 1
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfVFVSTiJ9>
+DEBUG UI: Adding card X T1 to hand.
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfRFJBVyJ9>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjb3VudCI6MzYsInR5cGUiOiJTWU5DX0RFQ0tfQ09VTlQifQ==>
+Arena: Checking hand playability...
+Arena: Checking hand playability...
+GridManager received card: X T1
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhY3Rpb25fZGF0YSI6eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aWVyIjoxLCJ0aXRsZSI6IlggVDEiLCJ0eXBlIjowfSwicGxheWVyX25hbWUiOiJQbGF5ZXIgMSIsIngiOjIsInkiOjF9LCJ0eXBlIjoiU1lOQ19HUklEX0FDVElPTiJ9>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aWVyIjoxLCJ0aXRsZSI6IlggVDEiLCJ0eXBlIjowfSwiaXNfdXNlIjp0cnVlLCJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfQ0FSRF9QTEFZRUQifQ==>
+DEBUG: Grid action received: { "card": { "pattern": 1.0, "suit": "Spades", "tier": 1.0, "title": "X T1", "type": 0.0 }, "player_name": "Player 1", "x": 2.0, "y": 1.0 }
+Player 1 move action completed.
 Arena: Checking hand playability...
 Player 1 move action completed.
 Arena: Checking hand playability...
-GridManager received card: X 4
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJhY3Rpb25fZGF0YSI6eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aXRsZSI6IlggNCIsInR5cGUiOjAsInZhbHVlIjo0fSwicGxheWVyX25hbWUiOiJQbGF5ZXIgMiIsIngiOjMsInkiOjN9LCJ0eXBlIjoiU1lOQ19HUklEX0FDVElPTiJ9>
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aXRsZSI6IlggNCIsInR5cGUiOjAsInZhbHVlIjo0fSwidHlwZSI6IlJFUVVFU1RfUExBWV9DQVJEIn0=>
-DEBUG: Grid action received: { "card": { "pattern": 1.0, "suit": "Spades", "title": "X 4", "type": 0.0, "value": 4.0 }, "player_name": "Player 2", "x": 3.0, "y": 3.0 }
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aXRsZSI6IlggNCIsInR5cGUiOjAsInZhbHVlIjo0fSwiaXNfdXNlIjp0cnVlLCJwbGF5ZXJfbmFtZSI6IlBsYXllciAyIiwidHlwZSI6IlNZTkNfQ0FSRF9QTEFZRUQifQ==>
-Player 2 move action completed.
-Arena: Checking hand playability...
-Player 2 move action completed.
-Arena: Checking hand playability...
-GridManager received card: X 8
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJhY3Rpb25fZGF0YSI6eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aXRsZSI6IlggOCIsInR5cGUiOjAsInZhbHVlIjo4fSwicGxheWVyX25hbWUiOiJQbGF5ZXIgMiIsIngiOjIsInkiOjJ9LCJ0eXBlIjoiU1lOQ19HUklEX0FDVElPTiJ9>
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aXRsZSI6IlggOCIsInR5cGUiOjAsInZhbHVlIjo4fSwidHlwZSI6IlJFUVVFU1RfUExBWV9DQVJEIn0=>
-DEBUG: Grid action received: { "card": { "pattern": 1.0, "suit": "Spades", "title": "X 8", "type": 0.0, "value": 8.0 }, "player_name": "Player 2", "x": 2.0, "y": 2.0 }
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJTcGFkZXMiLCJ0aXRsZSI6IlggOCIsInR5cGUiOjAsInZhbHVlIjo4fSwiaXNfdXNlIjp0cnVlLCJwbGF5ZXJfbmFtZSI6IlBsYXllciAyIiwidHlwZSI6IlNZTkNfQ0FSRF9QTEFZRUQifQ==>
-Player 2 move action completed.
-Arena: Checking hand playability...
-Player 2 move action completed.
-Arena: Checking hand playability...
-GridManager received card: X 3
-DEBUG: Raycast hit object: Player 1
-DEBUG: Raycast hit object: Player 1
-DEBUG: Raycast hit object: Player 1
-DEBUG: Raycast hit object: Player 1
-DEBUG: Raycast hit object: Player 1
-DEBUG: Raycast hit object: Player 1
-DEBUG: Raycast hit object: Player 1
-DEBUG: Raycast hit object: Player 1
-DEBUG: Raycast hit object: Player 1
-DEBUG: Raycast hit object: Player 1
-Initiating Push Attack on Player 1
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJIZWFydHMiLCJ0aXRsZSI6IlggMyIsInR5cGUiOjEsInZhbHVlIjozfSwidHlwZSI6IlJFUVVFU1RfUExBWV9DQVJEIn0=>
-⚔️ Attaque initiée contre Player 1
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJhdHRhY2tlcl9jYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJIZWFydHMiLCJ0aXRsZSI6IlggMyIsInR5cGUiOjEsInZhbHVlIjozfSwiaXNfcHVzaCI6dHJ1ZSwidGFyZ2V0X2lkIjoiNGMwM2QwOTMtNGViOS00YzE2LWFiZTktOTU0Y2ZkMTVhNzY1IiwidHlwZSI6IlJFUVVFU1RfQVRUQUNLIn0=>
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjEsInN1aXQiOiJIZWFydHMiLCJ0aXRsZSI6IlggMyIsInR5cGUiOjEsInZhbHVlIjozfSwiaXNfdXNlIjp0cnVlLCJwbGF5ZXJfbmFtZSI6IlBsYXllciAyIiwidHlwZSI6IlNZTkNfQ0FSRF9QTEFZRUQifQ==>
-🛡️ Opportunité de réaction (1 cartes valides).
-⚠️ REACTION PHASE STARTED - 3 Seconds!
-⌛ Reaction Timeout
-🛡️ Réaction ignorée.
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJhdHRhY2tlcl9pZCI6ImJhN2Y0ZGZlLTYzZDMtNDVkMi04OGQ4LTRlMThjYTU3YjQ2ZiIsImlzX2Jsb2NrZWQiOmZhbHNlLCJpc19kb2RnZWQiOmZhbHNlLCJpc19wdXNoIjp0cnVlLCJ0YXJnZXRfaWQiOiI0YzAzZDA5My00ZWI5LTRjMTYtYWJlOS05NTRjZmQxNWE3NjUiLCJ0eXBlIjoiQVRUQUNLX1JFU1VMVCJ9>
-⚠️ ATTACK_RESULT dupliqué ignoré (côté défenseur).
-💨 Poussée de Player 1 vers (0, 0)
-=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=2a0a42b8-a311-46d0-9cf1-434e6e8a6c29., op_code=1, presences=<null>, data=eyJ0YXJnZXRfbmFtZSI6IlBsYXllciAxIiwidHlwZSI6IlNZTkNfUFVTSCIsIngiOjAsInkiOjB9>
+GridManager received card: + T2
+Swipe Auto-Targeting: (3, 1)
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhY3Rpb25fZGF0YSI6eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJEaWFtb25kcyIsInRpZXIiOjIsInRpdGxlIjoiKyBUMiIsInR5cGUiOjF9LCJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwieCI6MywieSI6MX0sInR5cGUiOiJTWU5DX0dSSURfQUNUSU9OIn0=>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJEaWFtb25kcyIsInRpZXIiOjIsInRpdGxlIjoiKyBUMiIsInR5cGUiOjF9LCJpc191c2UiOnRydWUsInBsYXllcl9uYW1lIjoiUGxheWVyIDEiLCJ0eXBlIjoiU1lOQ19DQVJEX1BMQVlFRCJ9>
+⚔️ Attaque initiée contre Player 2
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhdHRhY2tlcl9jYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJEaWFtb25kcyIsInRpZXIiOjIsInRpdGxlIjoiKyBUMiIsInR5cGUiOjF9LCJpc19wdXNoIjpmYWxzZSwidGFyZ2V0X2lkIjoiNDQxNzVhMDAtMTU2OC00ZTUyLWI4MTAtMWFjMDEzODA1ODhiIiwidHlwZSI6IlJFUVVFU1RfQVRUQUNLIn0=>
+DEBUG: Grid action received: { "card": { "pattern": 0.0, "suit": "Diamonds", "tier": 2.0, "title": "+ T2", "type": 1.0 }, "player_name": "Player 1", "x": 3.0, "y": 1.0 }
+🛡️ Aucune carte de réaction valide. Dégâts automatiques.
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhdHRhY2tlcl9pZCI6IjI3YmFhOGQ3LTM0MTYtNDM3ZS05NWRlLTkxODYyZmUxODI5ZCIsImlzX2Jsb2NrZWQiOmZhbHNlLCJpc19kb2RnZWQiOmZhbHNlLCJpc19wdXNoIjpmYWxzZSwidGFyZ2V0X2lkIjoiNDQxNzVhMDAtMTU2OC00ZTUyLWI4MTAtMWFjMDEzODA1ODhiIiwidHlwZSI6IkFUVEFDS19SRVNVTFQifQ==>
+Player 2 took 1 damage. HP: 9
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAyIiwidHlwZSI6IlNZTkNfSEVBTFRIIiwidmFsdWUiOjl9>
 Arena: Checking hand playability...
 Arena: Checking hand playability...
---- Debugging process stopped ---
+Arena: Checking hand playability...
+Arena: Checking hand playability...
+GridManager received card: + T3
+Swipe Auto-Targeting: (3, 1)
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhY3Rpb25fZGF0YSI6eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJEaWFtb25kcyIsInRpZXIiOjMsInRpdGxlIjoiKyBUMyIsInR5cGUiOjF9LCJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwieCI6MywieSI6MX0sInR5cGUiOiJTWU5DX0dSSURfQUNUSU9OIn0=>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJEaWFtb25kcyIsInRpZXIiOjMsInRpdGxlIjoiKyBUMyIsInR5cGUiOjF9LCJpc191c2UiOnRydWUsInBsYXllcl9uYW1lIjoiUGxheWVyIDEiLCJ0eXBlIjoiU1lOQ19DQVJEX1BMQVlFRCJ9>
+⚔️ Attaque initiée contre Player 2
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhdHRhY2tlcl9jYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJEaWFtb25kcyIsInRpZXIiOjMsInRpdGxlIjoiKyBUMyIsInR5cGUiOjF9LCJpc19wdXNoIjpmYWxzZSwidGFyZ2V0X2lkIjoiNDQxNzVhMDAtMTU2OC00ZTUyLWI4MTAtMWFjMDEzODA1ODhiIiwidHlwZSI6IlJFUVVFU1RfQVRUQUNLIn0=>
+DEBUG: Grid action received: { "card": { "pattern": 0.0, "suit": "Diamonds", "tier": 3.0, "title": "+ T3", "type": 1.0 }, "player_name": "Player 1", "x": 3.0, "y": 1.0 }
+🛡️ Aucune carte de réaction valide. Dégâts automatiques.
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhdHRhY2tlcl9pZCI6IjI3YmFhOGQ3LTM0MTYtNDM3ZS05NWRlLTkxODYyZmUxODI5ZCIsImlzX2Jsb2NrZWQiOmZhbHNlLCJpc19kb2RnZWQiOmZhbHNlLCJpc19wdXNoIjpmYWxzZSwidGFyZ2V0X2lkIjoiNDQxNzVhMDAtMTU2OC00ZTUyLWI4MTAtMWFjMDEzODA1ODhiIiwidHlwZSI6IkFUVEFDS19SRVNVTFQifQ==>
+Player 2 took 1 damage. HP: 8
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAyIiwidHlwZSI6IlNZTkNfSEVBTFRIIiwidmFsdWUiOjh9>
+Arena: Checking hand playability...
+Arena: Checking hand playability...
+Arena: Checking hand playability...
+Arena: Checking hand playability...
+GridManager received card: + T4
+Swipe Auto-Targeting: (3, 1)
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhY3Rpb25fZGF0YSI6eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJEaWFtb25kcyIsInRpZXIiOjQsInRpdGxlIjoiKyBUNCIsInR5cGUiOjF9LCJwbGF5ZXJfbmFtZSI6IlBsYXllciAxIiwieCI6MywieSI6MX0sInR5cGUiOiJTWU5DX0dSSURfQUNUSU9OIn0=>
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJjYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJEaWFtb25kcyIsInRpZXIiOjQsInRpdGxlIjoiKyBUNCIsInR5cGUiOjF9LCJpc191c2UiOnRydWUsInBsYXllcl9uYW1lIjoiUGxheWVyIDEiLCJ0eXBlIjoiU1lOQ19DQVJEX1BMQVlFRCJ9>
+⚔️ Attaque initiée contre Player 2
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhdHRhY2tlcl9jYXJkIjp7InBhdHRlcm4iOjAsInN1aXQiOiJEaWFtb25kcyIsInRpZXIiOjQsInRpdGxlIjoiKyBUNCIsInR5cGUiOjF9LCJpc19wdXNoIjpmYWxzZSwidGFyZ2V0X2lkIjoiNDQxNzVhMDAtMTU2OC00ZTUyLWI4MTAtMWFjMDEzODA1ODhiIiwidHlwZSI6IlJFUVVFU1RfQVRUQUNLIn0=>
+DEBUG: Grid action received: { "card": { "pattern": 0.0, "suit": "Diamonds", "tier": 4.0, "title": "+ T4", "type": 1.0 }, "player_name": "Player 1", "x": 3.0, "y": 1.0 }
+🛡️ Aucune carte de réaction valide. Dégâts automatiques.
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJhdHRhY2tlcl9pZCI6IjI3YmFhOGQ3LTM0MTYtNDM3ZS05NWRlLTkxODYyZmUxODI5ZCIsImlzX2Jsb2NrZWQiOmZhbHNlLCJpc19kb2RnZWQiOmZhbHNlLCJpc19wdXNoIjpmYWxzZSwidGFyZ2V0X2lkIjoiNDQxNzVhMDAtMTU2OC00ZTUyLWI4MTAtMWFjMDEzODA1ODhiIiwidHlwZSI6IkFUVEFDS19SRVNVTFQifQ==>
+Player 2 took 1 damage. HP: 7
+=== Nakama : DEBUG === Sending async request: MatchDataSend<match_id=24094daa-fb90-4f2c-90fe-2e2fa6f48e7a., op_code=1, presences=<null>, data=eyJwbGF5ZXJfbmFtZSI6IlBsYXllciAyIiwidHlwZSI6IlNZTkNfSEVBTFRIIiwidmFsdWUiOjd9>
+Arena: Checking hand playability...
+Arena: Checking hand playability...
+Arena: Checking hand playability...
+Arena: Checking hand playability...

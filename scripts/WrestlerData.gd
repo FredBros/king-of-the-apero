@@ -4,6 +4,9 @@ extends Resource
 @export var id: String = "wrestler_id"
 @export var display_name: String = "Wrestler"
 @export var max_health: int = 10
+@export var combo_token: int = 4
+@export var allow_tier_zero: bool = false
+@export var allow_tier_five: bool = false
 @export var portrait: Texture2D
 @export var model_scene: PackedScene
 

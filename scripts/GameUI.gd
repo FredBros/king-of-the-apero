@@ -34,6 +34,7 @@ var remote_wrestler_ref: Wrestler
 @onready var get_app_button: Control = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/GetAppButton
 
 @onready var turn_label: Label = $TurnInfoContainer/VBoxContainer/TurnLabel
+@onready var combo_tokens: Control = %ComboTokens
 
 var selected_card_ui: CardUI
 
@@ -322,7 +323,7 @@ func _on_game_paused(is_paused: bool, _initiator_name: String) -> void:
 		add_child(network_pause_overlay)
 	network_pause_overlay.show()
 
-func update_turn_info(player_name: String, skip_anim: bool = false) -> void:
+func update_turn_info(_player_name: String, skip_anim: bool = false) -> void:
 	var is_my_turn = false
 	if game_manager_ref:
 		is_my_turn = game_manager_ref.is_local_player_active()
@@ -331,7 +332,7 @@ func update_turn_info(player_name: String, skip_anim: bool = false) -> void:
 	end_turn_button.set_player_turn(is_my_turn, skip_anim)
 	_update_discard_zone_visibility()
 
-func _on_rematch_update(current: int, total: int) -> void:
+func _on_rematch_update(_current: int, _total: int) -> void:
 	# Si l'adversaire a voté avant nous, on peut afficher un message
 	var btn = $GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/RestartButtonPanel/RestartButton
 	if btn and not btn.disabled:
@@ -410,18 +411,23 @@ func _animate_draw_to_player(target_wrapper: Control) -> void:
 	)
 
 func remove_card_from_hand(card_data: CardData) -> void:
+	# If a matching card is already animating out, let it self-destruct.
+	# Removing a duplicate here would incorrectly consume an unplayed card.
 	for wrapper in hand_container.get_children():
 		var child = wrapper.get_child(0) if wrapper.get_child_count() > 0 else null
-		# Comparaison par valeur (car les instances diffèrent via RPC)
-		if child is CardUI and child.card_data.title == card_data.title and \
-		   child.card_data.value == card_data.value and child.card_data.suit == card_data.suit:
-			# Si la carte est déjà en train de se détruire (animation locale), on la laisse finir
-			if not child.is_destroying:
-				wrapper.queue_free()
-				
-				if selected_card_ui == child:
-					selected_card_ui = null
-				break
+		if child is CardUI and child.is_destroying and \
+		   child.card_data.title == card_data.title and \
+		   child.card_data.tier == card_data.tier and child.card_data.suit == card_data.suit:
+			return
+	for wrapper in hand_container.get_children():
+		var child = wrapper.get_child(0) if wrapper.get_child_count() > 0 else null
+		if child is CardUI and not child.is_destroying and \
+		   child.card_data.title == card_data.title and \
+		   child.card_data.tier == card_data.tier and child.card_data.suit == card_data.suit:
+			wrapper.queue_free()
+			if selected_card_ui == child:
+				selected_card_ui = null
+			break
 
 func sync_hand(hand: Array) -> void:
 	# 1. Identifier les cartes actuellement affichées dans l'UI
@@ -576,10 +582,10 @@ func _animate_opponent_slap(card_data: CardData) -> void:
 	
 	card.animate_slap(target_pos)
 
-func _create_card_data(type: CardData.CardType, value: int, title: String) -> CardData:
+func _create_card_data(type: CardData.CardType, tier: int, title: String) -> CardData:
 	var card = CardData.new()
 	card.type = type
-	card.value = value
+	card.tier = tier
 	card.title = title
 	return card
 
@@ -698,6 +704,8 @@ func set_player_perspectives(local_player: Wrestler, remote_player: Wrestler) ->
 	if bottom_player_info and local_player:
 		bottom_player_info.setup(local_player.wrestler_data)
 		bottom_player_info.update_health(local_player.current_health, local_player.max_health)
+		if combo_tokens:
+			combo_tokens.setup(local_player.wrestler_data.combo_token, hand_container, local_player.wrestler_data)
 	
 	if top_player_info and remote_player:
 		top_player_info.setup(remote_player.wrestler_data)
@@ -949,15 +957,15 @@ func _on_opponent_skipped_versus() -> void:
 	if current_versus_screen and current_versus_screen.has_method("set_opponent_skipped"):
 		current_versus_screen.set_opponent_skipped()
 
-func _set_gameplay_ui_visible(is_visible: bool) -> void:
-	if top_player_info: top_player_info.visible = is_visible
-	if bottom_player_info: bottom_player_info.visible = is_visible
-	if end_turn_button: end_turn_button.visible = is_visible
-	if $PanelContainer: $PanelContainer.visible = is_visible
-	if opponent_hand_container: opponent_hand_container.visible = is_visible
-	if $TopRightContainer: $TopRightContainer.visible = is_visible
-	
-	if is_visible:
+func _set_gameplay_ui_visible(show_ui: bool) -> void:
+	if top_player_info: top_player_info.visible = show_ui
+	if bottom_player_info: bottom_player_info.visible = show_ui
+	if end_turn_button: end_turn_button.visible = show_ui
+	if $PanelContainer: $PanelContainer.visible = show_ui
+	if opponent_hand_container: opponent_hand_container.visible = show_ui
+	if $TopRightContainer: $TopRightContainer.visible = show_ui
+
+	if show_ui:
 		_update_discard_zone_visibility()
 	elif discard_zone_visual:
 		discard_zone_visual.visible = false

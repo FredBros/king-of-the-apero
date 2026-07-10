@@ -15,7 +15,7 @@ enum MovePattern {
 
 @export var type: CardType
 @export var pattern: MovePattern = MovePattern.ORTHOGONAL
-@export var value: int = 1
+@export var tier: int = 1
 @export var title: String = "Card"
 @export var suit: String = ""
 @export var symbol: String = ""
@@ -28,7 +28,7 @@ static func serialize(card: CardData) -> Dictionary:
 	if not card: return {}
 	return {
 		"type": int(card.type),
-		"value": card.value,
+		"tier": card.tier,
 		"title": card.title,
 		"suit": card.suit,
 		"pattern": int(card.pattern)
@@ -38,7 +38,7 @@ static func deserialize(data: Dictionary) -> CardData:
 	if data.is_empty(): return null
 	var card = CardData.new()
 	card.type = int(data.type)
-	card.value = int(data.value)
+	card.tier = int(data.tier)
 	card.title = data.title
 	card.suit = data.suit
 	card.pattern = int(data.pattern)

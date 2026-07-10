@@ -87,7 +87,7 @@ func on_reaction_skipped() -> void:
 func get_valid_reaction_cards(attack_card: CardData, hand: Array) -> Array[CardData]:
 	var valid: Array[CardData] = []
 	for card in hand:
-		if card.value <= attack_card.value and card.suit != "Joker":
+		if card.tier <= attack_card.tier and card.suit != "Joker":
 			continue
 		var ok = false
 		if card.suit == attack_card.suit:

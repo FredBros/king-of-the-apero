@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://btatxhtxxelg6"]
+
+[ext_resource type="Script" uid="uid://dgealccbt54lk" path="res://scenes/UI/Components/ComboCount/combo_count.gd" id="1_ermum"]
+
+[node name="ComboCount" type="Node2D" unique_id=1625335023]
+script = ExtResource("1_ermum")

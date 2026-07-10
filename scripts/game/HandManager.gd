@@ -126,6 +126,8 @@ func on_net_sync_draw(player_name: String) -> void:
 	_update_count(player_name, 1)
 
 func on_net_sync_card_played(card_dict: Dictionary, player_name: String, is_use: bool) -> void:
+	if player_name == _net.get_my_name():
+		return  # Optimistic UI already handled our own card
 	var card = CardData.deserialize(card_dict)
 	_remove_from_hand(player_name, card)
 	_update_count(player_name, -1)
