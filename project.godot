@@ -44,7 +44,7 @@ enabled=PackedStringArray("res://addons/com.heroiclabs.nakama/plugin.cfg")
 
 folder_colors={
 "res://assets/": "purple",
-"res://resources/": "green",
+"res://resources/": "yellow",
 "res://scenes/": "blue",
 "res://scripts/": "red",
 "res://server/": "gray",

@@ -92,9 +92,9 @@ Un combo se construit en jouant des cartes de tiers **strictement croissants** d
 | Position | Tier minimum requis | Effet attaque | Effet déplacement |
 |----------|--------------------|------------------------------------|-------------------------------|
 | 1 | T1+ | Coup normal | Déplacement normal |
-| 2 | T2+ | Parable par tier +2 minimum | Déplacement prioritaire |
+| 2 | T2+ | Parable par tier +1 minimum | Déplacement normal |
 | 3 | T3+ | Imparable | Direction libre au choix |
-| 4 | T4 | Double dégâts, imparable | Pousse l'adversaire et le suit |
+| 4 | T4 | Double dégâts, imparable | Direction libre au choix / Peut pousser l'adversaire et lui infliger 1 degat et le suivre|
 
 ### Combos mixtes
 Mélanger noir et rouge dans un même combo est autorisé et encouragé.  

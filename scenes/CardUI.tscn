@@ -1,49 +1,40 @@
-[gd_scene load_steps=2 format=3 uid="uid://c8j2k3l4m5n6"]
+[gd_scene format=3 uid="uid://c8j2k3l4m5n6"]
 
-[ext_resource type="Script" path="res://scripts/CardUI.gd" id="1_cardui"]
+[ext_resource type="Script" uid="uid://bgxhbnvv8l6ii" path="res://scripts/CardUI.gd" id="1_cardui"]
+[ext_resource type="FontFile" uid="uid://b238jip1oeqr5" path="res://assets/fonts/Bangers-Regular.ttf" id="2_font"]
 
-[node name="CardUI" type="PanelContainer"]
-custom_minimum_size = Vector2(120, 160)
+[node name="CardUI" type="PanelContainer" unique_id=1476180989]
+custom_minimum_size = Vector2(120, 120)
 offset_right = 120.0
-offset_bottom = 160.0
+offset_bottom = 120.0
 script = ExtResource("1_cardui")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1603268912]
 layout_mode = 2
 
-[node name="Header" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=397085803]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/Header"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Title"
-horizontal_alignment = 1
-
-[node name="DiscardButton" type="Button" parent="MarginContainer/VBoxContainer/Header"]
-visible = false
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 2
-text = "X"
-
-[node name="TypeLabel" type="Label" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-text = "Type"
-horizontal_alignment = 1
-
-[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="ValueLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="ValueLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1186028626]
 layout_mode = 2
 size_flags_vertical = 6
-theme_override_font_sizes/font_size = 32
 text = "0"
 horizontal_alignment = 1
+
+[node name="ComboBadgeHolder" type="Node2D" parent="." unique_id=1284152301]
+z_index = 1
+
+[node name="ComboBadge" type="Label" parent="ComboBadgeHolder" unique_id=236977000]
+visible = false
+offset_left = -12.000001
+offset_top = 36.0
+offset_right = 51.0
+offset_bottom = 64.0
+rotation = -0.785398
+theme_override_colors/font_color = Color(1, 0.92, 0.23, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 26
+text = "COMBO"

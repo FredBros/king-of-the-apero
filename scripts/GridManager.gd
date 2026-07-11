@@ -324,13 +324,20 @@ func _execute_action(clicked_cell: Vector2i, card: CardData, is_remote: bool = f
 	# Logic based on card type
 	if target:
 		if card.type == CardData.CardType.ATTACK or is_joker:
-			# Pass the network context down to the attack method.
-			# Visuals are now deferred until reaction resolution (GameManager)
-			# actor.attack(target, is_remote)
 			_consume_card(card, is_remote)
-			
 			if not is_remote:
-				game_manager.initiate_attack_sequence(target, card, false) # is_push = false (Standard Attack)
+				game_manager.initiate_attack_sequence(target, card, false)
+		elif card.type == CardData.CardType.MOVE:
+			# push_and_follow (combo 4) : MOVE vers la case de l'adversaire
+			var prev_pos = actor.grid_position
+			actor.move_to_grid_position(clicked_cell)
+			_consume_card(card, is_remote)
+			if not is_remote and game_manager:
+				# get_current : après _consume_card, combo_position est déjà avancé — l'effet correspond à la carte jouée
+				var effect = game_manager.get_current_combo_effect()
+				if effect and effect.push_and_follow:
+					var push_dir = (clicked_cell - prev_pos).sign()
+					game_manager.apply_combo_push(actor, target, push_dir, effect.push_damage, true)
 	elif card.type == CardData.CardType.MOVE or is_joker:
 		actor.move_to_grid_position(clicked_cell)
 		_consume_card(card, is_remote)
@@ -340,9 +347,19 @@ func _calculate_valid_cells() -> void:
 	var actor = _get_acting_wrestler()
 	if not actor or not current_card:
 		return
-		
+
 	var is_joker = current_card.suit == "Joker"
-		
+
+	# free_direction / push_follow : prédit la prochaine position de combo (carte pas encore jouée).
+	var free_direction := false
+	var push_and_follow := false
+	# get_next : carte pas encore jouée — prédit l'effet de la prochaine position combo pour les highlights
+	if game_manager and not is_dodging:
+		var effect = game_manager.get_next_combo_effect()
+		if effect:
+			free_direction = effect.free_direction
+			push_and_follow = effect.push_and_follow
+
 	if current_card.type == CardData.CardType.MOVE or is_joker:
 		# Check all cells within range
 		var range_val = 1
@@ -350,35 +367,40 @@ func _calculate_valid_cells() -> void:
 			for y in range(-range_val, range_val + 1):
 				var offset = Vector2i(x, y)
 				var target_pos = actor.grid_position + offset
-				
+
 				if not is_valid_cell(target_pos): continue
-				
+
 				# Check Pattern (Orthogonal vs Diagonal)
 				var valid_pattern = false
-				if is_joker:
+				if is_joker or free_direction:
 					valid_pattern = true
 				elif current_card.pattern == CardData.MovePattern.ORTHOGONAL:
 					if offset.x == 0 or offset.y == 0: valid_pattern = true
 				elif current_card.pattern == CardData.MovePattern.DIAGONAL:
 					if abs(offset.x) == abs(offset.y): valid_pattern = true
-				
+
 				if not valid_pattern: continue
-				
+
 				var diff = offset.abs()
-				
+
 				# Distance Check (Range 1)
 				var valid_dist = false
-				if is_joker:
+				if is_joker or free_direction:
 					if diff.x <= 1 and diff.y <= 1 and (diff.x + diff.y > 0): valid_dist = true
 				elif current_card.pattern == CardData.MovePattern.ORTHOGONAL:
 					if diff.x + diff.y == 1: valid_dist = true
 				elif current_card.pattern == CardData.MovePattern.DIAGONAL:
 					if diff.x == 1 and diff.y == 1: valid_dist = true
-				
+
 				if valid_dist:
-					# Move requires empty cell
-					if _get_wrestler_at(target_pos) == null:
+					var wrestler_at_pos = _get_wrestler_at(target_pos)
+					if wrestler_at_pos == null:
 						valid_cells.append(target_pos)
+					elif push_and_follow and wrestler_at_pos != actor:
+						# Case occupée par l'adversaire : valide si la poussée a où aller
+						var push_dir = (target_pos - actor.grid_position).sign()
+						if is_valid_cell(target_pos + push_dir):
+							valid_cells.append(target_pos)
 						
 	if current_card.type == CardData.CardType.ATTACK or is_joker:
 		# Check all opponents

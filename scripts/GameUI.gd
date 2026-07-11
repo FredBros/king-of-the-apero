@@ -130,6 +130,12 @@ func _ready() -> void:
 			game_manager.deck_count_updated.connect(_on_deck_count_updated)
 		if not game_manager.game_paused.is_connected(_on_game_paused):
 			game_manager.game_paused.connect(_on_game_paused)
+		if not game_manager.combo_changed.is_connected(_on_combo_changed):
+			game_manager.combo_changed.connect(_on_combo_changed)
+		if not game_manager.turn_started.is_connected(_on_turn_started_combo):
+			game_manager.turn_started.connect(_on_turn_started_combo)
+	if combo_tokens and not combo_tokens.token_applied.is_connected(_on_token_applied):
+		combo_tokens.token_applied.connect(_on_token_applied)
 	else:
 		printerr("GameUI: GameManager not found!")
 	
@@ -373,6 +379,12 @@ func add_card_to_hand(card_data: CardData, animate: bool = true) -> void:
 	if animate:
 		_animate_draw_to_player(wrapper)
 
+	# Initialise l'état du badge combo pour cette nouvelle carte
+	if game_manager_ref and card_data.suit != "Joker":
+		var combo_pos: int = game_manager_ref.turn_manager.combo_position
+		var last_tier: int = game_manager_ref.get_last_combo_tier()
+		card.set_combo_eligible(combo_pos >= 1 and card_data.tier > last_tier)
+
 func _animate_draw_to_player(target_wrapper: Control) -> void:
 	# Attend que le HBoxContainer calcule la position finale
 	await get_tree().process_frame
@@ -462,6 +474,32 @@ func sync_hand(hand: Array) -> void:
 func clear_hand() -> void:
 	for child in hand_container.get_children():
 		child.queue_free()
+
+func _on_turn_started_combo(_player_name: String) -> void:
+	_update_combo_badges(0)
+
+func _on_token_applied(card_ui: CardUI, _is_plus: bool) -> void:
+	if not game_manager_ref or not card_ui.card_data: return
+	var combo_pos: int = game_manager_ref.turn_manager.combo_position
+	var last_tier: int = game_manager_ref.get_last_combo_tier()
+	var effective_tier: int = 4 if card_ui.card_data.suit == "Joker" else card_ui.card_data.tier
+	card_ui.set_combo_eligible(combo_pos >= 1 and effective_tier > last_tier)
+
+func _on_combo_changed(pos: int) -> void:
+	_update_combo_badges(pos)
+
+func _update_combo_badges(combo_pos: int) -> void:
+	var last_tier := 0
+	if combo_pos > 0 and game_manager_ref:
+		last_tier = game_manager_ref.get_last_combo_tier()
+	for wrapper in hand_container.get_children():
+		var card_ui = wrapper.get_child(0) if wrapper.get_child_count() > 0 else null
+		if not card_ui is CardUI or card_ui.is_destroying or not card_ui.card_data:
+			continue
+		if card_ui.card_data.suit == "Joker":
+			card_ui.set_combo_eligible(false)
+			continue
+		card_ui.set_combo_eligible(combo_pos >= 1 and card_ui.card_data.tier > last_tier)
 	selected_card_ui = null
 
 func update_opponent_hand_visuals(count: int) -> void:
@@ -745,12 +783,16 @@ func _on_card_drag_started(card_data: CardData, card_ui: CardUI = null) -> void:
 		# Reset des couleurs et visibilité selon le pattern
 		var is_joker = (card_data.suit == "Joker")
 		var is_diagonal = (card_data.pattern == CardData.MovePattern.DIAGONAL)
-		
+		var free_dir := false
+		if game_manager_ref:
+			var effect = game_manager_ref.get_next_combo_effect()
+			free_dir = effect != null and effect.free_direction
+
 		for dir in drag_arrows:
 			var arrow = drag_arrows[dir]
 			arrow.modulate = COLOR_ARROW_INACTIVE
-			
-			if is_joker:
+
+			if is_joker or free_dir:
 				arrow.visible = true
 			else:
 				# On affiche seulement les flèches correspondantes au pattern

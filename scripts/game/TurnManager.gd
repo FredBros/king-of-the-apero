@@ -19,6 +19,20 @@ var is_game_active: bool = false
 var combo_position: int = 0
 var _last_combo_tier: int = 0
 
+var _default_combo_effects: Array[ComboEffect] = []
+
+func _ready() -> void:
+	for i in range(5):
+		_default_combo_effects.append(ComboEffect.new())
+	_default_combo_effects[2].block_tier_bonus = 1
+	_default_combo_effects[3].is_unblockable = true
+	_default_combo_effects[3].free_direction = true
+	_default_combo_effects[4].is_unblockable = true
+	_default_combo_effects[4].damage_multiplier = 2
+	_default_combo_effects[4].free_direction = true
+	_default_combo_effects[4].push_and_follow = true
+	_default_combo_effects[4].push_damage = 1
+
 func setup(net: NetworkSync, hand: HandManager) -> void:
 	_net = net
 	_hand = hand
@@ -61,10 +75,39 @@ func get_active_player_name() -> String:
 	var w = get_active_wrestler()
 	return w.name if w else ""
 
+func get_last_combo_tier() -> int:
+	return _last_combo_tier
+
+## Effet du combo pour la carte EN COURS de jeu (après register_card_played).
+func get_current_combo_effect() -> ComboEffect:
+	return _get_effect_for_position(combo_position)
+
+## Effet prédit si la prochaine carte continue le combo (utilisé pour les highlights).
+func get_next_combo_effect() -> ComboEffect:
+	return _get_effect_for_position(combo_position + 1)
+
+func _get_effect_for_position(pos: int) -> ComboEffect:
+	pos = clampi(pos, 0, 4)
+	if pos == 0:
+		return ComboEffect.new()
+	var active := get_active_wrestler()
+	var wd: WrestlerData = active.wrestler_data if active else null
+	var base: ComboEffect
+	if wd and wd.combo_effects.size() >= pos and wd.combo_effects[pos - 1] != null:
+		base = wd.combo_effects[pos - 1].duplicate()
+	else:
+		base = _default_combo_effects[pos].duplicate()
+	if wd and wd.combo_handler:
+		base = wd.combo_handler.get_effect(pos, base)
+	return base
+
 # --- Handlers réseau (appelés par le router dans GameManager) ---
 
 func on_net_sync_turn(player_name: String) -> void:
 	is_game_active = true
+	combo_position = 0
+	_last_combo_tier = 0
+	combo_changed.emit(0)
 	_handle_sync_turn(player_name)
 
 func on_net_request_end_turn(sender_id: String) -> void:
@@ -74,12 +117,13 @@ func on_net_request_end_turn(sender_id: String) -> void:
 # --- Privé ---
 
 func register_card_played(card: CardData) -> void:
-	var effective_tier = 4 if card.suit == "Joker" else card.tier
-	if effective_tier > _last_combo_tier:
+	if card.suit == "Joker":
+		return  # Joker transparent : n'affecte pas le combo
+	if card.tier > _last_combo_tier:
 		combo_position += 1
 	else:
 		combo_position = 1
-	_last_combo_tier = effective_tier
+	_last_combo_tier = card.tier
 	combo_changed.emit(combo_position)
 
 func _start_turn() -> void:

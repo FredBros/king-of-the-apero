@@ -11,6 +11,10 @@ extends Resource
 @export var model_scene: PackedScene
 
 
+@export_group("Combo")
+@export var combo_effects: Array[ComboEffect] = []
+@export var combo_handler: ComboHandler = null
+
 @export_group("Sounds")
 @export var sound_punch: AudioStream
 @export var sound_name: AudioStream

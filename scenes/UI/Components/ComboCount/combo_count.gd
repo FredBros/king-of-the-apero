@@ -43,11 +43,11 @@ func _ready() -> void:
 		gm.turn_started.connect(func(_name): _hide_immediately())
 
 func set_combo(combo_pos: int) -> void:
-	if combo_pos <= 1:
+	if combo_pos <= 0:
 		_hide_animated()
 		return
 
-	var color = COLORS[mini(combo_pos, COLORS.size() - 1)]
+	var color = COLORS[mini(combo_pos - 1, COLORS.size() - 1)]
 	_number_label.text = "x" + str(combo_pos)
 	_number_label.add_theme_color_override("font_color", color)
 	_combo_label.add_theme_color_override("font_color", color.lerp(Color.WHITE, 0.4))

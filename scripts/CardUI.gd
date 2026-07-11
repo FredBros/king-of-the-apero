@@ -9,8 +9,6 @@ signal swipe_committed(card_ui: CardUI, offset: Vector2, global_pos: Vector2)
 signal selection_canceled(card_ui: CardUI)
 signal impact_occurred
 
-@onready var title_label: Label = $MarginContainer/VBoxContainer/Header/TitleLabel
-@onready var type_label: Label = $MarginContainer/VBoxContainer/TypeLabel
 @onready var value_label: Label = $MarginContainer/VBoxContainer/ValueLabel
 
 var card_data: CardData
@@ -29,6 +27,8 @@ var _start_pos_local: Vector2
 var _is_selected: bool = false
 var _has_moved_significantly: bool = false
 var is_destroying: bool = false
+
+@onready var _combo_badge: Label = $ComboBadgeHolder/ComboBadge
 
 var is_playable: bool = true
 var is_reaction_candidate: bool = false
@@ -123,10 +123,6 @@ func _ready() -> void:
 	push_icon.mouse_filter = MOUSE_FILTER_IGNORE
 	push_icon.hide()
 	kick_holder.add_child(push_icon)
-	
-	# On cache les anciens labels inutiles pour le nouveau design
-	if title_label: title_label.hide()
-	if type_label: type_label.hide()
 	
 	# On rend le fond du PanelContainer transparent pour ne voir que le coaster
 	self_modulate = Color(1, 1, 1, 0)
@@ -266,6 +262,8 @@ func update_visuals() -> void:
 
 func set_playable(playable: bool) -> void:
 	is_playable = playable
+	if _combo_badge:
+		_combo_badge.visible = _combo_badge.visible and is_playable
 	_update_visual_state()
 
 func _update_visual_state() -> void:
@@ -351,6 +349,10 @@ func set_selected(selected: bool) -> void:
 func set_reaction_candidate(is_candidate: bool) -> void:
 	is_reaction_candidate = is_candidate
 	_update_visual_state()
+
+func set_combo_eligible(eligible: bool) -> void:
+	if _combo_badge:
+		_combo_badge.visible = eligible and is_playable
 
 func _get_suit_icon(suit: String) -> String:
 	match suit:

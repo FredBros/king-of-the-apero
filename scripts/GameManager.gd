@@ -221,9 +221,22 @@ func on_reaction_skipped() -> void:
 func on_dodge_complete(card: CardData) -> void:
 	combat_sequencer.on_dodge_complete(card)
 
+func get_current_combo_effect() -> ComboEffect:
+	return turn_manager.get_current_combo_effect()
+
+func get_next_combo_effect() -> ComboEffect:
+	return turn_manager.get_next_combo_effect()
+
+func get_last_combo_tier() -> int:
+	return turn_manager.get_last_combo_tier()
+
 func initiate_attack_sequence(target: Wrestler, attack_card: CardData, is_push: bool = false) -> void:
 	turn_manager.has_acted_this_turn = true
-	combat_sequencer.initiate_attack_sequence(target, attack_card, is_push, turn_manager.get_active_player_name())
+	var effect := turn_manager.get_current_combo_effect()
+	combat_sequencer.initiate_attack_sequence(target, attack_card, is_push, turn_manager.get_active_player_name(), effect)
+
+func apply_combo_push(attacker: Wrestler, target: Wrestler, push_direction: Vector2i, push_damage: int = 0, execute_immediately: bool = false) -> void:
+	combat_sequencer.apply_combo_push(attacker, target, push_direction, push_damage, execute_immediately)
 
 func send_grid_action(action_data: Dictionary) -> void:
 	network_sync.send({"type": "SYNC_GRID_ACTION", "action_data": action_data})
@@ -323,7 +336,10 @@ func _on_network_message(data: Dictionary) -> void:
 			var _sender = data.get("_sender_id", "")
 			if network_sync.is_sender(_sender, turn_manager.get_active_player_name()):
 				turn_manager.has_acted_this_turn = true
-			combat_sequencer.on_net_request_attack(data)
+			var net_effect := ComboEffect.new()
+			net_effect.is_unblockable = data.get("combo_unblockable", false)
+			net_effect.block_tier_bonus = int(data.get("combo_block_bonus", 0))
+			combat_sequencer.on_net_request_attack(data, net_effect)
 		"ATTACK_RESULT":
 			combat_sequencer.on_net_attack_result(data)
 		"SYNC_PUSH":
