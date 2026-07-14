@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://c8j2k3l4m5n6"]
 
 [ext_resource type="Script" uid="uid://bgxhbnvv8l6ii" path="res://scripts/CardUI.gd" id="1_cardui"]
-[ext_resource type="FontFile" uid="uid://b238jip1oeqr5" path="res://assets/fonts/Bangers-Regular.ttf" id="2_font"]
 
 [node name="CardUI" type="PanelContainer" unique_id=1476180989]
 custom_minimum_size = Vector2(120, 120)
@@ -35,6 +34,5 @@ theme_override_colors/font_color = Color(1, 0.92, 0.23, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
-theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 26
 text = "COMBO"

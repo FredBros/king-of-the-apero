@@ -1,74 +1,12 @@
 [gd_scene format=3 uid="uid://0cle83moyvrj"]
 
 [ext_resource type="Script" uid="uid://cvfke4vmqc10k" path="res://scripts/Lobby.gd" id="1_o1atq"]
-[ext_resource type="Theme" uid="uid://l8sbafea8ujc" path="res://resources/Themes/bar_theme.tres" id="1_qbi84"]
-[ext_resource type="PackedScene" uid="uid://b4y8k5l6m7oa" path="res://scenes/UI/Components/ChalkPanel.tscn" id="2_chalk"]
+[ext_resource type="Theme" uid="uid://cu622udo5tcqs" path="res://resources/Themes/main_theme.tres" id="1_qbi84"]
 [ext_resource type="Texture2D" uid="uid://bpl4twv8iu2tq" path="res://assets/UI/folklore_on_tape_title.png" id="4_1yh37"]
 [ext_resource type="Texture2D" uid="uid://bcwivwa78ntgs" path="res://assets/UI/Icons/copy.png" id="5_copy"]
-[ext_resource type="Shader" uid="uid://fhypsw041brr" path="res://shaders/chalk.gdshader" id="6_shader"]
 [ext_resource type="PackedScene" uid="uid://btdgo06qatlch" path="res://scenes/UI/Components/GetAppButton.tscn" id="7_get_app_button"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jp1kc"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_as3ys"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_chalk_text"]
-shader = ExtResource("6_shader")
-shader_parameter/intensity = 0.5
-shader_parameter/grain_size = 100.0
-shader_parameter/jitter_amount = 0.002
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_button"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hwwg2"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kayix"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_l31xl"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wuide"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h77bf"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4hpk5"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_yyg1t"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wrapper"]
 
 [node name="Lobby" type="Control" unique_id=724538796 node_paths=PackedStringArray("host_button", "join_button", "ip_input", "status_label", "paste_button", "back_button")]
 layout_mode = 3
@@ -80,29 +18,34 @@ grow_vertical = 2
 rotation = -0.0030143715
 theme = ExtResource("1_qbi84")
 script = ExtResource("1_o1atq")
-host_button = NodePath("ChalkPanel/MarginContainer/VBoxContainer/HostButtonPanel/HostButton")
-join_button = NodePath("ChalkPanel/MarginContainer/VBoxContainer/JoinButtonPanel/JoinButton")
-ip_input = NodePath("ChalkPanel/MarginContainer/VBoxContainer/IPInputContainer/IPInputPanel/IPInput")
-status_label = NodePath("ChalkPanel/MarginContainer/VBoxContainer/StatusLabel")
-paste_button = NodePath("ChalkPanel/MarginContainer/VBoxContainer/IPInputContainer/CopyButton")
-back_button = NodePath("ChalkPanel/MarginContainer/VBoxContainer/BackButtonPanel/BackButton")
+host_button = NodePath("MainPanel/MarginContainer/VBoxContainer/HostButtonPanel/HostButton")
+join_button = NodePath("MainPanel/MarginContainer/VBoxContainer/JoinButtonPanel/JoinButton")
+ip_input = NodePath("MainPanel/MarginContainer/VBoxContainer/IPInputContainer/IPInputPanel/IPInput")
+status_label = NodePath("MainPanel/MarginContainer/VBoxContainer/StatusLabel")
+paste_button = NodePath("MainPanel/MarginContainer/VBoxContainer/IPInputContainer/CopyButton")
+back_button = NodePath("MainPanel/MarginContainer/VBoxContainer/BackButtonPanel/BackButton")
 
-[node name="ChalkPanel" parent="." unique_id=173110024 instance=ExtResource("2_chalk")]
+[node name="MainPanel" type="PanelContainer" parent="." unique_id=173110024]
 layout_mode = 1
-theme_override_styles/panel = SubResource("StyleBoxEmpty_jp1kc")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_qbi84")
 
-[node name="MarginContainer" type="MarginContainer" parent="ChalkPanel" unique_id=1761771700]
+[node name="MarginContainer" type="MarginContainer" parent="MainPanel" unique_id=1761771700]
 layout_mode = 2
 theme_override_constants/margin_left = 100
 theme_override_constants/margin_top = 50
 theme_override_constants/margin_right = 100
 theme_override_constants/margin_bottom = 150
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ChalkPanel/MarginContainer" unique_id=308580756]
+[node name="VBoxContainer" type="VBoxContainer" parent="MainPanel/MarginContainer" unique_id=308580756]
 layout_mode = 2
 theme_override_constants/separation = 19
 
-[node name="TitleImage" type="TextureRect" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=1041536950]
+[node name="TitleImage" type="TextureRect" parent="MainPanel/MarginContainer/VBoxContainer" unique_id=1041536950]
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 size_flags_vertical = 0
@@ -110,7 +53,7 @@ texture = ExtResource("4_1yh37")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="QRCodeRect" type="TextureRect" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=255711724]
+[node name="QRCodeRect" type="TextureRect" parent="MainPanel/MarginContainer/VBoxContainer" unique_id=255711724]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(300, 300)
@@ -119,41 +62,29 @@ size_flags_horizontal = 4
 expand_mode = 1
 stretch_mode = 5
 
-[node name="HostButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=259934766 instance=ExtResource("2_chalk")]
+[node name="HostButtonPanel" type="PanelContainer" parent="MainPanel/MarginContainer/VBoxContainer" unique_id=259934766]
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_as3ys")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wrapper")
 
-[node name="HostButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/HostButtonPanel" unique_id=598056250]
-material = SubResource("ShaderMaterial_chalk_text")
+[node name="HostButton" type="Button" parent="MainPanel/MarginContainer/VBoxContainer/HostButtonPanel" unique_id=598056250]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+theme = ExtResource("1_qbi84")
+theme_type_variation = &"MainBtn"
 
-[node name="IPInputContainer" type="HBoxContainer" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=972354897]
+[node name="IPInputContainer" type="HBoxContainer" parent="MainPanel/MarginContainer/VBoxContainer" unique_id=972354897]
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="CopyButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/IPInputContainer" unique_id=409325391]
+[node name="CopyButton" type="Button" parent="MainPanel/MarginContainer/VBoxContainer/IPInputContainer" unique_id=409325391]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
-theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+theme_type_variation = &"MainBtn"
 
-[node name="Icon" type="TextureRect" parent="ChalkPanel/MarginContainer/VBoxContainer/IPInputContainer/CopyButton" unique_id=901221832]
-material = SubResource("ShaderMaterial_chalk_text")
+[node name="Icon" type="TextureRect" parent="MainPanel/MarginContainer/VBoxContainer/IPInputContainer/CopyButton" unique_id=901221832]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -169,151 +100,98 @@ texture = ExtResource("5_copy")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="IPInputPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/IPInputContainer" unique_id=429315006 instance=ExtResource("2_chalk")]
+[node name="IPInputPanel" type="PanelContainer" parent="MainPanel/MarginContainer/VBoxContainer/IPInputContainer" unique_id=429315006]
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxEmpty_hwwg2")
+theme_type_variation = &"MainPanel"
 
-[node name="IPInput" type="LineEdit" parent="ChalkPanel/MarginContainer/VBoxContainer/IPInputContainer/IPInputPanel" unique_id=2103086952]
-material = SubResource("ShaderMaterial_chalk_text")
+[node name="IPInput" type="LineEdit" parent="MainPanel/MarginContainer/VBoxContainer/IPInputContainer/IPInputPanel" unique_id=2103086952]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_placeholder_color = Color(1, 1, 1, 0.5)
-theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
 alignment = 1
 
-[node name="ShareContainer" type="VBoxContainer" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=473224988]
+[node name="ShareContainer" type="VBoxContainer" parent="MainPanel/MarginContainer/VBoxContainer" unique_id=473224988]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="ShareButtons" type="HFlowContainer" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer" unique_id=1640228071]
+[node name="ShareButtons" type="HFlowContainer" parent="MainPanel/MarginContainer/VBoxContainer/ShareContainer" unique_id=1640228071]
 layout_mode = 2
 theme_override_constants/h_separation = 20
 theme_override_constants/v_separation = 10
 alignment = 1
 
-[node name="CopyLinkPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=2036579986 instance=ExtResource("2_chalk")]
+[node name="CopyLinkPanel" type="PanelContainer" parent="MainPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=2036579986]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_kayix")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wrapper")
 
-[node name="CopyLinkButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/CopyLinkPanel" unique_id=1378768595]
+[node name="CopyLinkButton" type="Button" parent="MainPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/CopyLinkPanel" unique_id=1378768595]
 unique_name_in_owner = true
-material = SubResource("ShaderMaterial_chalk_text")
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+theme_type_variation = &"MainBtn"
 
-[node name="WhatsAppPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=928515481 instance=ExtResource("2_chalk")]
+[node name="WhatsAppPanel" type="PanelContainer" parent="MainPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=928515481]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_l31xl")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wrapper")
 
-[node name="WhatsAppButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/WhatsAppPanel" unique_id=1729676220]
+[node name="WhatsAppButton" type="Button" parent="MainPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/WhatsAppPanel" unique_id=1729676220]
 unique_name_in_owner = true
-material = SubResource("ShaderMaterial_chalk_text")
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+theme_type_variation = &"MainBtn"
 
-[node name="SMSPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=94449455 instance=ExtResource("2_chalk")]
+[node name="SMSPanel" type="PanelContainer" parent="MainPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=94449455]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_wuide")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wrapper")
 
-[node name="SMSButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/SMSPanel" unique_id=209729916]
+[node name="SMSButton" type="Button" parent="MainPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/SMSPanel" unique_id=209729916]
 unique_name_in_owner = true
-material = SubResource("ShaderMaterial_chalk_text")
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+theme_type_variation = &"MainBtn"
 
-[node name="DiscordPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=1422422002 instance=ExtResource("2_chalk")]
+[node name="DiscordPanel" type="PanelContainer" parent="MainPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons" unique_id=1422422002]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_h77bf")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wrapper")
 
-[node name="DiscordButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/DiscordPanel" unique_id=1028716994]
+[node name="DiscordButton" type="Button" parent="MainPanel/MarginContainer/VBoxContainer/ShareContainer/ShareButtons/DiscordPanel" unique_id=1028716994]
 unique_name_in_owner = true
-material = SubResource("ShaderMaterial_chalk_text")
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+theme_type_variation = &"MainBtn"
 
-[node name="JoinButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=509396681 instance=ExtResource("2_chalk")]
+[node name="JoinButtonPanel" type="PanelContainer" parent="MainPanel/MarginContainer/VBoxContainer" unique_id=509396681]
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_4hpk5")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wrapper")
 
-[node name="JoinButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/JoinButtonPanel" unique_id=587214496]
-material = SubResource("ShaderMaterial_chalk_text")
+[node name="JoinButton" type="Button" parent="MainPanel/MarginContainer/VBoxContainer/JoinButtonPanel" unique_id=587214496]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+theme_type_variation = &"MainBtn"
 
-[node name="StatusLabel" type="Label" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=1768009761]
+[node name="StatusLabel" type="Label" parent="MainPanel/MarginContainer/VBoxContainer" unique_id=1768009761]
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="GetAppButton" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=1759722624 instance=ExtResource("7_get_app_button")]
+[node name="GetAppButton" parent="MainPanel/MarginContainer/VBoxContainer" unique_id=1759722624 instance=ExtResource("7_get_app_button")]
 unique_name_in_owner = true
 visible = false
 
-[node name="BackButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer" unique_id=1892769745 instance=ExtResource("2_chalk")]
+[node name="BackButtonPanel" type="PanelContainer" parent="MainPanel/MarginContainer/VBoxContainer" unique_id=1892769745]
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_yyg1t")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wrapper")
 
-[node name="BackButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/BackButtonPanel" unique_id=1868324332]
-material = SubResource("ShaderMaterial_chalk_text")
+[node name="BackButton" type="Button" parent="MainPanel/MarginContainer/VBoxContainer/BackButtonPanel" unique_id=1868324332]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+theme_type_variation = &"MainBtn"
 
 [node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=773785765]
 unique_name_in_owner = true
@@ -335,7 +213,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.0941176, 0.0784314, 0.145098, 1)
+color = Color(0.1254902, 0.1254902, 0.1254902, 1)
 
 [node name="CenterContainer" type="CenterContainer" parent="LoadingOverlay" unique_id=189202812]
 layout_mode = 1
@@ -347,7 +225,7 @@ grow_vertical = 2
 
 [node name="LoadingLabel" type="Label" parent="LoadingOverlay/CenterContainer" unique_id=140865135]
 unique_name_in_owner = true
-material = SubResource("ShaderMaterial_chalk_text")
 layout_mode = 2
+theme_override_colors/font_color = Color(0.8745098, 0.8745098, 0.8745098, 1)
 theme_override_font_sizes/font_size = 60
 horizontal_alignment = 1

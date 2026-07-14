@@ -1,31 +1,8 @@
 [gd_scene format=3 uid="uid://ltw4bliun6sk"]
 
 [ext_resource type="Script" uid="uid://d1run3cppligi" path="res://scripts/Tuto_layer.gd" id="1_svnd1"]
-[ext_resource type="Shader" uid="uid://fhypsw041brr" path="res://shaders/chalk.gdshader" id="2_rdmdd"]
-[ext_resource type="PackedScene" uid="uid://b4y8k5l6m7oa" path="res://scenes/UI/Components/ChalkPanel.tscn" id="4_4kd2s"]
 [ext_resource type="Texture2D" uid="uid://olrcohnoiovf" path="res://assets/UI/Icons/cross-small.png" id="5_n4iax"]
 [ext_resource type="PackedScene" uid="uid://chf35my53chkb" path="res://scenes/UI/RoadMap.tscn" id="5_svnd1"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rdmdd"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_square_bg"]
-bg_color = Color(0.0941176, 0.0784314, 0.145098, 1)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_chalk_icon"]
-shader = ExtResource("2_rdmdd")
-shader_parameter/intensity = 0.5
-shader_parameter/grain_size = 100.0
-shader_parameter/jitter_amount = 0.002
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_k0s0j"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
 
 [node name="TutorialLayer" type="CanvasLayer" unique_id=595521162]
 process_mode = 3
@@ -50,9 +27,14 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.85)
 
-[node name="ChalkPanel" parent="TutorialOverlay" unique_id=1199446011 instance=ExtResource("4_4kd2s")]
+[node name="ChalkPanel" type="PanelContainer" parent="TutorialOverlay" unique_id=1199446011]
 layout_mode = 1
-theme_override_styles/panel = SubResource("StyleBoxEmpty_rdmdd")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"MainPanel"
 
 [node name="MarginContainer" type="MarginContainer" parent="TutorialOverlay/ChalkPanel" unique_id=1301052653]
 layout_mode = 2
@@ -79,12 +61,9 @@ horizontal_alignment = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_square_bg")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_square_bg")
-theme_override_styles/hover = SubResource("StyleBoxFlat_square_bg")
+theme_type_variation = &"MainBtn"
 
 [node name="Icon" type="TextureRect" parent="TutorialOverlay/ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/TutorialCloseButton" unique_id=1587091371]
-material = SubResource("ShaderMaterial_chalk_icon")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -137,10 +116,15 @@ fit_content = true
 [node name="RoadMap" parent="TutorialOverlay/ChalkPanel/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer" unique_id=1655735994 instance=ExtResource("5_svnd1")]
 layout_mode = 2
 
-[node name="RemotePauseOverlay" parent="." unique_id=88552380 instance=ExtResource("4_4kd2s")]
+[node name="RemotePauseOverlay" type="PanelContainer" parent="." unique_id=88552380]
 unique_name_in_owner = true
 visible = false
-theme_override_styles/panel = SubResource("StyleBoxEmpty_k0s0j")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"MainPanel"
 
 [node name="Label" type="Label" parent="RemotePauseOverlay" unique_id=239036418]
 layout_mode = 2

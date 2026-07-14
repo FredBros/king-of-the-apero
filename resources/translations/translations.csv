@@ -1,7 +1,7 @@
 id,en,fr
 
 # --- ROADMAP ---,,
-ROADMAP_ALPHA_VERSION,PRE-ALPHA VERSION,VERSION PRÉ-ALPHA
+ROADMAP_ALPHA_VERSION,PRE-ALPHA VERSION,VERSION PRE-ALPHA
 ROADMAP_WARNING,This is a technical prototype (POC).,Ceci est un prototype technique (POC).
 ROADMAP_TITLE,ROADMAP:,FEUILLE DE ROUTE :
 ROADMAP_CORE,Core Gameplay,Boucle de jeu principale
@@ -10,7 +10,7 @@ ROADMAP_3D,3D Models & Animations,Modèles et Animations 3D
 ROADMAP_LEGENDS,"Legends (Santa, Tooth Fairy...)","Légendes (Père Noël, Petite Souris...)"
 
 # --- TUTORIAL ---,,
-TUTO_TITLE,RULES,RÈGLES
+TUTO_TITLE,RULES,REGLES
 TUTO_PAUSE_TEXT,"GAME PAUSED
 
 Opponent is checking the rules...","JEU EN PAUSE
@@ -35,7 +35,7 @@ Throw [outline_size=4][outline_color=#e4a672][color=#262b44]BLACK[/color][/outli
 [b]Motifs :[/b] [color=#262b44]✚[/color]/[color=#be4a2f]✚[/color] (Croix) = Droit, [color=#262b44]✖[/color]/[color=#be4a2f]✖[/color] (X) = Diagonale.
 Jetez les [outline_size=4][outline_color=#e4a672][color=#262b44]NOIRS[/color][/outline_color][/outline_size] pour bouger. Brûlez les cartes inutiles. AFK ? Le public vous caillasse.
 [color=#e4a672]3.[/color] [shake rate=20 level=10][b]BASTON[/b][/shake] : Jetez les [outline_size=4][outline_color=#e4a672][color=#be4a2f]ROUGES[/color][/outline_color][/outline_size] pour frapper. Une touche [outline_size=4][outline_color=#e4a672][color=#be4a2f]ROUGE[/color][/outline_color][/outline_size] POUSSE l'ennemi. Visez hors du ring !
-[color=#e4a672]4.[/color] [shake rate=20 level=10][b]DÉFENSE[/b][/shake] : Bloquez avec le même motif [outline_size=4][outline_color=#e4a672][color=#be4a2f]ROUGE[/color][/outline_color][/outline_size] (valeur supérieure).
+[color=#e4a672]4.[/color] [shake rate=20 level=10][b]DEFENSE[/b][/shake] : Bloquez avec le même motif [outline_size=4][outline_color=#e4a672][color=#be4a2f]ROUGE[/color][/outline_color][/outline_size] (valeur supérieure).
 
 [font_size=18][i][color=#686e86]“Pas de pitié, c'est le folklore.”[/color][/i][/font_size]
 [/center]"
@@ -43,12 +43,12 @@ Jetez les [outline_size=4][outline_color=#e4a672][color=#262b44]NOIRS[/color][/o
 # --- BOUTONS MENU PRINCIPAL ---,,
 BTN_PLAY,PLAY,JOUER
 BTN_OPTIONS,OPTIONS,OPTIONS
-BTN_RULES,RULES,RÈGLES
+BTN_RULES,RULES,REGLES
 BTN_QUIT,QUIT,QUITTER
 BTN_BACK,Back,Retour
 
 # --- LOBBY ---,,
-LOBBY_CREATE_MATCH,CREATE MATCH,CRÉER PARTIE
+LOBBY_CREATE_MATCH,CREATE MATCH,CREER PARTIE
 LOBBY_JOIN_MATCH,JOIN MATCH,REJOINDRE PARTIE
 LOBBY_PLACEHOLDER_MATCH_ID,"Enter Match ID here...","Entrez l'ID de partie..."
 LOBBY_TOOLTIP_PASTE,Paste Match ID,Coller l'ID de partie
@@ -60,7 +60,7 @@ LOBBY_STATUS_READY,"Online Services Ready.","Services en ligne prêts."
 LOBBY_STATUS_CONNECTED_WAITING,"Connected! Waiting for opponent...","Connecté ! En attente de l'adversaire..."
 LOBBY_STATUS_HOSTED,"Match Created! Share the Code below.","Partie créée ! Partagez le code ci-dessous."
 LOBBY_STATUS_STARTING,LOADING MATCH...,CHARGEMENT DU MATCH...
-LOBBY_STATUS_FAILED,"Connection Failed.","Échec de la connexion."
+LOBBY_STATUS_FAILED,"Connection Failed.","Echec de la connexion."
 LOBBY_STATUS_PLAYER_CONNECTED,"Player {user_id} connected.","Joueur {user_id} connecté."
 LOBBY_STATUS_LINK_COPIED,"Link copied to clipboard!","Lien copié dans le presse-papiers !"
 LOBBY_STATUS_LINK_COPIED_DISCORD,"Link copied! Paste it in Discord.","Lien copié ! Collez-le dans Discord."
@@ -125,7 +125,7 @@ Done? Click the coin to end your turn.
 [/center]","[center]
 Terminé ? Cliquez sur la pièce pour finir votre tour.
 [i]La pièce bascule et l'adversaire prend la main.[/i]
-[color=#e4a672]SANTÉ ![/color]
+[color=#e4a672]SANTE ![/color]
 [/center]"
 
 keys,fr,en

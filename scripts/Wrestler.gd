@@ -22,7 +22,6 @@ const SPRITE_SCALE := 2.0
 const SPRITE_RAISE_PIXELS := 2.0
 const SPRITE_Y_OFFSET := -SPRITE_RAISE_PIXELS * SPRITE_SCALE
 
-const FLOATING_FONT = preload("res://assets/fonts/Bangers-Regular.ttf")
 const SOUND_POOL_SCENE = preload("res://scenes/Components/SoundPoolComponent.tscn")
 const DEFAULT_SOUND_SHOOTING_PUNCH = preload("res://assets/Sounds/Punch/Voice/shoutingpunches_male_default.wav")
 const DEFAULT_SOUND_PUNCH = preload("res://assets/Sounds/Punch/Impact/punch_default.mp3")
@@ -423,7 +422,6 @@ func play_dodge_sound() -> void:
 func show_floating_text(text: String, color: Color) -> void:
 	var label = Label.new()
 	label.text = text
-	label.add_theme_font_override("font", FLOATING_FONT)
 	label.add_theme_font_size_override("font_size", 8)
 	label.add_theme_color_override("font_color", color)
 	add_child(label)

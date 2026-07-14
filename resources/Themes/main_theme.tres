@@ -1,0 +1,73 @@
+[gd_resource type="Theme" format=3 uid="uid://cu622udo5tcqs"]
+
+[ext_resource type="FontFile" uid="uid://b8fdjncabxxxm" path="res://assets/fonts/04B_03__.TTF" id="1_f4ypn"]
+[ext_resource type="Texture2D" uid="uid://bcmycvl4kdwtf" path="res://assets/UI/Components/btn_normal.tres" id="1_o6dfl"]
+[ext_resource type="Texture2D" uid="uid://ddnn0aiyjx6vc" path="res://assets/UI/Components/btn_default.png" id="2_o6dfl"]
+[ext_resource type="Texture2D" uid="uid://bnwntibsi8fck" path="res://assets/UI/Components/frame_default.png" id="3_05amr"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lineedit"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_8xcbj"]
+texture = ExtResource("1_o6dfl")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8xcbj"]
+atlas = ExtResource("2_o6dfl")
+region = Rect2(24, 0, 24, 24)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_srv3n"]
+texture = SubResource("AtlasTexture_8xcbj")
+texture_margin_left = 11.0
+texture_margin_top = 11.0
+texture_margin_right = 9.0
+texture_margin_bottom = 9.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_tighk"]
+texture = ExtResource("3_05amr")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_srv3n"]
+load_path = "res://.godot/imported/frame_player_info.png-ee52f0664af8a5cd8f11a12e26804e01.ctex"
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ac5cj"]
+texture = SubResource("CompressedTexture2D_srv3n")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xtxwn"]
+bg_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h3gei"]
+bg_color = Color(0.99215686, 0.99215686, 0.99215686, 1)
+
+[resource]
+default_font = ExtResource("1_f4ypn")
+default_font_size = 16
+Control/colors/font_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
+LineEdit/colors/font_placeholder_color = Color(0.1254902, 0.1254902, 0.1254902, 0.5)
+LineEdit/styles/focus = SubResource("StyleBoxEmpty_lineedit")
+LineEdit/styles/normal = SubResource("StyleBoxEmpty_lineedit")
+MainBtn/base_type = &"Button"
+MainBtn/colors/font_hover_color = Color(0.3764706, 0.3764706, 0.3764706, 1)
+MainBtn/font_sizes/font_size = 32
+MainBtn/styles/hover = SubResource("StyleBoxTexture_8xcbj")
+MainBtn/styles/normal = SubResource("StyleBoxTexture_8xcbj")
+MainBtn/styles/pressed = SubResource("StyleBoxTexture_srv3n")
+MainPanel/base_type = &"PanelContainer"
+MainPanel/styles/panel = SubResource("StyleBoxTexture_tighk")
+PlayerInfoPanel/base_type = &"PanelContainer"
+PlayerInfoPanel/styles/panel = SubResource("StyleBoxTexture_ac5cj")
+ProgressBar/styles/background = SubResource("StyleBoxFlat_xtxwn")
+ProgressBar/styles/fill = SubResource("StyleBoxFlat_h3gei")

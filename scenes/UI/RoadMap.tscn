@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://chf35my53chkb"]
+[gd_scene format=3 uid="uid://chf35my53chkb"]
 
-[ext_resource type="Script" path="res://scripts/UI/RoadMap.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://cu35g22whfd6e" path="res://scripts/UI/RoadMap.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://cu622udo5tcqs" path="res://resources/Themes/main_theme.tres" id="2_aaeay"]
 
 [node name="RoadMap" type="VBoxContainer" unique_id=1655735994]
 anchors_preset = 10
@@ -11,6 +12,8 @@ script = ExtResource("1_script")
 
 [node name="InfoLabel" type="RichTextLabel" parent="." unique_id=1175738148]
 layout_mode = 2
+theme = ExtResource("2_aaeay")
+theme_override_colors/default_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
 theme_override_font_sizes/normal_font_size = 18
 theme_override_font_sizes/bold_font_size = 20
 bbcode_enabled = true

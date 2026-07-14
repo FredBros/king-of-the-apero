@@ -7,9 +7,8 @@
 [ext_resource type="Script" uid="uid://gvhp5i2exhxf" path="res://scripts/end_turn_button.gd" id="4_4t7g5"]
 [ext_resource type="AudioStream" uid="uid://rhjhqj3hvayj" path="res://assets/Sounds/UI/card_slap.wav" id="5_slap_sound"]
 [ext_resource type="Texture2D" uid="uid://dh5k7qyuv1a0l" path="res://assets/UI/Btn/end_turn.png" id="6_end_turn"]
+[ext_resource type="Theme" uid="uid://cu622udo5tcqs" path="res://resources/Themes/main_theme.tres" id="8_7hp7j"]
 [ext_resource type="Script" uid="uid://csrhhsqxb6b3q" path="res://scripts/Components/UISoundComponent.gd" id="8_u7j5g"]
-[ext_resource type="PackedScene" uid="uid://b4y8k5l6m7oa" path="res://scenes/UI/Components/ChalkPanel.tscn" id="9_chalk"]
-[ext_resource type="Shader" uid="uid://fhypsw041brr" path="res://shaders/chalk.gdshader" id="10_shader"]
 [ext_resource type="Texture2D" uid="uid://bqdgrwlaoentt" path="res://assets/UI/Icons/settings.png" id="12_settings"]
 [ext_resource type="PackedScene" uid="uid://chf35my53chkb" path="res://scenes/UI/RoadMap.tscn" id="13_7hp7j"]
 [ext_resource type="PackedScene" uid="uid://bxnlgllnletcq" path="res://scenes/UI/Draw.tscn" id="14_draw"]
@@ -19,34 +18,7 @@
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dc875"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_square_bg"]
-bg_color = Color(0.0941176, 0.0784314, 0.145098, 1)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_chalk_text"]
-shader = ExtResource("10_shader")
-shader_parameter/intensity = 0.5
-shader_parameter/grain_size = 100.0
-shader_parameter/jitter_amount = 0.002
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lk18c"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fsu2c"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_button"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6nmxl"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wrapper"]
 
 [node name="GameUI" type="CanvasLayer" unique_id=77095954 node_paths=PackedStringArray("top_player_info", "bottom_player_info", "opponent_hand_container")]
 script = ExtResource("1_gameui")
@@ -166,12 +138,9 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 tooltip_text = "Options"
-theme_override_styles/normal = SubResource("StyleBoxFlat_square_bg")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_square_bg")
-theme_override_styles/hover = SubResource("StyleBoxFlat_square_bg")
+theme_type_variation = &"MainBtn"
 
 [node name="Icon" type="TextureRect" parent="TopRightContainer/OptionsButton" unique_id=1268633922]
-material = SubResource("ShaderMaterial_chalk_text")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -228,9 +197,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ChalkPanel" parent="GameOverContainer" unique_id=2121975109 instance=ExtResource("9_chalk")]
+[node name="ChalkPanel" type="PanelContainer" parent="GameOverContainer" unique_id=2121975109]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_lk18c")
+theme = ExtResource("8_7hp7j")
+theme_type_variation = &"MainPanel"
 
 [node name="MarginContainer" type="MarginContainer" parent="GameOverContainer/ChalkPanel" unique_id=1141623312]
 layout_mode = 2
@@ -244,46 +214,29 @@ layout_mode = 2
 theme_override_constants/separation = 30
 
 [node name="WinnerLabel" type="Label" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1450060083]
-material = SubResource("ShaderMaterial_chalk_text")
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
 text = "WINNER!"
 horizontal_alignment = 1
 
-[node name="RestartButtonPanel" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1618913184 instance=ExtResource("9_chalk")]
+[node name="RestartButtonPanel" type="PanelContainer" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1618913184]
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_fsu2c")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wrapper")
 
 [node name="RestartButton" type="Button" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/RestartButtonPanel" unique_id=313932704]
-material = SubResource("ShaderMaterial_chalk_text")
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+theme_type_variation = &"MainBtn"
 text = "RESTART MATCH"
 
-[node name="QuitButtonPanel" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=2134581709 instance=ExtResource("9_chalk")]
+[node name="QuitButtonPanel" type="PanelContainer" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=2134581709]
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_6nmxl")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wrapper")
 
 [node name="QuitButton" type="Button" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer/QuitButtonPanel" unique_id=707802481]
-material = SubResource("ShaderMaterial_chalk_text")
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
-theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleBoxEmpty_button")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_button")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_button")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_button")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_button")
+theme_type_variation = &"MainBtn"
 text = "QUIT TO MENU"
 
 [node name="GetAppButton" parent="GameOverContainer/ChalkPanel/MarginContainer/VBoxContainer" unique_id=1759722624 instance=ExtResource("15_get_app_button")]

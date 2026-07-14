@@ -1,20 +1,8 @@
 [gd_scene format=3 uid="uid://1ncxi1ufiguq"]
 
 [ext_resource type="Script" uid="uid://chjs3peat145n" path="res://scripts/UI/Tutorial/TutoTooltip.gd" id="1_pcmkl"]
-[ext_resource type="PackedScene" uid="uid://b4y8k5l6m7oa" path="res://scenes/UI/Components/ChalkPanel.tscn" id="2_chalk"]
-[ext_resource type="Shader" uid="uid://fhypsw041brr" path="res://shaders/chalk.gdshader" id="3_shader"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_67ihb"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_text"]
-shader = ExtResource("3_shader")
-shader_parameter/intensity = 0.5
-shader_parameter/grain_size = 100.0
-shader_parameter/jitter_amount = 0.002
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wrapper"]
 
 [node name="TutoTooltip" type="Control" unique_id=567502519]
 process_mode = 3
@@ -38,7 +26,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.6)
 
-[node name="ChalkPanel" parent="." unique_id=685742376 instance=ExtResource("2_chalk")]
+[node name="ChalkPanel" type="PanelContainer" parent="." unique_id=685742376]
 custom_minimum_size = Vector2(400, 250)
 layout_mode = 1
 anchors_preset = 8
@@ -50,7 +38,7 @@ offset_left = -200.0
 offset_top = -100.0
 offset_right = 200.0
 offset_bottom = 100.0
-theme_override_styles/panel = SubResource("StyleBoxEmpty_67ihb")
+theme_type_variation = &"MainPanel"
 
 [node name="MarginContainer" type="MarginContainer" parent="ChalkPanel" unique_id=1952569789]
 layout_mode = 2
@@ -97,19 +85,18 @@ theme_override_constants/separation = 20
 alignment = 1
 
 [node name="SkipButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer" unique_id=5774422]
-material = SubResource("ShaderMaterial_text")
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "TUTO_SKIP"
 flat = true
 
-[node name="NextButtonPanel" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer" instance=ExtResource("2_chalk")]
+[node name="NextButtonPanel" type="PanelContainer" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(150, 50)
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wrapper")
 
 [node name="NextButton" type="Button" parent="ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/NextButtonPanel" unique_id=364614835]
-material = SubResource("ShaderMaterial_text")
 layout_mode = 2
+theme_type_variation = &"MainBtn"
 theme_override_font_sizes/font_size = 32
 text = "TUTO_OK"
-flat = true

@@ -23,7 +23,7 @@ const DEFAULT_IP = "play.folkloreontap.com"
 @onready var sms_button: Button = %SMSButton
 @onready var discord_button: Button = %DiscordButton
 
-@onready var chalk_panel: Control = $ChalkPanel
+@onready var main_panel: Control = $MainPanel
 @onready var loading_overlay: Control = %LoadingOverlay
 @onready var loading_label: Label = %LoadingLabel
 @onready var get_app_button: Control = %GetAppButton
@@ -229,7 +229,7 @@ func _on_game_starting() -> void:
 		loading_dots_count = 0
 		loading_label.text = tr("LOBBY_STATUS_STARTING")
 		loading_overlay.show()
-		if chalk_panel: chalk_panel.hide()
+		if main_panel: main_panel.hide()
 		loading_text_timer.start()
 	else: # Fallback au cas où l'overlay ne serait pas configuré
 		if back_button: back_button.hide()

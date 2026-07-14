@@ -31,8 +31,8 @@ NetworkManager="*res://scripts/NetworkManager.gd"
 window/size/viewport_width=720
 window/size/viewport_height=1280
 window/size/borderless=true
-window/size/window_width_override=540
-window/size/window_height_override=960
+window/size/window_width_override=504
+window/size/window_height_override=896
 window/stretch/mode="viewport"
 window/handheld/orientation=1
 
@@ -50,6 +50,10 @@ folder_colors={
 "res://server/": "gray",
 "res://shaders/": "pink"
 }
+
+[gui]
+
+theme/custom="res://resources/Themes/main_theme.tres"
 
 [internationalization]
 
