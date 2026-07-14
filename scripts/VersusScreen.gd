@@ -81,34 +81,21 @@ func setup(local_wrestler_data: WrestlerData, remote_wrestler_data: WrestlerData
 	# Mise à jour de la durée totale
 	duration = current_delay + 1.0
 
-func _spawn_model(data: WrestlerData, parent: Node3D, delay: float = 0.0) -> void:
-	if not data or not data.model_scene:
+func _spawn_model(data: WrestlerData, _parent: Node3D, delay: float = 0.0) -> void:
+	# Le pivot 2D a retiré model_scene de WrestlerData (remplacé par un sprite plat).
+	# La preview 3D de ce SubViewport sera reprise avec l'UI (voir mémoire pivot_2d_sincity) ;
+	# en attendant, on garde juste le timing et l'annonce vocale du personnage.
+	if not data:
 		return
-		
-	var model = data.model_scene.instantiate()
-	parent.add_child(model)
-	
-	# Gestion Animation (Flex > Idle)
-	var anim_player = model.find_child("AnimationPlayer", true, false)
-	if anim_player:
-		if anim_player.has_animation("Flex"):
-			anim_player.play("Flex")
-		elif anim_player.has_animation("Idle"):
-			anim_player.play("Idle")
-	
-	# Animation d'apparition (Zoom In)
-	model.scale = Vector3.ZERO
+
 	var tween = create_tween()
 	if delay > 0:
 		tween.tween_interval(delay)
-	
-	# Jouer le son d'annonce du personnage
+
 	if data.sound_name:
 		tween.tween_callback(func():
 			sound_component.play_varied(data.sound_name)
 		)
-		
-	tween.tween_property(model, "scale", Vector3.ONE, 0.8).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _start_intro_sequence(delay: float = 0.0) -> void:
 	# Animation VS (Flashy Bump)

@@ -8,7 +8,7 @@ extends Resource
 @export var allow_tier_zero: bool = false
 @export var allow_tier_five: bool = false
 @export var portrait: Texture2D
-@export var model_scene: PackedScene
+@export var sprite: Texture2D
 
 
 @export_group("Combo")

@@ -1,8 +1,8 @@
-extends Node3D
+extends Node
 
 @export var pool_size: int = 5 # Suffisant pour gérer Impact + Cri + Ambiance simultanés
 
-const SOUND_COMPONENT_SCENE = preload("res://scenes/Components/SoundComponent.tscn")
+const SOUND_COMPONENT_SCENE = preload("res://scenes/Components/UISoundComponent.tscn")
 
 var _pool: Array = []
 var _current_index: int = 0

@@ -7,14 +7,8 @@
 script = ExtResource("2_i8vlu")
 metadata/_custom_type_script = "uid://c4kx8fgyrsuv6"
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_i8vlu"]
-height = 1.8
-
-[node name="Wrestler" type="CharacterBody3D" unique_id=1536401217]
+[node name="Wrestler" type="Node2D" unique_id=1536401217]
 script = ExtResource("1_83s1c")
 wrestler_data = SubResource("Resource_16ftt")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=618426190]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00785327, 0.9420959, 0)
-shape = SubResource("CapsuleShape3D_i8vlu")
-disabled = true
+[node name="CharacterSprite" type="Sprite2D" parent="." unique_id=618426190]

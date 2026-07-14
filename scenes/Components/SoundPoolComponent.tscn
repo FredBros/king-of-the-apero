@@ -2,6 +2,6 @@
 
 [ext_resource type="Script" uid="uid://ojapyguaqcb8" path="res://scripts/Components/SoundPoolComponent.gd" id="1_60xp8"]
 
-[node name="SoundPoolComponent" type="Node3D" unique_id=1019733488]
+[node name="SoundPoolComponent" type="Node" unique_id=1019733488]
 process_mode = 3
 script = ExtResource("1_60xp8")

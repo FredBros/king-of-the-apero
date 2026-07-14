@@ -1,9 +1,8 @@
-extends Node3D
+extends Node2D
 
 @onready var grid_manager: GridManager = $GridManager
 @onready var game_ui: GameUI = $GameUI
 @onready var game_manager: GameManager = $GameManager
-@onready var camera_pivot: Node3D = $CameraPivot
 @onready var deck_manager: DeckManager = $DeckManager
 
 @onready var tutorial_orchestrator = $TutorialOrchestrator
@@ -91,11 +90,6 @@ func _ready() -> void:
 	if tutorial_orchestrator and game_manager and game_ui:
 		tutorial_orchestrator.setup(game_manager, game_ui)
 
-	# Adjust camera for Portrait Mode (Zoom In)
-	var camera = get_viewport().get_camera_3d()
-	if camera and camera.projection == Camera3D.PROJECTION_PERSPECTIVE:
-		camera.fov = 50.0
-		
 	# Initialisation Audio
 	sound_component = UI_SOUND_COMPONENT_SCENE.instantiate()
 	add_child(sound_component)
@@ -137,14 +131,13 @@ func _update_hand_display(player_name: String) -> void:
 
 func _setup_player_camera_view() -> void:
 	if not game_manager: return
-	
+
 	var my_name = game_manager.get_my_name()
-	
-	# Player 1 spawns at Top (Negative Z), so needs rotation to be at Bottom
+
+	# Player 1 spawns at the far corner, so we mirror the board mapping to keep them at the bottom
 	if my_name == "Player 1":
-		if camera_pivot:
-			print("I am Player 1. Rotating camera.")
-			camera_pivot.rotate_y(PI)
+		print("I am Player 1. Flipping board perspective.")
+		grid_manager.perspective_flip = true
 
 func _on_wrestlers_spawned(wrestlers: Array[Wrestler]) -> void:
 	# Connect Health Signals now that wrestlers exist

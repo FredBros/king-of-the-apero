@@ -199,6 +199,7 @@ func _handle_attack_result(data: Dictionary) -> void:
 	if is_blocked:
 		print("🛡️ Attaque bloquée !")
 		target.show_floating_text("BLOCKED!", Color(1.0, 0.6, 0.0))
+		target.block()
 	elif is_dodged:
 		print("💨 Attaque esquivée !")
 		target.show_floating_text("DODGED!", Color(0.0, 0.8, 1.0))
@@ -223,7 +224,11 @@ func _handle_attack_result(data: Dictionary) -> void:
 			if is_push_attack:
 				_apply_push(attacker, target, push_dmg)
 			else:
-				await get_tree().create_timer(0.3).timeout
+				# Doit s'exécuter avant que attacker.attack() n'atteigne son pic de saut et
+				# appelle combat_target.execute_pending_damage() : take_damage() ne fait
+				# qu'armer le callback (_pending_damage_callback), c'est attack() qui le
+				# déclenche au bon moment. Un délai ici (l'ancien timer 3D de 0.3s) fait
+				# rater ce rendez-vous depuis que l'animation d'attaque est plus rapide que 0.3s.
 				target.take_damage(dmg_mult)
 
 func _apply_push(attacker: Wrestler, target: Wrestler, push_damage: int = 0) -> void:

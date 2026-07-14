@@ -14,11 +14,12 @@ signal impact_occurred
 var card_data: CardData
 var base_color: Color = Color.WHITE
 
-const CARD_FONT = preload("res://assets/fonts/Bangers-Regular.ttf")
-const AURA_SHADER = preload("res://shaders/aura_sous_bock.gdshader")
+const CARD_TIER_FONT = preload("res://assets/fonts/04B_03__.TTF")
+const CARD_FACES_TEXTURE = preload("res://assets/Cards/cards.png")
+const CARD_FRAME_SIZE = 24
+const CARD_COLOR_ATTACK = Color("#cc3d3d")
+const CARD_COLOR_MOVE = Color("#202020")
 var card_visual: TextureRect
-var aura_rect: ColorRect
-var aura_holder: Node2D
 var push_icon: TextureRect
 var _touch_start_pos: Vector2
 var _is_touching: bool = false
@@ -32,13 +33,10 @@ var is_destroying: bool = false
 
 var is_playable: bool = true
 var is_reaction_candidate: bool = false
-var current_tier: int = 1
 var _target_scale: Vector2 = Vector2.ONE
 var _target_modulate: Color = Color.WHITE
 var _current_base_scale: Vector2 = Vector2.ONE
-var _discard_shake_intensity: float = 0.0
 var _kick_tween: Tween
-var _aura_margin: int = 30
 
 func setup(data: CardData) -> void:
 	card_data = data
@@ -56,37 +54,13 @@ func _ready() -> void:
 	# Réduction de la taille (220 -> 140) pour que 5 cartes rentrent sur mobile
 	custom_minimum_size = Vector2(120, 120)
 	
-	# Important : Ne pas clipper le contenu pour voir l'aura qui dépasse
+	# Important : Ne pas clipper le contenu (le texte du tier peut légèrement déborder)
 	clip_contents = false
-	
+
 	# Sécurité : On s'assure que le parent (le wrapper dans GameUI) ne coupe pas non plus
 	if get_parent() is Control:
 		get_parent().clip_contents = false
-	
-	# --- Setup Aura (Arrière-plan) ---
-	# On utilise un Node2D pour que le PanelContainer ne redimensionne pas l'aura
-	aura_holder = Node2D.new()
-	add_child(aura_holder)
-	
-	aura_rect = ColorRect.new()
-	aura_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE # Ne pas bloquer les clics
-	
-	# Setup Material & Noise
-	var aura_mat = ShaderMaterial.new()
-	aura_mat.shader = AURA_SHADER
-	
-	var noise = FastNoiseLite.new()
-	noise.frequency = 0.02 # Bruit assez large pour faire "fumée"
-	var noise_tex = NoiseTexture2D.new()
-	noise_tex.width = 256
-	noise_tex.height = 256
-	noise_tex.noise = noise
-	noise_tex.seamless = true
-	aura_mat.set_shader_parameter("noise_tex", noise_tex)
-	
-	aura_rect.material = aura_mat
-	aura_holder.add_child(aura_rect)
-	
+
 	# Setup Visuals (TextureRect)
 	card_visual = TextureRect.new()
 	card_visual.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -97,8 +71,8 @@ func _ready() -> void:
 	
 	# Setup Font & Layout for Value
 	if value_label:
-		value_label.add_theme_font_override("font", CARD_FONT)
-		value_label.add_theme_font_size_override("font_size", 40)
+		value_label.add_theme_font_override("font", CARD_TIER_FONT)
+		value_label.add_theme_font_size_override("font_size", 46)
 		value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		value_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		
@@ -124,141 +98,52 @@ func _ready() -> void:
 	push_icon.hide()
 	kick_holder.add_child(push_icon)
 	
-	# On rend le fond du PanelContainer transparent pour ne voir que le coaster
+	# On rend le fond du PanelContainer transparent pour ne voir que le visuel de la carte
 	self_modulate = Color(1, 1, 1, 0)
-	
-	# Mise à jour de la géométrie de l'aura quand la carte change de taille
-	resized.connect(_update_aura_geometry)
-	_update_aura_geometry()
-	
+
 	if card_data:
 		update_visuals()
 
 func _process(delta: float) -> void:
 	if is_destroying: return
-	
-	# --- 1. Gestion de l'Échelle (Smooth Lerp) ---
+
 	# On lisse le changement d'échelle de base (Sélection, Drag...)
 	_current_base_scale = _current_base_scale.lerp(_target_scale, delta * 15.0)
-	
-	if card_visual:
-		card_visual.modulate = card_visual.modulate.lerp(_target_modulate, delta * 15.0)
-	
-	# --- 2. Vibration (Vibes.md) ---
-	# On ne vibre pas si on est en train de draguer la carte (pour la lisibilité)
-	var apply_vibe = not _is_touching
-	
-	var power = 0.0
-	match current_tier:
-		0: power = 0.0
-		1: power = 0.5
-		2: power = 2.0
-		3: power = 3.5
-		4: power = 5.0
-		5: power = 8.0
-	
-	# Intensité globale
-	var intensity = power * 0.5
-	
-	# Jitter de Rotation (Chaos contrôlé)
-	# On ajoute l'intensité du "Discard Shake" si nécessaire
-	var total_rot_intensity = intensity + _discard_shake_intensity
-	var rot_jitter = 0.0
-	if apply_vibe or _discard_shake_intensity > 0.0:
-		rot_jitter = deg_to_rad(randf_range(-total_rot_intensity * 0.5, total_rot_intensity * 0.5))
-	
-	rotation = rot_jitter
-	
-	# Jitter d'Échelle (Effet "Pulsation / Envie de sauter")
-	var s_jitter = 1.0
-	if apply_vibe:
-		s_jitter = 1.0 + (randf_range(0.0, intensity) * 0.005)
-	
-	scale = _current_base_scale * s_jitter
+	scale = _current_base_scale
 
-func _update_aura_geometry() -> void:
-	if not aura_rect: return
-	aura_rect.size = size + Vector2(_aura_margin * 2, _aura_margin * 2)
-	aura_rect.position = -Vector2(_aura_margin, _aura_margin)
+	# Sur "modulate" (pas juste card_visual) pour que le chiffre de tier grise en même temps que l'art
+	modulate = modulate.lerp(_target_modulate, delta * 15.0)
 
 func update_visuals() -> void:
 	if not card_data: return
-	
+
 	if card_data.suit == "Joker":
 		value_label.text = ""
-		# Use a dark color for the Joker's star for better visibility
-		value_label.add_theme_color_override("font_color", Color.from_string("#262b44", Color.WHITE))
 	else:
 		value_label.text = str(card_data.tier)
-		# Set font color based on card type (red/black)
-		if card_data.type == CardData.CardType.ATTACK: # Red cards
-			value_label.add_theme_color_override("font_color", Color.from_string("#a22633", Color.WHITE))
-		else: # Black cards
-			value_label.add_theme_color_override("font_color", Color.from_string("#262b44", Color.WHITE))
-	
-	# --- 1. Chargement de la Texture (Skin) ---
-	var color_str = "black"
-	if card_data.type == CardData.CardType.ATTACK: color_str = "red"
-	
-	var pattern_str = "ortho"
-	if card_data.pattern == CardData.MovePattern.DIAGONAL: pattern_str = "diag"
-	
-	var tier = card_data.tier
-	var filename = "coaster_%s_%s_%d.png" % [color_str, pattern_str, tier]
-	
-	if card_data.suit == "Joker":
-		filename = "coaster_joker.png"
-		tier = 4 # Joker est considéré Tier Max pour les effets
-	current_tier = int(tier)
-	
-	var texture_path = "res://assets/Cards/" + filename
-	if ResourceLoader.exists(texture_path):
-		card_visual.texture = load(texture_path)
-	else:
-		printerr("Texture manquante: ", texture_path)
+		var text_color = CARD_COLOR_MOVE
+		if card_data.type == CardData.CardType.ATTACK:
+			text_color = CARD_COLOR_ATTACK
+		value_label.add_theme_color_override("font_color", text_color)
 
-	# --- 2. Configuration de l'Aura (Shader) ---
-	_aura_margin = 30
-	var halo_color = Color.WHITE
-	var pulse_speed = 1.0
-	var intensity = 1.0
+	card_visual.texture = _build_card_face_texture()
 
-	match int(tier):
-		0:
-			aura_rect.hide()
-			_update_aura_geometry()
-			return
-		1:
-			halo_color = Color("#ffffff")
-			pulse_speed = 0.5
-			intensity = 0.5
-		2:
-			halo_color = Color("#63c74d")
-			pulse_speed = 2.0
-			intensity = 1.0
-		3:
-			halo_color = Color("#0099db")
-			pulse_speed = 4.0
-			intensity = 1.5
-		4:
-			if card_data.suit == "Joker":
-				halo_color = Color("#68386c")
-			else:
-				halo_color = Color("#fee761")
-			pulse_speed = 8.0
-			intensity = 2.5
-		5:
-			halo_color = Color("#ff2020")
-			pulse_speed = 12.0
-			intensity = 3.5
-			_aura_margin = 45
+# Les 5 dalles de res://assets/Cards/cards.png (24x24 chacune, 120x24 au total), dans l'ordre :
+# + noire, + rouge, x noire, x rouge, joker.
+func _build_card_face_texture() -> AtlasTexture:
+	var frame_index := 4 # Joker
+	if card_data.suit != "Joker":
+		var is_diagonal = card_data.pattern == CardData.MovePattern.DIAGONAL
+		var is_red = card_data.type == CardData.CardType.ATTACK
+		if not is_diagonal and not is_red: frame_index = 0
+		elif not is_diagonal and is_red: frame_index = 1
+		elif is_diagonal and not is_red: frame_index = 2
+		else: frame_index = 3
 
-	aura_rect.show()
-	_update_aura_geometry()
-	if aura_rect.material:
-		aura_rect.material.set_shader_parameter("aura_color", halo_color)
-		aura_rect.material.set_shader_parameter("speed", pulse_speed * 0.5)
-		aura_rect.material.set_shader_parameter("intensity", intensity)
+	var atlas = AtlasTexture.new()
+	atlas.atlas = CARD_FACES_TEXTURE
+	atlas.region = Rect2(frame_index * CARD_FRAME_SIZE, 0, CARD_FRAME_SIZE, CARD_FRAME_SIZE)
+	return atlas
 
 func set_playable(playable: bool) -> void:
 	is_playable = playable
@@ -365,11 +250,8 @@ func _get_suit_icon(suit: String) -> String:
 
 func set_discard_hover_state(state: bool) -> void:
 	if is_destroying: return
-	
-	if state:
-		_discard_shake_intensity = 5.0 # Degrés de vibration supplémentaire
-	else:
-		_discard_shake_intensity = 0.0
+	# Inclinaison statique (plus de tremblement continu) pour signaler la défausse
+	rotation_degrees = 8.0 if state else 0.0
 
 func set_push_hover_state(is_hovering: bool) -> void:
 	if is_destroying: return
