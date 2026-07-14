@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="WrestlerData" format=3 uid="uid://drqnd1ajpdodo"]
 
-[ext_resource type="Texture2D" uid="uid://dlht6122rr2n8" path="res://assets/Actors/sandman.png" id="1_2txoo"]
+[ext_resource type="Texture2D" uid="uid://dlht6122rr2n8" path="res://assets/Actors/sandman/sandman.png" id="1_2txoo"]
 [ext_resource type="Script" uid="uid://c4kx8fgyrsuv6" path="res://scripts/WrestlerData.gd" id="1_5walk"]
 [ext_resource type="Script" uid="uid://dikobyn07dr5i" path="res://scripts/game/ComboEffect.gd" id="1_66y8c"]
-[ext_resource type="Texture2D" uid="uid://dm45trfcsbwjk" path="res://assets/Actors/Mr_eggplant/portrait.png" id="2_dc0i0"]
+[ext_resource type="Texture2D" uid="uid://dt3hei8y64w2k" path="res://assets/Actors/sandman/sandman_picture.png" id="2_66y8c"]
 [ext_resource type="AudioStream" uid="uid://dhdxu2p16x3x4" path="res://assets/Sounds/Voices/MrEggplant/Mr_eggplant_name.wav" id="3_7n5hi"]
 
 [resource]
@@ -11,7 +11,7 @@ script = ExtResource("1_5walk")
 id = "mr_eggplant"
 display_name = "MrEggPlant"
 max_health = 3
-portrait = ExtResource("2_dc0i0")
+portrait = ExtResource("2_66y8c")
 sprite = ExtResource("1_2txoo")
 sound_name = ExtResource("3_7n5hi")
 metadata/_custom_type_script = "uid://c4kx8fgyrsuv6"

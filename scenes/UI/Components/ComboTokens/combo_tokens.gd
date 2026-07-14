@@ -2,19 +2,23 @@ extends Control
 
 signal token_applied(card_ui: CardUI, is_plus: bool)
 
-const STACK_OFFSET_Y: float = 14.0
-const FRAME_HALF: Vector2 = Vector2(60.0, 60.0)
-const FLIP_HALF_DURATION: float = 0.1
+# res://assets/UI/Combo-token.png : 5 frames de 10x10 sur une ligne.
+# 1: face +1 - 2: face -1 - 3,4,5: frames de rotation (3/4 côté +1, tranche, 3/4 côté -1).
+const SPRITESHEET = preload("res://assets/UI/Combo-token.png")
+const FRAME_SIZE := 10.0
+const TOKEN_SCALE := 10.0 # Le pixel art 10x10 est agrandi pour rester lisible dans l'UI
+
+const FRAME_PLUS := 0
+const FRAME_MINUS := 1
+const FRAMES_PLUS_TO_MINUS := [2, 3, 4]
+const FRAMES_MINUS_TO_PLUS := [4, 3, 2]
+const FLIP_FRAME_DURATION := 0.05
+
+const STACK_OFFSET_Y: float = 1.0 * TOKEN_SCALE # 1px du sprite source par jeton empilé
+const FRAME_HALF: Vector2 = Vector2(FRAME_SIZE, FRAME_SIZE) * TOKEN_SCALE / 2.0
 const DRAG_THRESHOLD: float = 10.0
 
-# Frames dans l'animation "default" :
-# 0 = face A  1 = 3/4 face A  2 = tranche  3 = 3/4 face B  4 = face B
-const FRAME_PLUS:  int = 1
-const FRAME_MINUS: int = 3
-
-@onready var _template: AnimatedSprite2D = $AnimatedSprite2D
-
-var _tokens: Array[AnimatedSprite2D] = []
+var _tokens: Array[Sprite2D] = []
 var _hand_container: HBoxContainer
 var is_plus: bool = true
 var _is_flipping: bool = false
@@ -23,14 +27,26 @@ var _is_flipping: bool = false
 var _is_pressing: bool = false
 var _press_start: Vector2
 var _is_dragging: bool = false
-var _drag_sprite: AnimatedSprite2D = null
+var _drag_sprite: Sprite2D = null
 var _hovered_card: CardUI = null
 var _drag_apply_plus: bool = true
 var _can_switch_on_card: bool = false
 var _wrestler_data: WrestlerData = null
+var _is_drag_flipping: bool = false
+var _drag_flip_has_pending: bool = false
+var _drag_flip_pending_target: bool = false
 
-func _ready() -> void:
-	_template.visible = false
+func _get_frame(index: int) -> AtlasTexture:
+	var atlas = AtlasTexture.new()
+	atlas.atlas = SPRITESHEET
+	atlas.region = Rect2(index * FRAME_SIZE, 0, FRAME_SIZE, FRAME_SIZE)
+	return atlas
+
+func _make_token_sprite(frame_index: int) -> Sprite2D:
+	var sprite = Sprite2D.new()
+	sprite.texture = _get_frame(frame_index)
+	sprite.scale = Vector2(TOKEN_SCALE, TOKEN_SCALE)
+	return sprite
 
 func setup(count: int, hand_container: HBoxContainer, wrestler_data: WrestlerData) -> void:
 	_hand_container = hand_container
@@ -42,10 +58,7 @@ func setup(count: int, hand_container: HBoxContainer, wrestler_data: WrestlerDat
 	_is_flipping = false
 
 	for i in range(count):
-		var sprite = AnimatedSprite2D.new()
-		sprite.sprite_frames = _template.sprite_frames
-		sprite.animation = "default"
-		sprite.frame = FRAME_PLUS
+		var sprite = _make_token_sprite(FRAME_PLUS)
 		sprite.position = Vector2(0.0, -i * STACK_OFFSET_Y)
 		add_child(sprite)
 		_tokens.append(sprite)
@@ -86,11 +99,10 @@ func _input(event: InputEvent) -> void:
 func _start_drag(pos: Vector2) -> void:
 	_is_dragging = true
 	_drag_apply_plus = is_plus
+	_is_drag_flipping = false
+	_drag_flip_has_pending = false
 
-	_drag_sprite = AnimatedSprite2D.new()
-	_drag_sprite.sprite_frames = _template.sprite_frames
-	_drag_sprite.animation = "default"
-	_drag_sprite.frame = FRAME_PLUS if _drag_apply_plus else FRAME_MINUS
+	_drag_sprite = _make_token_sprite(FRAME_PLUS if _drag_apply_plus else FRAME_MINUS)
 	_drag_sprite.top_level = true
 	_drag_sprite.global_position = pos
 	_drag_sprite.z_index = 100
@@ -127,12 +139,12 @@ func _update_drag(pos: Vector2) -> void:
 
 			if new_plus != _drag_apply_plus:
 				_drag_apply_plus = new_plus
-				if _drag_sprite:
-					_drag_sprite.frame = FRAME_PLUS if _drag_apply_plus else FRAME_MINUS
+				_request_drag_flip(new_plus)
 
 func _end_drag(pos: Vector2) -> void:
 	_is_dragging = false
 
+	var token_consumed = false
 	var card_under = _get_card_under_pos(pos)
 	if card_under:
 		var delta = 1 if _drag_apply_plus else -1
@@ -145,14 +157,36 @@ func _end_drag(pos: Vector2) -> void:
 			print("token %+d appliqué — %s passe au tier %d" % [delta, card_under.card_data.title, new_tier])
 			token_applied.emit(card_under, _drag_apply_plus)
 			_consume_top_token()
-	elif not _tokens.is_empty():
-		_tokens.back().modulate.a = 1.0
+			token_consumed = true
 
 	_set_hovered_card(null)
 
-	if _drag_sprite:
-		_drag_sprite.queue_free()
-		_drag_sprite = null
+	if token_consumed:
+		if _drag_sprite:
+			_drag_sprite.queue_free()
+			_drag_sprite = null
+	else:
+		# Lâché hors d'une carte (ou carte refusée, ex: tier déjà au max/min) : le jeton
+		# revient visuellement se poser en haut de la pile plutôt que de juste disparaître.
+		_return_drag_sprite_to_stack()
+
+func _return_drag_sprite_to_stack() -> void:
+	if not _drag_sprite:
+		return
+	var sprite = _drag_sprite
+	_drag_sprite = null
+
+	if _tokens.is_empty():
+		sprite.queue_free()
+		return
+
+	var target = _tokens.back()
+	var tween = create_tween()
+	tween.tween_property(sprite, "global_position", target.global_position, 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_callback(func():
+		target.modulate.a = 1.0
+		sprite.queue_free()
+	)
 
 func _consume_top_token() -> void:
 	if _tokens.is_empty(): return
@@ -192,17 +226,42 @@ func _set_hovered_card(card_ui: CardUI) -> void:
 
 # --- Flip ---
 
+# Joue la séquence de rotation sur n'importe quel sprite de jeton (pile ou fantôme de drag).
+func _play_flip_frames(sprite: Sprite2D, to_plus: bool) -> void:
+	var rotation_frames = FRAMES_MINUS_TO_PLUS if to_plus else FRAMES_PLUS_TO_MINUS
+	var final_frame = FRAME_PLUS if to_plus else FRAME_MINUS
+
+	for frame_index in rotation_frames:
+		if not is_instance_valid(sprite): return
+		sprite.texture = _get_frame(frame_index)
+		await get_tree().create_timer(FLIP_FRAME_DURATION).timeout
+
+	if is_instance_valid(sprite):
+		sprite.texture = _get_frame(final_frame)
+
 func _flip_top_token() -> void:
 	_is_flipping = true
-	is_plus = not is_plus
 	var top = _tokens.back()
-	var target_frame := FRAME_PLUS if is_plus else FRAME_MINUS
+	var going_to_plus = not is_plus
+	is_plus = going_to_plus
+	await _play_flip_frames(top, going_to_plus)
+	_is_flipping = false
 
-	var tween = create_tween()
-	tween.tween_property(top, "scale:y", 0.0, FLIP_HALF_DURATION).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
-	tween.tween_callback(func():
-		top.frame = target_frame
-		var t2 = create_tween()
-		t2.tween_property(top, "scale:y", 1.0, FLIP_HALF_DURATION).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		t2.tween_callback(func(): _is_flipping = false)
-	)
+# Même animation que _flip_top_token, mais pour le jeton en train d'être dragué quand on
+# passe du haut au bas d'une carte (et inversement). Les demandes qui arrivent pendant qu'une
+# rotation est déjà en cours sont mises en attente plutôt que perdues (l'utilisateur peut
+# survoler rapidement les deux zones avant que l'animation précédente soit terminée).
+func _request_drag_flip(to_plus: bool) -> void:
+	if _is_drag_flipping:
+		_drag_flip_has_pending = true
+		_drag_flip_pending_target = to_plus
+		return
+	if not _drag_sprite: return
+
+	_is_drag_flipping = true
+	await _play_flip_frames(_drag_sprite, to_plus)
+	_is_drag_flipping = false
+
+	if _drag_flip_has_pending:
+		_drag_flip_has_pending = false
+		_request_drag_flip(_drag_flip_pending_target)

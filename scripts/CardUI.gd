@@ -19,7 +19,13 @@ const CARD_FACES_TEXTURE = preload("res://assets/Cards/cards.png")
 const CARD_FRAME_SIZE = 24
 const CARD_COLOR_ATTACK = Color("#cc3d3d")
 const CARD_COLOR_MOVE = Color("#202020")
+# 7e et 8e dalles de cards.png : flèches "bonus" (fond transparent) à surimprimer sur une
+# carte mouvement quand elle devient éligible au déplacement libre (combo 3/4).
+const BONUS_ARROWS_ORTHO_FRAME := 6
+const BONUS_ARROWS_DIAGONAL_FRAME := 7
 var card_visual: TextureRect
+var bonus_arrows_overlay: TextureRect
+var _free_direction_bonus_active: bool = false
 var push_icon: TextureRect
 var _touch_start_pos: Vector2
 var _is_touching: bool = false
@@ -68,7 +74,16 @@ func _ready() -> void:
 	card_visual.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	# On l'ajoute en premier pour qu'il soit en fond
 	add_child(card_visual)
-	
+
+	# Overlay des flèches bonus (au-dessus du fond, en dessous du chiffre de tier)
+	bonus_arrows_overlay = TextureRect.new()
+	bonus_arrows_overlay.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	bonus_arrows_overlay.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	bonus_arrows_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	bonus_arrows_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bonus_arrows_overlay.modulate.a = 0.0
+	add_child(bonus_arrows_overlay)
+
 	# Setup Font & Layout for Value
 	if value_label:
 		value_label.add_theme_font_override("font", CARD_TIER_FONT)
@@ -128,8 +143,12 @@ func update_visuals() -> void:
 
 	card_visual.texture = _build_card_face_texture()
 
-# Les 5 dalles de res://assets/Cards/cards.png (24x24 chacune, 120x24 au total), dans l'ordre :
-# + noire, + rouge, x noire, x rouge, joker.
+	if bonus_arrows_overlay and card_data.suit != "Joker":
+		var bonus_frame = BONUS_ARROWS_DIAGONAL_FRAME if card_data.pattern == CardData.MovePattern.ORTHOGONAL else BONUS_ARROWS_ORTHO_FRAME
+		bonus_arrows_overlay.texture = _build_atlas_frame(bonus_frame)
+
+# Les 8 dalles de res://assets/Cards/cards.png (24x24 chacune), dans l'ordre : + noire, + rouge,
+# x noire, x rouge, joker, flèches bonus ortho, flèches bonus diagonales.
 func _build_card_face_texture() -> AtlasTexture:
 	var frame_index := 4 # Joker
 	if card_data.suit != "Joker":
@@ -140,10 +159,31 @@ func _build_card_face_texture() -> AtlasTexture:
 		elif is_diagonal and not is_red: frame_index = 2
 		else: frame_index = 3
 
+	return _build_atlas_frame(frame_index)
+
+func _build_atlas_frame(frame_index: int) -> AtlasTexture:
 	var atlas = AtlasTexture.new()
 	atlas.atlas = CARD_FACES_TEXTURE
 	atlas.region = Rect2(frame_index * CARD_FRAME_SIZE, 0, CARD_FRAME_SIZE, CARD_FRAME_SIZE)
 	return atlas
+
+# Affiché en surimpression quand une carte mouvement devient éligible au déplacement libre
+# (combo 3/4) : fade in + petit bump, pour compléter les 4 flèches manquantes sur la carte.
+func set_free_direction_bonus(enabled: bool) -> void:
+	if _free_direction_bonus_active == enabled: return
+	_free_direction_bonus_active = enabled
+	if not bonus_arrows_overlay: return
+
+	var tween = create_tween()
+	if enabled:
+		bonus_arrows_overlay.pivot_offset = bonus_arrows_overlay.size / 2.0
+		bonus_arrows_overlay.scale = Vector2(0.8, 0.8)
+		tween.set_parallel(true)
+		tween.tween_property(bonus_arrows_overlay, "modulate:a", 1.0, 0.15)
+		tween.tween_property(bonus_arrows_overlay, "scale", Vector2(1.15, 1.15), 0.1).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween.chain().tween_property(bonus_arrows_overlay, "scale", Vector2.ONE, 0.1).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	else:
+		tween.tween_property(bonus_arrows_overlay, "modulate:a", 0.0, 0.1)
 
 func set_playable(playable: bool) -> void:
 	is_playable = playable

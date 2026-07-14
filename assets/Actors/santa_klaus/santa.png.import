@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bo34t77pxmkia"
-path="res://.godot/imported/leprechaun_picture.png-6b7aecbe59c3834ca74add33972f6e17.ctex"
+uid="uid://cdfie07iyebjm"
+path="res://.godot/imported/santa.png-4d61dc6a873e09e49f6fc31b56197e40.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Actors/leprechaun_picture.png"
-dest_files=["res://.godot/imported/leprechaun_picture.png-6b7aecbe59c3834ca74add33972f6e17.ctex"]
+source_file="res://assets/Actors/santa_klaus/santa.png"
+dest_files=["res://.godot/imported/santa.png-4d61dc6a873e09e49f6fc31b56197e40.ctex"]
 
 [params]
 

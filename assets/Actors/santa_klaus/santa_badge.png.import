@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c0g5ngpaqvh2w"
-path="res://.godot/imported/little_pink_riding_hood.png-295c46eb6463f5cd8488f39d080743c2.ctex"
+uid="uid://c2s2hmps4u7xn"
+path="res://.godot/imported/santa_badge.png-a2bf298f916c8a2d7ef2aebe91d32293.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Actors/little_pink_riding_hood.png"
-dest_files=["res://.godot/imported/little_pink_riding_hood.png-295c46eb6463f5cd8488f39d080743c2.ctex"]
+source_file="res://assets/Actors/santa_klaus/santa_badge.png"
+dest_files=["res://.godot/imported/santa_badge.png-a2bf298f916c8a2d7ef2aebe91d32293.ctex"]
 
 [params]
 

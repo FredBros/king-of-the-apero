@@ -54,18 +54,24 @@ var drop_zone: DropZone
 # Discard Zone Visual (Red strip at bottom)
 @onready var discard_zone_visual: ColorRect = $DiscardZone
 
-const CARD_BACK_TEXTURE = preload("res://assets/Cards/card_back.png")
+const CARD_BACK_TEXTURE = preload("res://assets/Cards/card_back.tres")
 const CHALK_TIC_SOUND = preload("res://assets/Sounds/UI/chalk_tic.wav")
-const ARROW_TEXTURE = preload("res://assets/UI/Icons/Arrow.png")
+# res://assets/UI/Icons/arrows.png : 2 frames de 10x10 côte à côte. La flèche ortho pointe
+# "haut" au repos, la diagonale pointe "haut-droite" : les 8 directions ne demandent donc que
+# des rotations à 90°, ce qui reste net en pixel art (une rotation à 45° flouterait le sprite).
+const ORTHO_ARROW_TEXTURE = preload("res://assets/UI/Icons/arrow_ortho.tres")
+const DIAGONAL_ARROW_TEXTURE = preload("res://assets/UI/Icons/arrow_diagonal.tres")
+const ARROW_FRAME_SIZE = Vector2(10, 10)
+const ARROW_DISPLAY_SCALE = 5.0
 
 # Drag Feedback Colors
-const COLOR_ARROW_INACTIVE = Color(0.6, 0.6, 0.6, 0.8) # Gris transparent
 const COLOR_ARROW_ATTACK = Color("#a22633") # Rouge
 const COLOR_ARROW_MOVE = Color("#262b44") # Noir/Bleu
 
 var drag_arrows_root: Control
-var drag_arrows: Dictionary = {} # {Vector2.UP: Polygon2D, ...}
-var drag_arrows_ghosts: Dictionary = {} # Les copies pour l'animation
+var _valid_directions: Dictionary = {} # {Vector2.UP: bool, ...} directions autorisées pour la carte draguée
+var drag_arrows_ghosts: Dictionary = {} # {Vector2.UP: TextureRect, ...} l'unique flèche affichée par direction
+var _ghost_rest_positions: Dictionary = {} # {Vector2.UP: Vector2, ...} position de repos figée par direction
 var _active_drag_dir: Vector2 = Vector2.ZERO
 var _drag_ghost_tween: Tween
 
@@ -187,7 +193,7 @@ func _setup_reaction_ui() -> void:
 	add_child(pass_button)
 
 func _setup_drag_feedback() -> void:
-	# Création d'un conteneur pour les flèches
+	# Création d'un conteneur pour la flèche de direction
 	drag_arrows_root = Control.new()
 	drag_arrows_root.name = "DragArrowsOverlay"
 	drag_arrows_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -195,65 +201,55 @@ func _setup_drag_feedback() -> void:
 	drag_arrows_root.hide()
 	add_child(drag_arrows_root)
 	
-	# Définition des directions (Ortho + Diag)
+	# Définition des directions (Ortho + Diag). La flèche ortho pointe "haut" au repos, la
+	# diagonale pointe "haut-droite" : donc uniquement des rotations à 90° pour les 8 directions.
 	var directions = {
 		# Orthogonal
-		Vector2.UP: - 90,
-		Vector2.RIGHT: 0,
-		Vector2.DOWN: 90,
-		Vector2.LEFT: 180,
+		Vector2.UP: 0,
+		Vector2.RIGHT: 90,
+		Vector2.DOWN: 180,
+		Vector2.LEFT: 270,
 		# Diagonal
-		Vector2(1, -1): - 45, # Haut-Droite
-		Vector2(1, 1): 45, # Bas-Droite
-		Vector2(-1, 1): 135, # Bas-Gauche
-		Vector2(-1, -1): - 135 # Haut-Gauche
+		Vector2(1, -1): 0, # Haut-Droite
+		Vector2(1, 1): 90, # Bas-Droite
+		Vector2(-1, 1): 180, # Bas-Gauche
+		Vector2(-1, -1): 270 # Haut-Gauche
 	}
-	
-	# Création des polygones (Triangles)
+
 	var offset_dist = 70.0 # Écartement augmenté pour ne pas être caché par le doigt
-	var tex_size = ARROW_TEXTURE.get_size()
-	
+
 	for dir in directions:
-		var arrow = TextureRect.new()
-		arrow.texture = ARROW_TEXTURE
-		arrow.modulate = COLOR_ARROW_INACTIVE
-		arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		
-		arrow.size = tex_size
-		arrow.pivot_offset = tex_size / 2.0
-		arrow.scale = Vector2(0.5, 0.5) # Réduction de 50%
+		var is_diagonal = dir.x != 0 and dir.y != 0
+		var texture = DIAGONAL_ARROW_TEXTURE if is_diagonal else ORTHO_ARROW_TEXTURE
 
 		# Distance augmentée de 50% pour les diagonales
-		var current_offset = offset_dist
-		if dir.x != 0 and dir.y != 0:
-			current_offset = offset_dist * 1.5
+		var current_offset = offset_dist * 1.5 if is_diagonal else offset_dist
 
-		# Positionnement et Rotation
-		arrow.position = (dir.normalized() * current_offset) - (tex_size / 2.0)
-		arrow.rotation_degrees = directions[dir]
-		
-		drag_arrows_root.add_child(arrow)
-		drag_arrows[dir] = arrow
-		
-		# Création du fantôme pour l'animation de projection
+		# Flèche unique par direction : cachée par défaut, montrée uniquement quand cette
+		# direction devient la direction verrouillée par le drag (cf. _on_card_swipe_pending).
 		var ghost = TextureRect.new()
-		ghost.texture = ARROW_TEXTURE
+		ghost.texture = texture
 		ghost.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		ghost.size = tex_size
-		ghost.pivot_offset = tex_size / 2.0
-		ghost.scale = Vector2(0.5, 0.5)
-		ghost.position = arrow.position
-		ghost.rotation_degrees = arrow.rotation_degrees
+		ghost.size = ARROW_FRAME_SIZE
+		ghost.pivot_offset = ARROW_FRAME_SIZE / 2.0
+		ghost.scale = Vector2(ARROW_DISPLAY_SCALE, ARROW_DISPLAY_SCALE)
+		ghost.position = (dir.normalized() * current_offset) - (ARROW_FRAME_SIZE / 2.0)
+		ghost.rotation_degrees = directions[dir]
 		ghost.hide()
 		drag_arrows_root.add_child(ghost)
-		drag_arrows_root.move_child(ghost, 0) # Place le fantôme SOUS les flèches normales
 		drag_arrows_ghosts[dir] = ghost
+		_ghost_rest_positions[dir] = ghost.position
 
 func _reset_drag_ghosts() -> void:
 	if _drag_ghost_tween:
 		_drag_ghost_tween.kill()
 	if _active_drag_dir != Vector2.ZERO and drag_arrows_ghosts.has(_active_drag_dir):
-		drag_arrows_ghosts[_active_drag_dir].hide()
+		var ghost = drag_arrows_ghosts[_active_drag_dir]
+		# kill() stoppe le tween en plein vol sans remettre la position d'origine : sans ce
+		# reset explicite, la position "dérivée" devient le nouveau point de départ la
+		# prochaine fois que cette direction est activée, d'où une dérive cumulative.
+		ghost.position = _ghost_rest_positions.get(_active_drag_dir, ghost.position)
+		ghost.hide()
 	_active_drag_dir = Vector2.ZERO
 
 func _input(event: InputEvent) -> void:
@@ -379,11 +375,13 @@ func add_card_to_hand(card_data: CardData, animate: bool = true) -> void:
 	if animate:
 		_animate_draw_to_player(wrapper)
 
-	# Initialise l'état du badge combo pour cette nouvelle carte
-	if game_manager_ref and card_data.suit != "Joker":
+	# Initialise l'état du badge combo (et des flèches bonus) pour cette nouvelle carte
+	if game_manager_ref:
 		var combo_pos: int = game_manager_ref.turn_manager.combo_position
 		var last_tier: int = game_manager_ref.get_last_combo_tier()
-		card.set_combo_eligible(combo_pos >= 1 and card_data.tier > last_tier)
+		var effect = game_manager_ref.get_next_combo_effect()
+		var free_dir = effect != null and effect.free_direction
+		_apply_move_combo_visuals(card, combo_pos, last_tier, free_dir)
 
 func _animate_draw_to_player(target_wrapper: Control) -> void:
 	# Attend que le HBoxContainer calcule la position finale
@@ -483,7 +481,14 @@ func _on_token_applied(card_ui: CardUI, _is_plus: bool) -> void:
 	var combo_pos: int = game_manager_ref.turn_manager.combo_position
 	var last_tier: int = game_manager_ref.get_last_combo_tier()
 	var effective_tier: int = 4 if card_ui.card_data.suit == "Joker" else card_ui.card_data.tier
-	card_ui.set_combo_eligible(combo_pos >= 1 and effective_tier > last_tier)
+	var is_eligible = combo_pos >= 1 and effective_tier > last_tier
+	card_ui.set_combo_eligible(is_eligible)
+
+	var free_dir := false
+	var effect = game_manager_ref.get_next_combo_effect()
+	free_dir = effect != null and effect.free_direction
+	var show_bonus = free_dir and is_eligible and card_ui.card_data.type == CardData.CardType.MOVE
+	card_ui.set_free_direction_bonus(show_bonus)
 
 func _on_combo_changed(pos: int) -> void:
 	_update_combo_badges(pos)
@@ -492,15 +497,27 @@ func _update_combo_badges(combo_pos: int) -> void:
 	var last_tier := 0
 	if combo_pos > 0 and game_manager_ref:
 		last_tier = game_manager_ref.get_last_combo_tier()
+	var free_dir := false
+	if game_manager_ref:
+		var effect = game_manager_ref.get_next_combo_effect()
+		free_dir = effect != null and effect.free_direction
 	for wrapper in hand_container.get_children():
 		var card_ui = wrapper.get_child(0) if wrapper.get_child_count() > 0 else null
 		if not card_ui is CardUI or card_ui.is_destroying or not card_ui.card_data:
 			continue
-		if card_ui.card_data.suit == "Joker":
-			card_ui.set_combo_eligible(false)
-			continue
-		card_ui.set_combo_eligible(combo_pos >= 1 and card_ui.card_data.tier > last_tier)
+		_apply_move_combo_visuals(card_ui, combo_pos, last_tier, free_dir)
 	selected_card_ui = null
+
+# Badge combo + flèches bonus (déplacement libre) pour une carte de la main.
+func _apply_move_combo_visuals(card_ui: CardUI, combo_pos: int, last_tier: int, free_dir: bool) -> void:
+	if card_ui.card_data.suit == "Joker":
+		card_ui.set_combo_eligible(false)
+		card_ui.set_free_direction_bonus(false)
+		return
+	var is_eligible = combo_pos >= 1 and card_ui.card_data.tier > last_tier
+	card_ui.set_combo_eligible(is_eligible)
+	var show_bonus = free_dir and is_eligible and card_ui.card_data.type == CardData.CardType.MOVE
+	card_ui.set_free_direction_bonus(show_bonus)
 
 func update_opponent_hand_visuals(count: int) -> void:
 	if not opponent_hand_container: return
@@ -777,10 +794,10 @@ func _on_card_drag_started(card_data: CardData, card_ui: CardUI = null) -> void:
 		if card_data.type == CardData.CardType.ATTACK and card_data.suit != "Joker":
 			return
 		
-		# Les flèches sont positionnées sur la carte elle-même
+		# La flèche (unique) est positionnée sur la carte elle-même
 		drag_arrows_root.global_position = card_ui.get_global_rect().get_center()
-		
-		# Reset des couleurs et visibilité selon le pattern
+
+		# Directions autorisées selon le pattern de la carte
 		var is_joker = (card_data.suit == "Joker")
 		var is_diagonal = (card_data.pattern == CardData.MovePattern.DIAGONAL)
 		var free_dir := false
@@ -788,17 +805,11 @@ func _on_card_drag_started(card_data: CardData, card_ui: CardUI = null) -> void:
 			var effect = game_manager_ref.get_next_combo_effect()
 			free_dir = effect != null and effect.free_direction
 
-		for dir in drag_arrows:
-			var arrow = drag_arrows[dir]
-			arrow.modulate = COLOR_ARROW_INACTIVE
+		_valid_directions.clear()
+		for dir in drag_arrows_ghosts:
+			var is_dir_diag = (dir.x != 0 and dir.y != 0)
+			_valid_directions[dir] = is_joker or free_dir or (is_diagonal == is_dir_diag)
 
-			if is_joker or free_dir:
-				arrow.visible = true
-			else:
-				# On affiche seulement les flèches correspondantes au pattern
-				var is_arrow_diag = (dir.x != 0 and dir.y != 0)
-				arrow.visible = (is_diagonal == is_arrow_diag)
-		
 		drag_arrows_root.show()
 
 func _on_card_drag_ended() -> void:
@@ -825,79 +836,72 @@ func _on_card_swipe_pending(card_ui: CardUI, offset: Vector2) -> void:
 	# Met à jour la visibilité de l'icône "kick" sur la carte
 	card_ui.set_push_hover_state(is_push_hovering)
 	
-	# Mise à jour des flèches directionnelles
+	# Mise à jour de la flèche directionnelle (une seule, celle de la direction verrouillée)
 	if drag_arrows_root and drag_arrows_root.visible:
-		# Faire suivre les flèches à la carte
+		# Faire suivre la flèche à la carte
 		drag_arrows_root.global_position = card_ui.get_global_rect().get_center()
-		
+
 		var active_color = COLOR_ARROW_ATTACK if card_ui.card_data.type == CardData.CardType.ATTACK else COLOR_ARROW_MOVE
 		var threshold = 20.0 # Seuil de détection
 		var new_active_dir = Vector2.ZERO
-		
-		# Reset rapide
-		for arrow in drag_arrows.values():
-			if arrow.visible:
-				arrow.modulate = COLOR_ARROW_INACTIVE
-			
+
 		if offset.length() > threshold:
 			var is_joker = (card_ui.card_data.suit == "Joker")
 			var is_diagonal = (card_ui.card_data.pattern == CardData.MovePattern.DIAGONAL)
-			
+
 			if is_joker:
 				# Logique Joker (8 directions)
 				var best_dir = Vector2.ZERO
 				var max_dot = -2.0
 				var normalized_offset = offset.normalized()
-				
-				for dir in drag_arrows:
-					if not drag_arrows[dir].visible: continue
+
+				for dir in _valid_directions:
+					if not _valid_directions[dir]: continue
 					var dot = normalized_offset.dot(dir.normalized())
 					if dot > max_dot:
 						max_dot = dot
 						best_dir = dir
-				
+
 				new_active_dir = best_dir
 			elif is_diagonal:
 				# Logique Diagonale
 				var dir_x = 1 if offset.x > 0 else -1
 				var dir_y = 1 if offset.y > 0 else -1
 				var key = Vector2(dir_x, dir_y)
-				if drag_arrows.has(key) and drag_arrows[key].visible:
+				if _valid_directions.get(key, false):
 					new_active_dir = key
 			else:
 				# Logique Orthogonale
 				var abs_x = abs(offset.x)
 				var abs_y = abs(offset.y)
 				var key = Vector2.ZERO
-				
+
 				if abs_x > abs_y:
 					# Horizontal
 					key = Vector2.RIGHT if offset.x > 0 else Vector2.LEFT
 				else:
 					# Vertical
 					key = Vector2.DOWN if offset.y > 0 else Vector2.UP
-				
-				if drag_arrows.has(key) and drag_arrows[key].visible:
+
+				if _valid_directions.get(key, false):
 					new_active_dir = key
 
-		# 1. Coloration de la flèche principale
-		if new_active_dir != Vector2.ZERO:
-			drag_arrows[new_active_dir].modulate = active_color
-
-		# 2. Gestion de l'Animation Fantôme (Projection)
+		# Gestion de l'Animation Fantôme (Projection) — c'est la seule flèche affichée
 		if new_active_dir != _active_drag_dir:
 			_reset_drag_ghosts()
 			_active_drag_dir = new_active_dir
-			
+
 			if _active_drag_dir != Vector2.ZERO and drag_arrows_ghosts.has(_active_drag_dir):
 				var ghost = drag_arrows_ghosts[_active_drag_dir]
-				var base_arrow = drag_arrows[_active_drag_dir]
 				ghost.show()
 				ghost.modulate = active_color
-				
-				var start_pos = base_arrow.position
+
+				# Position de repos figée (pas ghost.position, qui peut avoir été laissée en plein
+				# vol par un tween tué avant d'avoir bouclé) : source de vérité stable.
+				var start_pos = _ghost_rest_positions[_active_drag_dir]
+				ghost.position = start_pos
 				# Projection sur environ 3x la taille visible de la flèche
-				var proj_dist = ARROW_TEXTURE.get_size().x * 0.5 * 3.0
+				var proj_dist = ARROW_FRAME_SIZE.x * ARROW_DISPLAY_SCALE * 3.0
 				var end_pos = start_pos + (_active_drag_dir.normalized() * proj_dist)
 				
 				# Création d'une animation en boucle fluide

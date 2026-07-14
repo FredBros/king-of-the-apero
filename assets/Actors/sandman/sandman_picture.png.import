@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dlht6122rr2n8"
-path="res://.godot/imported/sandman.png-2f961cb65dd66c720ed1c284b6005fd1.ctex"
+uid="uid://dt3hei8y64w2k"
+path="res://.godot/imported/sandman_picture.png-f597ced0e0f21e8f8cd107b8683eb09c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Actors/sandman.png"
-dest_files=["res://.godot/imported/sandman.png-2f961cb65dd66c720ed1c284b6005fd1.ctex"]
+source_file="res://assets/Actors/sandman/sandman_picture.png"
+dest_files=["res://.godot/imported/sandman_picture.png-f597ced0e0f21e8f8cd107b8683eb09c.ctex"]
 
 [params]
 

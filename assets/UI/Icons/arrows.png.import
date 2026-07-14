@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://vyqfh2jpt7qd"
-path="res://.godot/imported/fight.png-1ab85a73ebf38b5cc73c44837d0f6edb.ctex"
+uid="uid://co4r7dooiphyx"
+path="res://.godot/imported/arrows.png-443bf2829f2c0f3073efb817e16ac320.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/UI/fight.png"
-dest_files=["res://.godot/imported/fight.png-1ab85a73ebf38b5cc73c44837d0f6edb.ctex"]
+source_file="res://assets/UI/Icons/arrows.png"
+dest_files=["res://.godot/imported/arrows.png-443bf2829f2c0f3073efb817e16ac320.ctex"]
 
 [params]
 

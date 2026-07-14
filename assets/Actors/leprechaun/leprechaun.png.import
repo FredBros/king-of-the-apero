@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dnt50bppw23st"
-path="res://.godot/imported/little_pink_riding_hood_picture.png-56d8d4da35a55bb0f5f19a52b11b2c82.ctex"
+uid="uid://chy7e602ido6h"
+path="res://.godot/imported/leprechaun.png-5aef06087f6586f21f8b1232c90085d2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Actors/little_pink_riding_hood_picture.png"
-dest_files=["res://.godot/imported/little_pink_riding_hood_picture.png-56d8d4da35a55bb0f5f19a52b11b2c82.ctex"]
+source_file="res://assets/Actors/leprechaun/leprechaun.png"
+dest_files=["res://.godot/imported/leprechaun.png-5aef06087f6586f21f8b1232c90085d2.ctex"]
 
 [params]
 

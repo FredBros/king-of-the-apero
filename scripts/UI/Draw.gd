@@ -1,7 +1,7 @@
 extends Control
 
 const ROTATION_MARGIN = 5 # px, pour éviter que les cartes tournées ne débordent du conteneur
-const CARD_BACK_TEXTURE = preload("res://assets/Cards/card_back.png")
+const CARD_BACK_TEXTURE = preload("res://assets/Cards/card_back.tres")
 const CARD_SIZE = Vector2(120, 120) # Taille augmentée pour plus de visibilité
 const TOOLTIP_SCENE = preload("res://scenes/UI/DrawPileTooltip.tscn")
 
