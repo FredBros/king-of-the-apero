@@ -128,6 +128,26 @@ Terminé ? Cliquez sur la pièce pour finir votre tour.
 [color=#e4a672]SANTE ![/color]
 [/center]"
 
+# --- CHARACTER SELECT ---,,
+CHARSELECT_TITLE,CHOOSE YOUR CHAMPION,CHOISIS TON CHAMPION
+CHARSELECT_BTN_OK,OK,OK
+CHARSELECT_STATUS_WAITING,Waiting for opponent...,En attente de l'adversaire...
+
+# --- CHARACTER DESCRIPTION (placeholder, à remplacer par personnage) ---,,
+CHAR_DEFAULT_INTRO,"Lorem ipsum dolor sit amet, consectetur adipiscing elit.","Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+CHAR_DEFAULT_COMBO_ATTACK_0,Sed do eiusmod tempor incididunt.,Sed do eiusmod tempor incididunt.
+CHAR_DEFAULT_COMBO_ATTACK_1,Ut labore et dolore magna aliqua.,Ut labore et dolore magna aliqua.
+CHAR_DEFAULT_COMBO_ATTACK_2,Ut enim ad minim veniam quis nostrud.,Ut enim ad minim veniam quis nostrud.
+CHAR_DEFAULT_COMBO_ATTACK_3,Exercitation ullamco laboris nisi ut aliquip.,Exercitation ullamco laboris nisi ut aliquip.
+CHAR_DEFAULT_COMBO_MOVE_0,Duis aute irure dolor in reprehenderit.,Duis aute irure dolor in reprehenderit.
+CHAR_DEFAULT_COMBO_MOVE_1,In voluptate velit esse cillum dolore.,In voluptate velit esse cillum dolore.
+CHAR_DEFAULT_COMBO_MOVE_2,Eu fugiat nulla pariatur excepteur sint.,Eu fugiat nulla pariatur excepteur sint.
+CHAR_DEFAULT_COMBO_MOVE_3,Occaecat cupidatat non proident sunt.,Occaecat cupidatat non proident sunt.
+CHAR_DEFAULT_PASSIVE,Passif : lorem ipsum dolor sit amet.,Passif : lorem ipsum dolor sit amet.
+CHAR_DEFAULT_ULTI,Ulti : consectetur adipiscing elit sed do.,Ulti : consectetur adipiscing elit sed do.
+CHAR_DEFAULT_STRENGTHS,Points forts : eiusmod tempor incididunt.,Points forts : eiusmod tempor incididunt.
+CHAR_DEFAULT_WEAKNESSES,Points faibles : labore et dolore magna.,Points faibles : labore et dolore magna.
+
 keys,fr,en
 TUTO_OK,OK,OK
 TUTO_SKIP,PASSER LE TUTO,SKIP TUTO

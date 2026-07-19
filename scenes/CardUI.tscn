@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://c8j2k3l4m5n6"]
 
 [ext_resource type="Script" uid="uid://bgxhbnvv8l6ii" path="res://scripts/CardUI.gd" id="1_cardui"]
+[ext_resource type="PackedScene" uid="uid://hm0gfotnqh2j" path="res://scenes/Components/ComboBadge.tscn" id="2_combobadge"]
 
 [node name="CardUI" type="PanelContainer" unique_id=1476180989]
 custom_minimum_size = Vector2(120, 120)
@@ -23,16 +24,5 @@ horizontal_alignment = 1
 [node name="ComboBadgeHolder" type="Node2D" parent="." unique_id=1284152301]
 z_index = 1
 
-[node name="ComboBadge" type="Label" parent="ComboBadgeHolder" unique_id=236977000]
-visible = false
-offset_left = -12.000001
-offset_top = 36.0
-offset_right = 51.0
-offset_bottom = 64.0
-rotation = -0.785398
-theme_override_colors/font_color = Color(1, 0.92, 0.23, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
-theme_override_constants/shadow_offset_x = 2
-theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 26
-text = "COMBO"
+[node name="ComboBadge" parent="ComboBadgeHolder" instance=ExtResource("2_combobadge")]
+position = Vector2(60, 10)

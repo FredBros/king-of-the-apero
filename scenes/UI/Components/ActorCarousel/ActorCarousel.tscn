@@ -1,0 +1,91 @@
+[gd_scene format=3 uid="uid://crm4sis8wapjy"]
+
+[ext_resource type="Script" uid="uid://coo3eoba7t0qe" path="res://scenes/UI/Components/ActorCarousel/actor_carousel.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dbpajm5cxmc6d" path="res://assets/UI/Icons/left_arrow_icon.tres" id="2_left_arrow"]
+[ext_resource type="Texture2D" uid="uid://xa5y3b605nuc" path="res://assets/UI/Icons/right_arrow_icon.tres" id="3_right_arrow"]
+
+[node name="ActorCarousel" type="Control"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 190)
+script = ExtResource("1_script")
+
+[node name="MainRow" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/separation = 8
+
+[node name="LeftArrow" type="Control" parent="MainRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Bg" type="ColorRect" parent="MainRow/LeftArrow"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.1254902, 0.1254902, 0.1254902, 0.7)
+
+[node name="Icon" type="TextureRect" parent="MainRow/LeftArrow"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -6.0
+offset_top = -24.0
+offset_right = 6.0
+offset_bottom = 24.0
+mouse_filter = 2
+texture = ExtResource("2_left_arrow")
+expand_mode = 1
+stretch_mode = 5
+modulate = Color(0.9921569, 0.9921569, 0.9921569, 1)
+
+[node name="CardsScroll" type="ScrollContainer" parent="MainRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+vertical_scroll_mode = 0
+horizontal_scroll_mode = 3
+
+[node name="CardsRow" type="HBoxContainer" parent="MainRow/CardsScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="RightArrow" type="Control" parent="MainRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Bg" type="ColorRect" parent="MainRow/RightArrow"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.1254902, 0.1254902, 0.1254902, 0.7)
+
+[node name="Icon" type="TextureRect" parent="MainRow/RightArrow"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -6.0
+offset_top = -24.0
+offset_right = 6.0
+offset_bottom = 24.0
+mouse_filter = 2
+texture = ExtResource("3_right_arrow")
+expand_mode = 1
+stretch_mode = 5
+modulate = Color(0.9921569, 0.9921569, 0.9921569, 1)

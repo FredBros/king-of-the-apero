@@ -122,8 +122,7 @@ func initialize_network(deck_mgr: DeckManager) -> void:
 		_server_select_and_sync_characters()
 	else:
 		network_sync.setup_network()
-		if network_sync.am_i_host():
-			get_tree().create_timer(1.0).timeout.connect(_server_select_and_sync_characters)
+		_resolve_character_selections()
 
 func initialize_game_state() -> void:
 	if not grid_manager or grid_manager.wrestlers.is_empty():
@@ -433,6 +432,17 @@ func _handle_rematch_vote(player_name: String) -> void:
 # ============================================================
 # SÉLECTION DES PERSONNAGES
 # ============================================================
+
+func _resolve_character_selections() -> void:
+	var p1_id = network_sync.get_id_for_name("Player 1")
+	var p2_id = network_sync.get_id_for_name("Player 2")
+	var p1_path: String = NetworkManager.character_selections.get(p1_id, "")
+	var p2_path: String = NetworkManager.character_selections.get(p2_id, "")
+	if p1_path.is_empty() or p2_path.is_empty():
+		printerr("GameManager: sélection de personnage manquante (CharacterSelect non passé ?), fallback aléatoire.")
+		_server_select_and_sync_characters()
+		return
+	_handle_character_selection(p1_path, p2_path)
 
 func _server_select_and_sync_characters() -> void:
 	if character_pool.size() < 2:

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="WrestlerData" format=3 uid="uid://cuqsudshtin7x"]
+
+[ext_resource type="Script" uid="uid://dikobyn07dr5i" path="res://scripts/game/ComboEffect.gd" id="1_ow75f"]
+[ext_resource type="Texture2D" uid="uid://r28pa3njfdlp" path="res://assets/Actors/leprechaun/leprechaun_badge.png" id="1_q16mp"]
+[ext_resource type="Script" uid="uid://c4kx8fgyrsuv6" path="res://scripts/WrestlerData.gd" id="2_5qybm"]
+[ext_resource type="Texture2D" uid="uid://bo34t77pxmkia" path="res://assets/Actors/leprechaun/leprechaun_picture.png" id="3_gau3l"]
+[ext_resource type="AudioStream" uid="uid://cakdd17gwasxp" path="res://assets/Actors/leprechaun/leprechaun.mp3" id="4_q16mp"]
+[ext_resource type="Texture2D" uid="uid://chy7e602ido6h" path="res://assets/Actors/leprechaun/leprechaun.png" id="5_kmr8b"]
+
+[resource]
+script = ExtResource("2_5qybm")
+id = "leprechaun"
+display_name = "Leprechaun"
+portrait = ExtResource("3_gau3l")
+sprite = ExtResource("5_kmr8b")
+color = Color(0.23529412, 0.8039216, 0.32941177, 1)
+badge = ExtResource("1_q16mp")
+sound_name = ExtResource("4_q16mp")
+metadata/_custom_type_script = "uid://c4kx8fgyrsuv6"

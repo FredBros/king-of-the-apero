@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://55akmhutwp02"]
+
+[ext_resource type="Script" uid="uid://dlmb4hfln12vu" path="res://scripts/character_select.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://cu622udo5tcqs" path="res://resources/Themes/main_theme.tres" id="2_theme"]
+[ext_resource type="PackedScene" uid="uid://dnf6xe3rwxfpa" path="res://scenes/UI/Components/ActorTooltip/ActorTooltip.tscn" id="3_tooltip"]
+[ext_resource type="PackedScene" uid="uid://crm4sis8wapjy" path="res://scenes/UI/Components/ActorCarousel/ActorCarousel.tscn" id="4_carousel"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wrapper"]
+
+[node name="CharacterSelect" type="Control" unique_id=657322107]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1187179274]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=126390690]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=872329011]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "CHARSELECT_TITLE"
+horizontal_alignment = 1
+
+[node name="Carousel" parent="MarginContainer/VBoxContainer" unique_id=676390987 instance=ExtResource("4_carousel")]
+unique_name_in_owner = true
+
+[node name="InfoPanel" parent="MarginContainer/VBoxContainer" unique_id=651834392 instance=ExtResource("3_tooltip")]
+unique_name_in_owner = true
+
+[node name="StatusLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=301598482]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="OkButtonPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer" unique_id=3113771]
+custom_minimum_size = Vector2(300, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxEmpty_wrapper")
+
+[node name="OkButton" type="Button" parent="MarginContainer/VBoxContainer/OkButtonPanel" unique_id=551157329]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MainBtn"
+text = "CHARSELECT_BTN_OK"

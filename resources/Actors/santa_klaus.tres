@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="WrestlerData" format=3 uid="uid://dvo5xssimxifo"]
+
+[ext_resource type="Texture2D" uid="uid://c2s2hmps4u7xn" path="res://assets/Actors/santa_klaus/santa_badge.png" id="1_2pp8v"]
+[ext_resource type="Script" uid="uid://dikobyn07dr5i" path="res://scripts/game/ComboEffect.gd" id="1_dpig1"]
+[ext_resource type="Script" uid="uid://c4kx8fgyrsuv6" path="res://scripts/WrestlerData.gd" id="2_sfru5"]
+[ext_resource type="Texture2D" uid="uid://cj7hea2a80cgx" path="res://assets/Actors/santa_klaus/santa_picture.png" id="3_l8sxd"]
+[ext_resource type="AudioStream" uid="uid://bdq0pahvk31yt" path="res://assets/Actors/santa_klaus/santa_klaus.mp3" id="4_2pp8v"]
+[ext_resource type="Texture2D" uid="uid://cdfie07iyebjm" path="res://assets/Actors/santa_klaus/santa.png" id="5_gnaoi"]
+
+[resource]
+script = ExtResource("2_sfru5")
+id = "santa_klaus"
+display_name = "Santa Klaus"
+portrait = ExtResource("3_l8sxd")
+sprite = ExtResource("5_gnaoi")
+color = Color(0.8, 0.23921569, 0.23921569, 1)
+badge = ExtResource("1_2pp8v")
+sound_name = ExtResource("4_2pp8v")
+metadata/_custom_type_script = "uid://c4kx8fgyrsuv6"

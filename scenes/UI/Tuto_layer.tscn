@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://ltw4bliun6sk"]
 
 [ext_resource type="Script" uid="uid://d1run3cppligi" path="res://scripts/Tuto_layer.gd" id="1_svnd1"]
-[ext_resource type="Texture2D" uid="uid://olrcohnoiovf" path="res://assets/UI/Icons/cross-small.png" id="5_n4iax"]
+[ext_resource type="Texture2D" uid="uid://cdwxo2k8xq5gs" path="res://assets/UI/Icons/close_icon.tres" id="5_n4iax"]
 [ext_resource type="PackedScene" uid="uid://chf35my53chkb" path="res://scenes/UI/RoadMap.tscn" id="5_svnd1"]
 
 [node name="TutorialLayer" type="CanvasLayer" unique_id=595521162]
@@ -62,22 +62,10 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 theme_type_variation = &"MainBtn"
-
-[node name="Icon" type="TextureRect" parent="TutorialOverlay/ChalkPanel/MarginContainer/VBoxContainer/HBoxContainer/TutorialCloseButton" unique_id=1587091371]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 5.0
-offset_top = 5.0
-offset_right = -5.0
-offset_bottom = -5.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("5_n4iax")
-expand_mode = 1
-stretch_mode = 5
+icon = ExtResource("5_n4iax")
+expand_icon = true
+icon_alignment = 1
+vertical_icon_alignment = 1
 
 [node name="ScrollContainer" type="ScrollContainer" parent="TutorialOverlay/ChalkPanel/MarginContainer/VBoxContainer" unique_id=22350229]
 layout_mode = 2

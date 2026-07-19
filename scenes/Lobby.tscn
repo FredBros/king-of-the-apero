@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cvfke4vmqc10k" path="res://scripts/Lobby.gd" id="1_o1atq"]
 [ext_resource type="Theme" uid="uid://cu622udo5tcqs" path="res://resources/Themes/main_theme.tres" id="1_qbi84"]
 [ext_resource type="Texture2D" uid="uid://bpl4twv8iu2tq" path="res://assets/UI/folklore_on_tape_title.png" id="4_1yh37"]
-[ext_resource type="Texture2D" uid="uid://bcwivwa78ntgs" path="res://assets/UI/Icons/copy.png" id="5_copy"]
+[ext_resource type="Texture2D" uid="uid://151iht0joegr" path="res://assets/UI/Icons/paste_icon.tres" id="5_copy"]
 [ext_resource type="PackedScene" uid="uid://btdgo06qatlch" path="res://scenes/UI/Components/GetAppButton.tscn" id="7_get_app_button"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wrapper"]
@@ -83,22 +83,10 @@ layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 theme_type_variation = &"MainBtn"
-
-[node name="Icon" type="TextureRect" parent="MainPanel/MarginContainer/VBoxContainer/IPInputContainer/CopyButton" unique_id=901221832]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 5.0
-offset_top = 5.0
-offset_right = -5.0
-offset_bottom = -5.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("5_copy")
-expand_mode = 1
-stretch_mode = 5
+icon = ExtResource("5_copy")
+expand_icon = true
+icon_alignment = 1
+vertical_icon_alignment = 1
 
 [node name="IPInputPanel" type="PanelContainer" parent="MainPanel/MarginContainer/VBoxContainer/IPInputContainer" unique_id=429315006]
 custom_minimum_size = Vector2(0, 60)

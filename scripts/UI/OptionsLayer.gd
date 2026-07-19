@@ -17,6 +17,7 @@ extends Control
 @onready var music_progress: ProgressBar = music_container.get_node("ProgressBarPanel/ProgressBar")
 
 @onready var tuto_button: CheckBox = %TutoButton
+@onready var tuto_check_icon: TextureRect = %CheckIcon
 @onready var tuto_state_label: Label = %TutoStateLabel
 
 const BUS_SFX_NAME = "SFX"
@@ -158,6 +159,8 @@ func _update_tuto_button_text(is_enabled: bool) -> void:
 		tuto_state_label.text = tr("OPTIONS_ON") if is_enabled else tr("OPTIONS_OFF")
 	if tuto_button:
 		tuto_button.text = "" # S'assure que le bouton CheckButton n'affiche plus de texte natif
+	if tuto_check_icon:
+		tuto_check_icon.visible = is_enabled
 
 func _setup_button_feedback(btn: Control) -> void:
 	if not btn: return

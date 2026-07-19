@@ -9,7 +9,7 @@
 [ext_resource type="Script" uid="uid://c4kx8fgyrsuv6" path="res://scripts/WrestlerData.gd" id="3_vyqrf"]
 [ext_resource type="Resource" uid="uid://c8qk2n6qtfwif" path="res://resources/BigGuy.tres" id="6_gcrh0"]
 [ext_resource type="Resource" uid="uid://drqnd1ajpdodo" path="res://resources/MrEggPlant.tres" id="7_vyqrf"]
-[ext_resource type="Texture2D" uid="uid://dmwvt7cl86xxv" path="res://assets/UI/Fight.png" id="8_fight"]
+[ext_resource type="Texture2D" uid="uid://dclgro36uk3iw" path="res://assets/UI/Fight.png" id="8_fight"]
 [ext_resource type="PackedScene" uid="uid://cmibln8vt7nxa" path="res://scenes/Components/PreWarmer.tscn" id="11_otdxd"]
 [ext_resource type="PackedScene" uid="uid://ipdd3fwghaxl" path="res://scenes/SmokePuff.tscn" id="12_ph461"]
 [ext_resource type="PackedScene" uid="uid://b1rbahxu3sgqt" path="res://scenes/UI/Tutorial/TutorialOrchestrator.tscn" id="14_rrk8b"]
@@ -28,7 +28,6 @@ script = ExtResource("3_deckmanager")
 script = ExtResource("1_grid")
 wrestler_scene = ExtResource("2_q751w")
 grid_size = Vector2i(5, 5)
-cell_size = 16.0
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=483330696]
 zoom = Vector2(6, 6)

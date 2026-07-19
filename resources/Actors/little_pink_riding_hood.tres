@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="WrestlerData" format=3 uid="uid://d1ygk8ffk3ug6"]
+
+[ext_resource type="Texture2D" uid="uid://bxl7nbmw0yogj" path="res://assets/Actors/pink_hood/little_pink_riding_hood_badge.png" id="1_2dwtb"]
+[ext_resource type="Script" uid="uid://dikobyn07dr5i" path="res://scripts/game/ComboEffect.gd" id="1_wvkxh"]
+[ext_resource type="Script" uid="uid://c4kx8fgyrsuv6" path="res://scripts/WrestlerData.gd" id="2_b6y78"]
+[ext_resource type="Texture2D" uid="uid://dnt50bppw23st" path="res://assets/Actors/pink_hood/little_pink_riding_hood_picture.png" id="3_b7ojt"]
+[ext_resource type="AudioStream" uid="uid://6qkahowt5bt7" path="res://assets/Actors/pink_hood/little_pink_riding_hood.mp3" id="4_2dwtb"]
+[ext_resource type="Texture2D" uid="uid://c0g5ngpaqvh2w" path="res://assets/Actors/pink_hood/little_pink_riding_hood.png" id="5_cnk7d"]
+
+[resource]
+script = ExtResource("2_b6y78")
+id = "little_pink_riding_hood"
+display_name = "Little Pink Riding Hood"
+portrait = ExtResource("3_b7ojt")
+sprite = ExtResource("5_cnk7d")
+color = Color(0.8039216, 0.22745098, 0.4862745, 1)
+badge = ExtResource("1_2dwtb")
+sound_name = ExtResource("4_2dwtb")
+metadata/_custom_type_script = "uid://c4kx8fgyrsuv6"

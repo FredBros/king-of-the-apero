@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://dh5k7qyuv1a0l" path="res://assets/UI/Btn/end_turn.png" id="6_end_turn"]
 [ext_resource type="Theme" uid="uid://cu622udo5tcqs" path="res://resources/Themes/main_theme.tres" id="8_7hp7j"]
 [ext_resource type="Script" uid="uid://csrhhsqxb6b3q" path="res://scripts/Components/UISoundComponent.gd" id="8_u7j5g"]
-[ext_resource type="Texture2D" uid="uid://bqdgrwlaoentt" path="res://assets/UI/Icons/settings.png" id="12_settings"]
+[ext_resource type="Texture2D" uid="uid://pijowrf8t73d" path="res://assets/UI/Icons/options_icon.tres" id="12_settings"]
 [ext_resource type="PackedScene" uid="uid://chf35my53chkb" path="res://scenes/UI/RoadMap.tscn" id="13_7hp7j"]
 [ext_resource type="PackedScene" uid="uid://bxnlgllnletcq" path="res://scenes/UI/Draw.tscn" id="14_draw"]
 [ext_resource type="PackedScene" uid="uid://btdgo06qatlch" path="res://scenes/UI/Components/GetAppButton.tscn" id="15_get_app_button"]
@@ -139,22 +139,9 @@ custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 tooltip_text = "Options"
 theme_type_variation = &"MainBtn"
-
-[node name="Icon" type="TextureRect" parent="TopRightContainer/OptionsButton" unique_id=1268633922]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 5.0
-offset_top = 5.0
-offset_right = -5.0
-offset_bottom = -5.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("12_settings")
-expand_mode = 1
-stretch_mode = 5
+icon = ExtResource("12_settings")
+icon_alignment = 1
+expand_icon = true
 
 [node name="EndTurnButton" type="TextureButton" parent="." unique_id=1388120301]
 anchors_preset = 3
@@ -279,7 +266,7 @@ bus = &"SFX"
 script = ExtResource("8_u7j5g")
 
 [node name="ComboCount" parent="." unique_id=1625335023 instance=ExtResource("16_lk18c")]
-position = Vector2(40, 969)
+position = Vector2(278, 818)
 
 [node name="ComboTokens" parent="." unique_id=1705711172 instance=ExtResource("17_fsu2c")]
 unique_name_in_owner = true

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="WrestlerData" format=3 uid="uid://blkad1f62373x"]
+
+[ext_resource type="Texture2D" uid="uid://wv13s32l76sh" path="res://assets/Actors/sandman/sandman_badge.png" id="1_1t6v4"]
+[ext_resource type="Script" uid="uid://dikobyn07dr5i" path="res://scripts/game/ComboEffect.gd" id="1_a7xka"]
+[ext_resource type="Script" uid="uid://c4kx8fgyrsuv6" path="res://scripts/WrestlerData.gd" id="2_b6jfi"]
+[ext_resource type="Texture2D" uid="uid://dt3hei8y64w2k" path="res://assets/Actors/sandman/sandman_picture.png" id="3_w1v1x"]
+[ext_resource type="AudioStream" uid="uid://2ae1g4u3am8v" path="res://assets/Actors/sandman/sandman.mp3" id="4_1t6v4"]
+[ext_resource type="Texture2D" uid="uid://dlht6122rr2n8" path="res://assets/Actors/sandman/sandman.png" id="5_qy5e1"]
+
+[resource]
+script = ExtResource("2_b6jfi")
+id = "sandman"
+display_name = "Sandman"
+portrait = ExtResource("3_w1v1x")
+sprite = ExtResource("5_qy5e1")
+color = Color(0.4392157, 0.22745098, 0.8039216, 1)
+badge = ExtResource("1_1t6v4")
+sound_name = ExtResource("4_1t6v4")
+metadata/_custom_type_script = "uid://c4kx8fgyrsuv6"

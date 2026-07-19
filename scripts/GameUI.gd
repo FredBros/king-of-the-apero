@@ -482,7 +482,7 @@ func _on_token_applied(card_ui: CardUI, _is_plus: bool) -> void:
 	var last_tier: int = game_manager_ref.get_last_combo_tier()
 	var effective_tier: int = 4 if card_ui.card_data.suit == "Joker" else card_ui.card_data.tier
 	var is_eligible = combo_pos >= 1 and effective_tier > last_tier
-	card_ui.set_combo_eligible(is_eligible)
+	card_ui.set_combo_eligible(is_eligible, combo_pos, _get_local_wrestler_color())
 
 	var free_dir := false
 	var effect = game_manager_ref.get_next_combo_effect()
@@ -492,6 +492,11 @@ func _on_token_applied(card_ui: CardUI, _is_plus: bool) -> void:
 
 func _on_combo_changed(pos: int) -> void:
 	_update_combo_badges(pos)
+
+func _get_local_wrestler_color() -> Color:
+	if local_wrestler_ref and local_wrestler_ref.wrestler_data:
+		return local_wrestler_ref.wrestler_data.color
+	return CardUI.CARD_COLOR_ATTACK
 
 func _update_combo_badges(combo_pos: int) -> void:
 	var last_tier := 0
@@ -515,7 +520,7 @@ func _apply_move_combo_visuals(card_ui: CardUI, combo_pos: int, last_tier: int, 
 		card_ui.set_free_direction_bonus(false)
 		return
 	var is_eligible = combo_pos >= 1 and card_ui.card_data.tier > last_tier
-	card_ui.set_combo_eligible(is_eligible)
+	card_ui.set_combo_eligible(is_eligible, combo_pos, _get_local_wrestler_color())
 	var show_bonus = free_dir and is_eligible and card_ui.card_data.type == CardData.CardType.MOVE
 	card_ui.set_free_direction_bonus(show_bonus)
 

@@ -1,6 +1,7 @@
 [gd_resource type="Theme" format=3 uid="uid://cu622udo5tcqs"]
 
 [ext_resource type="FontFile" uid="uid://b8fdjncabxxxm" path="res://assets/fonts/04B_03__.TTF" id="1_f4ypn"]
+[ext_resource type="Texture2D" uid="uid://cec6aynw6yg7h" path="res://assets/UI/Components/btn_disabled.tres" id="1_h3gei"]
 [ext_resource type="Texture2D" uid="uid://bcmycvl4kdwtf" path="res://assets/UI/Components/btn_normal.tres" id="1_o6dfl"]
 [ext_resource type="Texture2D" uid="uid://ddnn0aiyjx6vc" path="res://assets/UI/Components/btn_default.png" id="2_o6dfl"]
 [ext_resource type="Texture2D" uid="uid://bnwntibsi8fck" path="res://assets/UI/Components/frame_default.png" id="3_05amr"]
@@ -11,7 +12,22 @@ content_margin_top = 8.0
 content_margin_right = 8.0
 content_margin_bottom = 8.0
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_qcjnf"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+texture = ExtResource("1_h3gei")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_8xcbj"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
 texture = ExtResource("1_o6dfl")
 texture_margin_left = 8.0
 texture_margin_top = 8.0
@@ -23,6 +39,10 @@ atlas = ExtResource("2_o6dfl")
 region = Rect2(24, 0, 24, 24)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_srv3n"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
 texture = SubResource("AtlasTexture_8xcbj")
 texture_margin_left = 11.0
 texture_margin_top = 11.0
@@ -62,6 +82,7 @@ LineEdit/styles/normal = SubResource("StyleBoxEmpty_lineedit")
 MainBtn/base_type = &"Button"
 MainBtn/colors/font_hover_color = Color(0.3764706, 0.3764706, 0.3764706, 1)
 MainBtn/font_sizes/font_size = 32
+MainBtn/styles/disabled = SubResource("StyleBoxTexture_qcjnf")
 MainBtn/styles/hover = SubResource("StyleBoxTexture_8xcbj")
 MainBtn/styles/normal = SubResource("StyleBoxTexture_8xcbj")
 MainBtn/styles/pressed = SubResource("StyleBoxTexture_srv3n")

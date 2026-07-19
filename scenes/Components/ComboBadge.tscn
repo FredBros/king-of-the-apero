@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://hm0gfotnqh2j"]
+
+[ext_resource type="Script" uid="uid://b8givgq6dy6ex" path="res://scripts/Components/combo_badge.gd" id="1_badge"]
+
+[node name="ComboBadge" type="Node2D" unique_id=1436443478]
+script = ExtResource("1_badge")

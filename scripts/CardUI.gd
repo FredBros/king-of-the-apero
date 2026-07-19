@@ -35,7 +35,7 @@ var _is_selected: bool = false
 var _has_moved_significantly: bool = false
 var is_destroying: bool = false
 
-@onready var _combo_badge: Label = $ComboBadgeHolder/ComboBadge
+@onready var _combo_badge: ComboBadge = $ComboBadgeHolder/ComboBadge
 
 var is_playable: bool = true
 var is_reaction_candidate: bool = false
@@ -187,8 +187,6 @@ func set_free_direction_bonus(enabled: bool) -> void:
 
 func set_playable(playable: bool) -> void:
 	is_playable = playable
-	if _combo_badge:
-		_combo_badge.visible = _combo_badge.visible and is_playable
 	_update_visual_state()
 
 func _update_visual_state() -> void:
@@ -275,9 +273,11 @@ func set_reaction_candidate(is_candidate: bool) -> void:
 	is_reaction_candidate = is_candidate
 	_update_visual_state()
 
-func set_combo_eligible(eligible: bool) -> void:
-	if _combo_badge:
-		_combo_badge.visible = eligible and is_playable
+func set_combo_eligible(eligible: bool, combo_position: int = 0, attack_star_color: Color = CARD_COLOR_ATTACK) -> void:
+	if not _combo_badge: return
+	var is_attack: bool = card_data != null and card_data.type == CardData.CardType.ATTACK
+	var star_color = attack_star_color if is_attack else ComboBadge.MOVE_COLOR
+	_combo_badge.setup(star_color, combo_position if eligible else 0, true)
 
 func _get_suit_icon(suit: String) -> String:
 	match suit:

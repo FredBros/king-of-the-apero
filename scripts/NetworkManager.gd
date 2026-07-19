@@ -11,7 +11,7 @@ signal game_starting
 
 const PORT = 443 # Port standard HTTPS/WSS
 const DEFAULT_SERVER_IP = "play.folkloreontap.com" # Production
-const GAME_SCENE_PATH = "res://scenes/Arena.tscn" # TODO: Verify this is the correct path to your game scene!
+const GAME_SCENE_PATH = "res://scenes/CharacterSelect.tscn"
 const LOBBY_SCENE_PATH = "res://scenes/Lobby.tscn" # TODO: Verify the path to your Lobby/Main scene
 
 # Op Codes for Nakama Match State
@@ -24,6 +24,10 @@ var match_presences: Dictionary = {} # userID -> presence data
 var self_user_id: String = ""
 var is_joining: bool = false
 var is_host: bool = false
+
+# user_id -> resource_path du WrestlerData choisi. Rempli par CharacterSelect,
+# lu par GameManager (persiste via cet autoload le temps du changement de scène).
+var character_selections: Dictionary = {}
 
 func _ready() -> void:
 	# Listen to NakamaManager to know when a match is found
@@ -173,4 +177,5 @@ func return_to_lobby() -> void:
 			socket.leave_match_async(current_match_id)
 	current_match_id = ""
 	match_presences.clear()
+	character_selections.clear()
 	get_tree().change_scene_to_file(LOBBY_SCENE_PATH)
