@@ -11,8 +11,9 @@ signal game_starting
 
 const PORT = 443 # Port standard HTTPS/WSS
 const DEFAULT_SERVER_IP = "play.folkloreontap.com" # Production
-const GAME_SCENE_PATH = "res://scenes/CharacterSelect.tscn"
-const LOBBY_SCENE_PATH = "res://scenes/Lobby.tscn" # TODO: Verify the path to your Lobby/Main scene
+const CHARACTER_SELECT_SCENE_PATH = "res://scenes/CharacterSelect.tscn"
+const ARENA_SCENE_PATH = "res://scenes/Arena.tscn"
+const LOBBY_SCENE_PATH = "res://scenes/Lobby.tscn"
 
 # Op Codes for Nakama Match State
 enum OpCode {
@@ -167,7 +168,13 @@ func _transition_to_game() -> void:
 	# On laisse passer 2 frames pour forcer Godot à rafraîchir l'UI (Web/Mobile) avant de figer le thread
 	await get_tree().process_frame
 	await get_tree().process_frame
-	get_tree().change_scene_to_file(GAME_SCENE_PATH)
+	get_tree().change_scene_to_file(CHARACTER_SELECT_SCENE_PATH)
+
+func transition_to_arena() -> void:
+	# Même précaution que _transition_to_game() : laisser le temps au rendu web de se rafraîchir
+	await get_tree().process_frame
+	await get_tree().process_frame
+	get_tree().change_scene_to_file(ARENA_SCENE_PATH)
 
 func return_to_lobby() -> void:
 	is_host = false

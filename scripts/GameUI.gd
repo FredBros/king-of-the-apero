@@ -8,6 +8,7 @@ signal reaction_selected(card_data: CardData)
 signal reaction_skipped
 signal opponent_slap_finished
 signal opponent_slap_impacted
+signal versus_screen_finished
 
 @export var top_player_info: PlayerInfo
 @export var bottom_player_info: PlayerInfo
@@ -1025,20 +1026,20 @@ func _on_versus_screen_finished() -> void:
 	if current_versus_screen:
 		current_versus_screen.queue_free()
 		current_versus_screen = null
-	
+
 	if tuto_layer_instance:
 		tuto_layer_instance.show()
-	
-	# On affiche l'interface de jeu maintenant que le combat commence
+
+	versus_screen_finished.emit()
+
+# Appelée par Arena une fois la séquence rideau + "FIGHT!" terminée.
+func reveal_gameplay_ui() -> void:
 	_set_gameplay_ui_visible(true)
-	
-	if game_manager_ref:
-		game_manager_ref.start_match_after_versus()
-		
-		# Force initial UI update (without animation) to ensure correct state for non-starting players
-		if not game_manager_ref.players.is_empty():
-			var current_player_name = game_manager_ref.players[game_manager_ref.active_player_index].name
-			update_turn_info(current_player_name, true)
+
+	# Force initial UI update (without animation) to ensure correct state for non-starting players
+	if game_manager_ref and not game_manager_ref.players.is_empty():
+		var current_player_name = game_manager_ref.players[game_manager_ref.active_player_index].name
+		update_turn_info(current_player_name, true)
 
 func _setup_button_feedback(btn: Button) -> void:
 	if not btn: return

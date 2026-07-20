@@ -52,4 +52,4 @@ func _try_transition() -> void:
 	if NetworkManager.character_selections.size() < 2:
 		status_label.text = tr("CHARSELECT_STATUS_WAITING")
 		return
-	get_tree().change_scene_to_file("res://scenes/Arena.tscn")
+	NetworkManager.transition_to_arena()

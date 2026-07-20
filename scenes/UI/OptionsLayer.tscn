@@ -7,9 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://b2lp2avjpr2ja" path="res://assets/UI/Icons/mute_icon.tres" id="6_mute"]
 [ext_resource type="Texture2D" uid="uid://cdwxo2k8xq5gs" path="res://assets/UI/Icons/close_icon.tres" id="8_cross"]
 [ext_resource type="PackedScene" uid="uid://chf35my53chkb" path="res://scenes/UI/RoadMap.tscn" id="9_jpu5e"]
-[ext_resource type="Texture2D" path="res://assets/UI/Icons/blank_icon.png" id="10_blank"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_progress_bg"]
+[ext_resource type="Texture2D" uid="uid://xke2cvckrrce" path="res://assets/UI/Icons/blank_icon.png" id="10_blank"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tuto_checkbox"]
 content_margin_left = 4.0
@@ -22,11 +20,9 @@ border_width_top = 6
 border_width_right = 6
 border_width_bottom = 6
 border_color = Color(0.1254902, 0.1254902, 0.1254902, 1)
-corner_radius_top_left = 0
-corner_radius_top_right = 0
-corner_radius_bottom_right = 0
-corner_radius_bottom_left = 0
 anti_aliasing = false
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_progress_bg"]
 
 [node name="OptionsLayer" type="Control" unique_id=803959781]
 z_index = 20
@@ -88,9 +84,8 @@ custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 theme_type_variation = &"MainBtn"
 icon = ExtResource("8_cross")
-expand_icon = true
 icon_alignment = 1
-vertical_icon_alignment = 1
+expand_icon = true
 
 [node name="VolumeSetup" type="VBoxContainer" parent="CenterContainer/MainPanel/MarginContainer/VBoxContainer" unique_id=242690340]
 layout_mode = 2
@@ -228,6 +223,7 @@ theme_override_icons/unchecked = ExtResource("10_blank")
 
 [node name="CheckIcon" type="TextureRect" parent="CenterContainer/MainPanel/MarginContainer/VBoxContainer/TutoSetup/Tuto/TutoButton" unique_id=1587091372]
 unique_name_in_owner = true
+modulate = Color(0.1254902, 0.1254902, 0.1254902, 1)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -242,7 +238,6 @@ mouse_filter = 2
 texture = ExtResource("8_cross")
 expand_mode = 1
 stretch_mode = 5
-modulate = Color(0.1254902, 0.1254902, 0.1254902, 1)
 
 [node name="TutoStateLabel" type="Label" parent="CenterContainer/MainPanel/MarginContainer/VBoxContainer/TutoSetup/Tuto" unique_id=1239874560]
 unique_name_in_owner = true

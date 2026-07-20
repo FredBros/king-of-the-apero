@@ -81,6 +81,9 @@ func _ready() -> void:
 		# This is now done after spawning, to ensure wrestlers exist.
 		grid_manager.wrestlers_spawned.connect(_on_wrestlers_spawned)
 		
+		# Déclenche la séquence rideau + "FIGHT!" une fois le VersusScreen terminé
+		game_ui.versus_screen_finished.connect(start_fight_sequence)
+
 		# Initialize Game Manager network part. Game state init will be triggered by character selection.
 		game_manager.initialize_network(deck_manager)
 		
@@ -176,7 +179,7 @@ func _update_ui_player_perspectives() -> void:
 	if local_wrestler and remote_wrestler:
 		game_ui.set_player_perspectives(local_wrestler, remote_wrestler)
 
-# Appelée par le VersusScreen quand il a fini son animation
+# Appelée quand GameUI signale la fin du VersusScreen
 func start_fight_sequence() -> void:
 	print("Arena: Starting Fight Sequence (Triggered by VersusScreen)")
 	
@@ -224,8 +227,12 @@ func _play_fight_sequence() -> void:
 		# Disparition
 		tween.tween_property(fight_image, "scale", Vector2.ZERO, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 		
-		# Indique au chef d'orchestre que l'intro est finie
+		# Démarre vraiment la partie et révèle l'UI de jeu, puis indique au chef d'orchestre
+		# que l'intro est finie (dans cet ordre : le host doit être actif avant l'évaluation
+		# des tutoriels déclenchée par mark_intro_finished).
 		tween.tween_callback(func():
+			game_manager.start_match_after_versus()
+			game_ui.reveal_gameplay_ui()
 			if tutorial_orchestrator and tutorial_orchestrator.has_method("mark_intro_finished"):
 				tutorial_orchestrator.mark_intro_finished()
 			if game_manager and game_manager.has_method("mark_intro_finished"):

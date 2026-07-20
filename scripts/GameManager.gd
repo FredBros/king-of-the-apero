@@ -425,7 +425,7 @@ func _handle_rematch_vote(player_name: String) -> void:
 	print("🔄 Vote rematch: ", player_name)
 	var required = 2 if enable_hotseat_mode else NetworkManager.match_presences.size() + 1
 	if rematch_votes.size() >= required:
-		get_tree().change_scene_to_file("res://scenes/Arena.tscn")
+		NetworkManager.transition_to_arena()
 	else:
 		rematch_update.emit(rematch_votes.size(), required)
 

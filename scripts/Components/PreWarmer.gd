@@ -1,4 +1,4 @@
-extends Node3D
+extends Node
 
 @export var particles_to_warm: Array[PackedScene] = []
 @export var sounds_to_warm: Array[AudioStream] = []
@@ -17,9 +17,7 @@ func _ready() -> void:
 			
 			# On le place AU CENTRE de l'écran pour forcer le GPU à le rendre (Culling off)
 			# Mais on le rend quasi-invisible. Le rideau noir masquera le reste.
-			if inst is Node3D:
-				inst.position = Vector3(0, 1, 0)
-			elif inst is Node2D or inst is Control:
+			if inst is Node2D or inst is Control:
 				inst.position = get_viewport().get_visible_rect().size / 2.0
 				inst.modulate = Color(1, 1, 1, 0.01) # 1% d'opacité
 				inst.z_index = -100 # On s'assure qu'il est dessiné DERRIÈRE le rideau noir

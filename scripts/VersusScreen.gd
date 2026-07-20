@@ -3,10 +3,15 @@ extends Control
 signal finished
 signal skip_pressed
 
-@onready var top_spawn = $VBoxContainer/TopContainer/SubViewport/TopScene/SpawnPoint
-@onready var bottom_spawn = $VBoxContainer/BottomContainer/SubViewport/BottomScene/SpawnPoint
 @onready var vs_image = $VSImage
 @onready var skip_label = $SkipLabel
+
+@onready var top_stack: VBoxContainer = %TopStack
+@onready var top_sprite: TextureRect = %TopSprite
+@onready var top_badge: TextureRect = %TopBadge
+@onready var bottom_stack: VBoxContainer = %BottomStack
+@onready var bottom_sprite: TextureRect = %BottomSprite
+@onready var bottom_badge: TextureRect = %BottomBadge
 
 const VERSUS_SOUND = preload("res://assets/Sounds/Voices/versus.wav")
 const UI_SOUND_COMPONENT_SCENE = preload("res://scenes/Components/UISoundComponent.tscn")
@@ -27,6 +32,8 @@ func _ready() -> void:
 	# État initial
 	vs_image.scale = Vector2.ZERO
 	skip_label.modulate.a = 0.0
+	top_stack.scale = Vector2.ZERO
+	bottom_stack.scale = Vector2.ZERO
 	
 	# NETTOYAGE : On supprime l'image Fight si elle traîne encore dans cette scène par erreur
 	if has_node("FightImage"):
@@ -42,7 +49,7 @@ func setup(local_wrestler_data: WrestlerData, remote_wrestler_data: WrestlerData
 	var current_delay = 0.0
 	
 	# 1. Instancier le modèle du haut
-	_spawn_model(local_wrestler_data, top_spawn, current_delay)
+	_spawn_model(local_wrestler_data, current_delay, top_sprite, top_badge, top_stack)
 	
 	# Calcul durée étape 1 (Son ou min 0.8s pour l'anim visuelle)
 	var t1 = 0.8
@@ -58,7 +65,7 @@ func setup(local_wrestler_data: WrestlerData, remote_wrestler_data: WrestlerData
 	current_delay += t2
 	
 	# 3. Instancier le modèle du bas
-	_spawn_model(remote_wrestler_data, bottom_spawn, current_delay)
+	_spawn_model(remote_wrestler_data, current_delay, bottom_sprite, bottom_badge, bottom_stack)
 	
 	# Calcul durée étape 3
 	var t3 = 0.8
@@ -69,10 +76,7 @@ func setup(local_wrestler_data: WrestlerData, remote_wrestler_data: WrestlerData
 	# Mise à jour de la durée totale
 	duration = current_delay + 1.0
 
-func _spawn_model(data: WrestlerData, _parent: Node3D, delay: float = 0.0) -> void:
-	# Le pivot 2D a retiré model_scene de WrestlerData (remplacé par un sprite plat).
-	# La preview 3D de ce SubViewport sera reprise avec l'UI (voir mémoire pivot_2d_sincity) ;
-	# en attendant, on garde juste le timing et l'annonce vocale du personnage.
+func _spawn_model(data: WrestlerData, delay: float = 0.0, sprite_rect: TextureRect = null, badge_rect: TextureRect = null, stack: Control = null) -> void:
 	if not data:
 		return
 
@@ -80,10 +84,19 @@ func _spawn_model(data: WrestlerData, _parent: Node3D, delay: float = 0.0) -> vo
 	if delay > 0:
 		tween.tween_interval(delay)
 
-	if data.sound_name:
-		tween.tween_callback(func():
+	tween.tween_callback(func():
+		if sprite_rect:
+			sprite_rect.texture = data.sprite
+		if badge_rect:
+			badge_rect.texture = data.badge
+		if data.sound_name:
 			sound_component.play_varied(data.sound_name)
-		)
+	)
+
+	# Pop élastique du sprite+badge, synchronisé avec la voix (mêmes constantes que vs_image)
+	if stack:
+		tween.tween_property(stack, "scale", Vector2(1.5, 1.5), 0.3).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(stack, "scale", Vector2(1.0, 1.0), 0.2)
 
 func _start_intro_sequence(delay: float = 0.0) -> void:
 	# Animation VS (Flashy Bump)
@@ -133,11 +146,3 @@ func _finish() -> void:
 	if is_finished: return
 	is_finished = true
 	finished.emit()
-	
-	# On notifie l'Arena (scène principale) qu'elle peut lancer son intro "FIGHT!"
-	var current_scene = get_tree().current_scene
-	if current_scene and current_scene.has_method("start_fight_sequence"):
-		current_scene.start_fight_sequence()
-		
-	# On se détruit pour laisser place à l'arène (qui est déjà en dessous)
-	queue_free()

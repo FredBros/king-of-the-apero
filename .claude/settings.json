@@ -45,7 +45,23 @@
       "Bash(\"/c/Program Files/Godot4/Godot_v4.6-stable_win64_console.exe\" --path . --headless --editor --quit-after 8)",
       "Bash(\"/c/Program Files/Godot4/Godot_v4.6-stable_win64_console.exe\" --help)",
       "Bash(\"/c/Program Files/Godot4/Godot_v4.6-stable_win64_console.exe\" --path . --headless --import)",
-      "Bash(taskkill //PID 22192 //F)"
+      "Bash(taskkill //PID 22192 //F)",
+      "Read(//c//**)",
+      "Bash(find 'C:\\\\Users\\\\fredb' -iname Godot*.exe)",
+      "Bash(\"/c/Program Files/Godot4/Godot_v4.6-stable_win64_console.exe\" --headless --path . --import --quit-after 20)",
+      "Bash(\"/c/Program Files/Godot4/Godot_v4.6-stable_win64_console.exe\" --path . res://scenes/Arena.tscn)",
+      "Bash(echo \"Launched with PID $!\")",
+      "Bash(tasklist //FI \"IMAGENAME eq Godot_v4.6-stable_win64_console.exe\" //V)",
+      "Bash(tasklist //FI \"IMAGENAME eq Godot_v4.6-stable_win64.exe\" //V)",
+      "Bash(taskkill //F //PID 8996)",
+      "Bash(taskkill //F //PID 16556)",
+      "Bash(python3 -c ' *)",
+      "Bash(taskkill //F //PID 14012)",
+      "Bash(taskkill //F //PID 22280)",
+      "Bash(taskkill //F //PID 4116)",
+      "Bash(taskkill //F //PID 8972)",
+      "Bash(taskkill //F //PID 4192)",
+      "Bash(git status *)"
     ]
   }
 }
